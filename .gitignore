@@ -15,6 +15,7 @@ dist-ssr
 coverage
 *.local
 vuecom-server*
+.env*
 
 
 /cypress/videos/

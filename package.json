@@ -1,4 +1,5 @@
 {
+    "type": "module",
     "scripts": {
         "dev": "node dev.js",
         "build": "node build.js"

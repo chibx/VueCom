@@ -1,14 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import adminSlug from './admin-slug'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      name: 'home',
-      path: '/',
-      component: () => import('@/pages/HomePage.vue'),
-    },
-  ],
+  routes: adminSlug,
 })
 
 export default router

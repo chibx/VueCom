@@ -21,8 +21,4 @@ export default [
       },
     ],
   },
-  {
-    path: '/:path(.*)',
-    component: () => import('@/pages/NotFound.vue'),
-  },
 ] as RouteRecordRaw[]

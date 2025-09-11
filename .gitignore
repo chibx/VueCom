@@ -16,7 +16,7 @@ coverage
 *.local
 vuecom-server*
 .env*
-
+components.d.ts
 
 /cypress/videos/
 /cypress/screenshots/

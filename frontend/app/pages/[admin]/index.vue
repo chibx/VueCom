@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import Button from '@/components/ui/button/Button.vue';
+// import Button from "primevue/button";
+
 </script>
 
 <template>
   <div>
     <h1>Yo wassup</h1>
-    <Button>Fuck you</Button>
+    <PrimeButton color="blue">Fuck you</PrimeButton>
   </div>
 </template>
 

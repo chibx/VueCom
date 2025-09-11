@@ -5,5 +5,9 @@ var AllowedPaths = []string{
 	"api",
 	// Frontend
 	"favicon.ico",
-	"assets",
+	"_nuxt",
+	".well-known",
+	"200.html",
+	"404.html",
+	"robots.txt",
 }

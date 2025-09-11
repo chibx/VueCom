@@ -19,7 +19,7 @@ func main() {
 	host, is_host_set := os.LookupEnv("GO_HOST")
 	mode, _ := os.LookupEnv("SERVER_MODE")
 
-	var server Server
+	var server Server = Server{Server: server.Server{}}
 
 	if len(mode) != 0 {
 		fmt.Println("SERVER_MODE:", mode)

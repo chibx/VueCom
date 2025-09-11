@@ -2,7 +2,7 @@ import "dotenv/config";
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 
-process.env.SERVER_MODE = "prod";
+process.env.SERVER_MODE = "production";
 
 const backend = spawn("./vuecom-server", {
   cwd: join(process.cwd(), "./.output"),

@@ -22,6 +22,7 @@ vuecom-server*
 .nitro
 .cache
 dist
+components.d.ts
 
 /cypress/videos/
 /cypress/screenshots/

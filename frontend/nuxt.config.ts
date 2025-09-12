@@ -15,17 +15,32 @@ export default defineNuxtConfig({
             autoSubfolderIndex: false,
         },
     },
+    css: ['~~/assets/main.css'],
     modules: ['@pinia/nuxt', '@nuxtjs/i18n', '@formkit/auto-animate/nuxt'],
     i18n: {
         defaultLocale: 'en',
     },
+    $development: {
+        modules: ['@primevue/nuxt-module'],
+    },
+    $production: {
+        vite: {
+            plugins: [
+                Components({
+                    resolvers: [PrimeVueResolver({ components: { prefix: 'Prime' } })],
+                }),
+            ],
+        },
+    },
+    primevue: {
+        usePrimeVue: false,
+        loadStyles: false,
+        components: {
+            prefix: 'Prime',
+        },
+    },
     vite: {
-        plugins: [
-            tailwindcss(),
-            Components({
-                resolvers: [PrimeVueResolver({ components: { prefix: 'Prime' } })],
-            }),
-        ],
+        plugins: [tailwindcss()],
         server: {
             proxy: {
                 '/api': `http://${GO_HOST}:${GO_PORT}`,
@@ -34,7 +49,7 @@ export default defineNuxtConfig({
     },
     typescript: {
         tsConfig: {
-            include: ['./app/components.d.ts'],
+            // include: ['./app/components.d.ts'],
         },
     },
 })

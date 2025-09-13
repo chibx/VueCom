@@ -3,9 +3,12 @@ package server
 import (
 	"fmt"
 	"strings"
+
+	"github.com/gofiber/fiber/v2/utils"
 )
 
 func extractRouteParts(route string) []string {
+	route = utils.CopyString(route)
 	var routeLength = len(route)
 	var routeParts []string
 

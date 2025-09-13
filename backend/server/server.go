@@ -57,5 +57,5 @@ func (s *Server) ValidateSlug(ctx *fiber.Ctx) error {
 }
 
 func (s *Server) serveIndex(ctx *fiber.Ctx) error {
-	return WriteFile(ctx, "./dist/index.html", "text/html")
+	return WriteFile(ctx, "./dist/index.html", fiber.MIMETextHTMLCharsetUTF8)
 }

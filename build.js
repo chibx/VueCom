@@ -8,7 +8,7 @@ const FRONTEND_DIR = join(process.cwd(), "./frontend");
 let prev = "f"; // Switch to preserve grouping
 const BINARY_NAME = `vuecom-server${platform() === "win32" ? ".exe" : ""}`;
 const backend = spawn("go", ["build", "-o", `./${BINARY_NAME}`], { cwd: BACKEND_DIR });
-const frontend = spawn("npm", ["run", "generate"], { cwd: FRONTEND_DIR });
+const frontend = spawn("npm", ["run", "build"], { cwd: FRONTEND_DIR });
 backend.once("spawn", () => {
     console.log("Backend Started Successfully");
 });
@@ -47,7 +47,7 @@ await Promise.all([
         backend.once("close", (code) => {
             if (code !== 0) {
                 console.error(
-                    "--------Server Build Failed---------\nAborting all active operations!"
+                    "--------Server Build Failed---------\nAborting all active operations!",
                 );
                 if (frontend.connected) {
                     frontend.kill("SIGKILL");
@@ -62,7 +62,7 @@ await Promise.all([
         frontend.once("close", (code) => {
             if (code !== 0) {
                 console.error(
-                    "--------Client Build Failed---------\nAborting all active operations!"
+                    "--------Client Build Failed---------\nAborting all active operations!",
                 );
                 if (backend.connected) {
                     backend.kill("SIGKILL");
@@ -83,7 +83,7 @@ if (existsSync(OUTPUT_DIR)) {
 }
 mkdirSync(OUTPUT_DIR);
 copyFileSync(join(BACKEND_DIR, `./${BINARY_NAME}`), join(OUTPUT_DIR, `./${BINARY_NAME}`));
-cpSync(join(FRONTEND_DIR, "./.output/public"), join(OUTPUT_DIR, "./dist"), { recursive: true });
+cpSync(join(FRONTEND_DIR, "./dist"), join(OUTPUT_DIR, "./dist"), { recursive: true });
 // await Promise.all([
 //     rm(join(BACKEND_DIR, `./${BINARY_NAME}`)),
 //     rm(join(FRONTEND_DIR, "./dist"), { recursive: true, force: true }),

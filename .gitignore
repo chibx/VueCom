@@ -10,10 +10,19 @@ lerna-debug.log*
 node_modules
 .DS_Store
 dist
-.output/**
+.output
 dist-ssr
 coverage
 *.local
+vuecom-server*
+.env*
+!.env.example
+.data
+.nuxt
+.nitro
+.cache
+dist
+components.d.ts
 
 /cypress/videos/
 /cypress/screenshots/

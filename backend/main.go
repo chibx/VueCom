@@ -4,31 +4,25 @@ import (
 	"fmt"
 
 	// "sync"
-	"vuecom/server"
+	"vuecom/api"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/helmet"
 	_ "github.com/joho/godotenv/autoload"
 )
 
-type Server struct {
-	server.Server
-}
-
 func main() {
-	var config = server.LoadEnvConfig()
-
-	var server Server = Server{Server: server.Server{}}
+	var config = api.LoadEnvConfig()
 
 	app := fiber.New(fiber.Config{DisableStartupMessage: true})
 
+	app.Use(helmet.New())
+	//! TODO Add a rate limiter middleware
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusNotFound)
 	})
-	// For validating the admin slug
-	app.Use("/:admin/*", server.ValidateSlug)
 
-	api := app.Group("/api")
-	server.LoadApis(api)
+	LoadApis(app)
 
 	app.Static("/", "./dist")
 

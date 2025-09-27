@@ -9,7 +9,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	_ "github.com/joho/godotenv/autoload"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
+
+func plugDB(api *api.Api, url string) {
+	gorm.Open(postgres.New(postgres.Config{}))
+}
 
 func main() {
 	var config = api.LoadEnvConfig()
@@ -21,8 +27,9 @@ func main() {
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusNotFound)
 	})
+	handler := &api.Api{}
 
-	LoadApis(app)
+	LoadApis(app, handler)
 
 	app.Static("/", "./dist")
 

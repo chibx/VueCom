@@ -9,7 +9,9 @@ const Page_404 = `
         <title>Not Found</title>
     </head>
     <body>
-        <h1 style="text-align: center;">Not Found</h1>
+        <h1 style="text-align: center;">404</h1>
+        <div style="text-align: center; margin-bottom: 20px;">Not Found</div>
+        <hr />
     </body>
 </html>
 >

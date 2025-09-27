@@ -36,6 +36,7 @@ func extractRouteParts(route string) []string {
 func serveIndex(ctx *fiber.Ctx) error {
 	return WriteFile(ctx, "./dist/index.html", fiber.MIMETextHTMLCharsetUTF8)
 }
+
 func WriteFile(ctx *fiber.Ctx, path string, ctype string) error {
 	file, err := os.ReadFile(path)
 

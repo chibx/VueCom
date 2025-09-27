@@ -13,12 +13,18 @@ import (
 	"gorm.io/gorm"
 )
 
-func plugDB(api *api.Api, url string) {
-	gorm.Open(postgres.New(postgres.Config{}))
+func plugDB(api *api.Api, dsn string) {
+	db, err := gorm.Open(postgres.Open(dsn))
+
+	if err != nil {
+		panic(err)
+	}
+
+	api.DB = db
 }
 
 func main() {
-	var config = api.LoadEnvConfig()
+	config := api.LoadEnvConfig()
 
 	app := fiber.New(fiber.Config{DisableStartupMessage: true})
 
@@ -29,6 +35,7 @@ func main() {
 	})
 	handler := &api.Api{}
 
+	plugDB(handler, config.PostgresDSN)
 	LoadApis(app, handler)
 
 	app.Static("/", "./dist")

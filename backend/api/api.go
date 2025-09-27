@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"slices"
+	"vuecom/config"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -11,7 +12,7 @@ import (
 )
 
 type Api struct {
-	DB    gorm.DB
+	DB    *gorm.DB
 	Redis redis.Client
 }
 
@@ -22,12 +23,13 @@ func (s *Api) ValidateSlug(ctx *fiber.Ctx) error {
 	// /"" OR /"admin"
 	var adminPart string = routeParts[0]
 
-	if slices.Contains(AllowedPaths, adminPart) {
+	if slices.Contains(config.AllowedPaths, adminPart) {
 		return ctx.Next()
 	}
 
-	if adminPart != adminSlug {
-		ctx.Context().SetContentType(fiber.MIMETextHTMLCharsetUTF8)
+	// TODO: Remove when true setting up
+	if adminPart != config.MockAdminSlug {
+		ctx.Set(fiber.HeaderContentType, fiber.MIMETextHTMLCharsetUTF8)
 		return ctx.Status(404).SendString(Page_404)
 	}
 

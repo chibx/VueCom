@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"vuecom/config"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -57,4 +58,70 @@ func WriteFile(ctx *fiber.Ctx, path string, ctype string) error {
 	}
 
 	return nil
+}
+
+func LoadEnvConfig() *config.Config {
+	port, isSet := os.LookupEnv("GO_PORT")
+
+	if !isSet {
+		panic("GO_PORT variable is to be set")
+	}
+
+	host, isSet := os.LookupEnv("GO_HOST")
+
+	if !isSet {
+		panic("GO_HOST variable is to be set")
+	}
+
+	postgresDSN := loadPostgresDSN()
+
+	redisUrl, isSet := os.LookupEnv("REDIS_URL")
+
+	if !isSet {
+		panic("REDIS_URL variable is to be set")
+	}
+
+	return &config.Config{
+		Port:        port,
+		Host:        host,
+		PostgresDSN: postgresDSN,
+		RedisUrl:    redisUrl,
+	}
+}
+
+func loadPostgresDSN() string {
+
+	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
+
+	host, isSet := os.LookupEnv("PG_HOST")
+
+	if !isSet {
+		panic("PG_HOST env is required")
+	}
+
+	user, isSet := os.LookupEnv("PG_USER")
+
+	if !isSet {
+		panic("PG_USER env is required")
+	}
+
+	passwd, isSet := os.LookupEnv("PG_PASSWD")
+
+	if !isSet {
+		panic("PG_PASSWD env is required")
+	}
+
+	dbName, isSet := os.LookupEnv("PG_DBNAME")
+
+	if !isSet {
+		panic("PG_DBNAME env is required")
+	}
+
+	port, isSet := os.LookupEnv("PG_PORT")
+
+	if !isSet {
+		panic("PG_PORT env is required")
+	}
+
+	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }

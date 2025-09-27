@@ -17,7 +17,6 @@ func extractRouteParts(route string) []string {
 	var routeLength = len(route)
 	var routeParts []string
 
-	fmt.Println(route, routeLength)
 	if routeLength == 1 {
 		// It's just "/"
 		routeParts = []string{""}

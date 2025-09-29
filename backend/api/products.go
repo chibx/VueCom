@@ -23,7 +23,7 @@ func (api *Api) GetProducts(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	product := dbModel.Products{}
+	product := dbModel.Product{}
 	result := api.DB.First(&product)
 
 	return ctx.SendString("Product Yo")

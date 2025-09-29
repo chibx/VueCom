@@ -59,8 +59,7 @@ type OTP struct {
 
 type Product struct {
 	gorm.Model
-	Name string `gorm:"not null;index;type:text"`
-	SKU  string `gorm:"not null;index"`
+	models.ApiProducts
 }
 
 // ID: 131 | Name: Size | Value: XL

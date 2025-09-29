@@ -5,6 +5,7 @@ import (
 
 	// "sync"
 	"vuecom/api"
+	"vuecom/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
@@ -24,7 +25,7 @@ func plugDB(api *api.Api, dsn string) {
 }
 
 func main() {
-	config := api.LoadEnvConfig()
+	config := utils.LoadEnvConfig()
 
 	app := fiber.New(fiber.Config{DisableStartupMessage: true})
 

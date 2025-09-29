@@ -3,9 +3,9 @@ package api
 import (
 	"fmt"
 	"slices"
-	"vuecom/api/utils"
 	"vuecom/config"
 	"vuecom/models"
+	"vuecom/utils"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"

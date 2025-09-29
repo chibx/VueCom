@@ -36,7 +36,13 @@ func main() {
 	handler := &api.Api{}
 
 	plugDB(handler, config.PostgresDSN)
-	LoadApis(app, handler)
+
+	err := migrate(handler.DB)
+	if err != nil {
+		panic("Error while migration")
+	}
+
+	loadApis(app, handler)
 
 	app.Static("/", "./dist")
 

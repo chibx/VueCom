@@ -1,4 +1,4 @@
-package api
+package utils
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2/utils"
 )
 
-func extractRouteParts(route string) []string {
+func ExtractRouteParts(route string) []string {
 	route = utils.CopyString(route)
 	var routeLength = len(route)
 	var routeParts []string
@@ -33,11 +33,11 @@ func extractRouteParts(route string) []string {
 	return routeParts
 }
 
-func serveIndex(ctx *fiber.Ctx) error {
-	return WriteFile(ctx, "./dist/index.html", fiber.MIMETextHTMLCharsetUTF8)
+func ServeIndex(ctx *fiber.Ctx) error {
+	return writeFile(ctx, "./dist/index.html", fiber.MIMETextHTMLCharsetUTF8)
 }
 
-func WriteFile(ctx *fiber.Ctx, path string, ctype string) error {
+func writeFile(ctx *fiber.Ctx, path string, ctype string) error {
 	file, err := os.ReadFile(path)
 
 	if err != nil {

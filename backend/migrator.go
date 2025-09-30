@@ -8,9 +8,10 @@ import (
 
 func migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
+		model.User{},
+		model.Product{},
 		model.Customer{},
 		model.OTP{},
 		model.Session{},
-		model.User{},
 	)
 }

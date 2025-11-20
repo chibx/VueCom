@@ -1,6 +1,6 @@
 package config
 
-var AllowedPaths = []string{
+var allowedPaths = []string{
 	// Backend
 	"api",
 	// Frontend
@@ -12,4 +12,4 @@ var AllowedPaths = []string{
 	"robots.txt",
 }
 
-const MockAdminSlug = "admin123"
+const mockAdminSlug = "admin123"

@@ -1,17 +1,18 @@
 package main
 
 import (
-	model "vuecom/models/db"
+	model "vuecom/shared/models/db"
 
 	"gorm.io/gorm"
 )
 
 func migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
-		model.User{},
+		model.BackendUser{},
 		model.Product{},
 		model.Customer{},
 		model.OTP{},
-		model.Session{},
+		model.CustomerSession{},
+		model.BackendSession{},
 	)
 }

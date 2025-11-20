@@ -1,8 +1,10 @@
-module vuecom
+module vuecom/gateway
 
 go 1.25.0
 
 require github.com/joho/godotenv v1.5.1
+
+require github.com/goccy/go-json v0.10.5 // indirect
 
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
@@ -35,4 +37,7 @@ require (
 	golang.org/x/text v0.29.0 // indirect
 	gorm.io/driver/postgres v1.6.0 // indirect
 	gorm.io/gorm v1.30.5 // indirect
+	vuecom/shared v1.0.0
 )
+
+replace vuecom/shared => ../shared

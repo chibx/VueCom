@@ -1,4 +1,4 @@
-package api
+package v1
 
 const Page_404 = `
 <!DOCTYPE html>

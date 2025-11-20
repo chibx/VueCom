@@ -1,11 +1,10 @@
-package api
+package v1
 
 import (
 	"fmt"
 	"slices"
-	"vuecom/config"
-	"vuecom/models"
-	"vuecom/utils"
+	"vuecom/gateway/config"
+	"vuecom/gateway/utils"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -14,23 +13,25 @@ import (
 )
 
 type Api struct {
-	DB    *gorm.DB
-	Redis redis.Client
+	DB       *gorm.DB
+	Redis    *redis.Client
+	Config   *config.Config
+	HasAdmin bool
 }
 
 // For validating the admin slug
-func (s *Api) ValidateSlug(ctx *fiber.Ctx) error {
+func (api *Api) ValidateSlug(ctx *fiber.Ctx) error {
 	var routeParts = utils.ExtractRouteParts(ctx.Path())
 	// var partLen = len(routeParts)
 	// /"" OR /"admin"
 	var adminPart string = routeParts[0]
 
-	if slices.Contains(config.AllowedPaths, adminPart) {
+	if slices.Contains(api.Config.AllowedPaths, adminPart) {
 		return ctx.Next()
 	}
 
 	// TODO: Remove when true setting up
-	if adminPart != config.MockAdminSlug {
+	if adminPart != api.Config.MockAdminSlug {
 		ctx.Set(fiber.HeaderContentType, fiber.MIMETextHTMLCharsetUTF8)
 		return ctx.Status(404).SendString(Page_404)
 	}
@@ -38,18 +39,7 @@ func (s *Api) ValidateSlug(ctx *fiber.Ctx) error {
 	return utils.ServeIndex(ctx)
 }
 
-func (a *Api) ApiHandler(ctx *fiber.Ctx) error {
+func (api *Api) ApiHandler(ctx *fiber.Ctx) error {
 	fmt.Println(ctx.Params("name"))
-	return nil
-}
-
-func (api *Api) initializeApp(ctx *fiber.Ctx) error {
-	appData := models.CreateAppData{}
-	err := ctx.BodyParser(&appData)
-
-	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).SendString(err.Error())
-	}
-
 	return nil
 }

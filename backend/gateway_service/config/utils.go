@@ -18,12 +18,12 @@ func getEnv(env string, sub ...string) string {
 }
 
 func loadMasterKey() []byte {
-	keyBase64 := getEnv("API_MASTER_KEY")
+	keyBase64 := getEnv("API_ENC_KEY")
 
 	var err error
 	masterKey, err := base64.StdEncoding.DecodeString(keyBase64)
 	if err != nil || len(masterKey) != 32 {
-		panic("Invalid API_MASTER_KEY")
+		panic("Invalid API_ENC_KEY")
 	}
 	return masterKey
 }

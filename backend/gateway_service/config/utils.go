@@ -6,7 +6,9 @@ import (
 	"os"
 )
 
-func getEnv(env string, sub ...string) string {
+const VERSION = "1.0.0"
+
+func GetEnv(env string, sub ...string) string {
 	val := os.Getenv(env)
 	if val == "" {
 		if len(sub) > 0 {
@@ -18,7 +20,7 @@ func getEnv(env string, sub ...string) string {
 }
 
 func loadMasterKey() []byte {
-	keyBase64 := getEnv("API_ENC_KEY")
+	keyBase64 := GetEnv("API_ENC_KEY")
 
 	var err error
 	masterKey, err := base64.StdEncoding.DecodeString(keyBase64)
@@ -32,21 +34,21 @@ func loadPostgresDSN() string {
 
 	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
 
-	host := getEnv("PG_HOST")
+	host := GetEnv("PG_HOST")
 
-	user := getEnv("PG_USER")
+	user := GetEnv("PG_USER")
 
-	passwd := getEnv("PG_PASSWD")
+	passwd := GetEnv("PG_PASSWD")
 
-	dbName := getEnv("PG_DBNAME")
+	dbName := GetEnv("PG_DBNAME")
 
-	port := getEnv("PG_PORT")
+	port := GetEnv("PG_PORT")
 
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }
 
 func isSaaS() bool {
-	saas := getEnv("IS_SAAS", "false")
+	saas := GetEnv("IS_SAAS", "false")
 
 	if saas == "true" {
 		return true

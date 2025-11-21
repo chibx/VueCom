@@ -13,10 +13,10 @@ type Config struct {
 
 func GetConfig() *Config {
 	return &Config{
-		Host:          getEnv("GO_HOST", "127.0.0.1"),
-		Port:          getEnv("GO_PORT", "2500"),
+		Host:          GetEnv("GO_HOST", "127.0.0.1"),
+		Port:          GetEnv("GO_PORT", "2500"),
 		PostgresDSN:   loadPostgresDSN(),
-		RedisUrl:      getEnv("REDIS_URL"),
+		RedisUrl:      GetEnv("REDIS_URL"),
 		AllowedPaths:  allowedPaths,
 		MockAdminSlug: "admin123",
 		ApiMasterKey:  loadMasterKey(),

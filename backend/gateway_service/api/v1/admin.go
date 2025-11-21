@@ -32,6 +32,8 @@ func (api *Api) DoesOwnerExist(ctx *fiber.Ctx) (bool, error) {
 // 	Plan       int    `json:"app_plan"`
 // 	LogoUrl   string `json:"app_logo"`
 
+// TODO: Validate the business name and the admin route to avoid clashes with url and also storage buckets
+
 func (api *Api) InitializeApp(ctx *fiber.Ctx) error {
 	form, err := ctx.MultipartForm()
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"vuecom/gateway/config"
 	"vuecom/gateway/utils"
 
+	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 
@@ -16,6 +17,7 @@ type Api struct {
 	DB       *gorm.DB
 	Redis    *redis.Client
 	Config   *config.Config
+	Cld      *cloudinary.Cloudinary
 	HasAdmin bool
 }
 

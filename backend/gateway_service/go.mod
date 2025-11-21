@@ -9,7 +9,7 @@ require github.com/goccy/go-json v0.10.5 // indirect
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/cloudinary/cloudinary-go/v2 v2.13.0 // indirect
+	github.com/cloudinary/cloudinary-go/v2 v2.14.0 // indirect
 	github.com/creasty/defaults v1.7.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gofiber/fiber/v2 v2.52.9 // indirect

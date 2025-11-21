@@ -1,5 +1,7 @@
 package v1
 
+// This is for testing or for when the user decides to just use the backend as a headless content bucket
+// This 404 response is the default page that will be shown when the user doesn't set frontend mode
 const Page_404 = `
 <!DOCTYPE html>
 <html lang="en">
@@ -16,3 +18,6 @@ const Page_404 = `
 </html>
 >
 `
+
+// Max allowed image size in bytes i.e 5MB
+const MAX_IMAGE_UPLOAD = 5 * 1024 * 1024

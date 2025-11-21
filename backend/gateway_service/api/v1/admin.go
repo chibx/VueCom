@@ -3,9 +3,13 @@ package v1
 import (
 	"errors"
 	"mime/multipart"
+	"strings"
 	"vuecom/shared/models"
 	"vuecom/shared/models/db"
 
+	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
+	"github.com/cloudinary/cloudinary-go/v2/api/admin"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -29,8 +33,6 @@ func (api *Api) DoesOwnerExist(ctx *fiber.Ctx) (bool, error) {
 // 	LogoUrl   string `json:"app_logo"`
 
 func (api *Api) InitializeApp(ctx *fiber.Ctx) error {
-	// appData := models.CreateAppData{}
-	// err := ctx.BodyParser(&appData)
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		return fiber.ErrInternalServerError
@@ -40,7 +42,32 @@ func (api *Api) InitializeApp(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(404).SendString(err.Error())
 	}
+	_, err = api.Cld.Admin.CreateFolder(ctx.Context(), admin.CreateFolderParams{
+		Folder: appData.Name,
+	})
 
+	err500 := fiber.NewError(500, "Error initializing app. Try again")
+
+	if err != nil {
+		return err500
+	}
+
+	fileIO, err := logoFile.Open()
+	if err != nil {
+		return err500
+	}
+
+	_, err = api.Cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
+		Folder:      appData.Name,
+		Overwrite:   cldApi.Bool(true),
+		DisplayName: appData.Name + "_logo",
+		PublicID:    appData.Name + "_logo",
+	})
+
+	result := api.DB.Create(appData)
+	if result.Error != nil {
+		return err500
+	}
 	// if err != nil {
 	// 	return ctx.Status(fiber.StatusBadRequest).SendString(err.Error())
 	// }
@@ -56,7 +83,7 @@ func RegisterOwner(api *Api, owner *db.BackendUser) error {
 	return nil
 }
 
-func validateInitializeProps(form *multipart.Form) (appData *models.CreateAppData, file *multipart.FileHeader, err error) {
+func validateInitializeProps(form *multipart.Form) (appData *models.AppData, file *multipart.FileHeader, err error) {
 	fields := form.Value
 	files := form.File
 	nameField := fields["name"]
@@ -72,8 +99,8 @@ func validateInitializeProps(form *multipart.Form) (appData *models.CreateAppDat
 		return nil, nil, errors.New(fieldIsMissing("`Application logo`"))
 	}
 
-	name := nameField[0]
-	adminRoute := adminRouteField[0]
+	name := strings.TrimSpace(nameField[0])
+	adminRoute := strings.TrimSpace(adminRouteField[0])
 	logoFile := logoFileField[0]
 
 	switch {
@@ -87,7 +114,7 @@ func validateInitializeProps(form *multipart.Form) (appData *models.CreateAppDat
 		return nil, nil, errors.New("The uploaded logo must not be more than 5MB in size")
 	}
 
-	appData = &models.CreateAppData{
+	appData = &models.AppData{
 		Name:       name,
 		AdminRoute: adminRoute,
 	}

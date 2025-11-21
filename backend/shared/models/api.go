@@ -2,10 +2,10 @@ package models
 
 import "time"
 
-type CreateAppData struct {
-	Name       string `json:"app_name"`
-	AdminRoute string `json:"-"`
-	LogoUrl    string `json:"app_logo"`
+type AppData struct {
+	Name       string `json:"app_name" gorm:""`
+	AdminRoute string `json:"-" gorm:""`
+	LogoUrl    string `json:"app_logo" gorm:""`
 	// Plan       int    `json:"app_plan"`
 }
 

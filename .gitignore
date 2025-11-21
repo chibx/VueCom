@@ -41,3 +41,7 @@ components.d.ts
 
 test-results/
 playwright-report/
+
+# binaries
+gateway
+

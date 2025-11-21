@@ -6,7 +6,7 @@ type CreateAppData struct {
 	Name       string `json:"app_name"`
 	AdminRoute string `json:"-"`
 	Plan       int    `json:"app_plan"`
-	LogoUrl    string `json:"app_image_url"`
+	LogoUrl    string `json:"app_logo"`
 }
 
 type OnlyID struct {

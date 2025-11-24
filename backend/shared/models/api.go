@@ -27,37 +27,17 @@ type CustomerJWTPayload struct {
 	Exp    int    `json:"exp"`
 }
 
-type sharedUserProps struct {
-	FullName        string  `json:"full_name" gorm:"not null;type:varchar(255);index"`
-	UserName        *string `json:"user_name" gorm:"type:varchar(255);index"`
-	Email           string  `json:"email" gorm:"unique;not null;type:varchar(255);index"`
-	PhoneNumber     *string `json:"phone_number" gorm:"type:varchar(20)"`
-	Image           *string `json:"image"`
-	Country         uint    `json:"country" gorm:"index"`
-	IsEmailVerified bool    `json:"email_verified" gorm:"default:FALSE;not null"`
-}
+// type ApiCustomer struct {
+// 	sharedUserProps
+// }
 
-type ApiCustomer struct {
-	sharedUserProps
-}
-
-// Base Backend Panel User
-type ApiBackendUser struct {
-	sharedUserProps
-	Role string `json:"role" gorm:"type:varchar(50)"`
-}
+// // Base Backend Panel User
+// type ApiBackendUser struct {
+// 	sharedUserProps
+// 	Role string `json:"role" gorm:"type:varchar(50)"`
+// }
 
 type ApiProducts struct {
-	Name string `json:"name" gorm:"not null;index;type:text"`
-	SKU  string `json:"sku" gorm:"not null;index"`
-	// Just made the precision to be 15 (Don't know how bad the ecomomy of some countries are)
-	Price      float64   `json:"price" gorm:"not null;type:numeric(15, 2)"`
-	DscPercent float64   `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
-	DscPeriod  time.Time `json:"dsc_period" gorm:""`
-	Enabled    bool      `json:"enabled" gorm:""`
-	// Warranty   string    `json:"warranty"`
-	Description string
-	Url         string `json:"url"`
 }
 
 type CustomerReviews struct {

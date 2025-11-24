@@ -2,24 +2,32 @@ package db
 
 import (
 	"time"
-
-	"vuecom/shared/models"
 )
 
-type ApplicationConfig struct {
-	Name string `gorm:"not null"`
-	// Dashboard
-	AdminRoute string `gorm:"not null"`
-	Plan       uint   `gorm:"not null"`
-	// Logo
-	ImageUrl string `gorm:"not null"`
+type AppData struct {
+	Name       string `json:"app_name" gorm:"" redis:"name"`
+	AdminRoute string `json:"-" gorm:"" redis:"admin_route"`
+	LogoUrl    string `json:"app_logo" gorm:"" redis:"logo_url"`
+	// Plan       int    `json:"app_plan"`
+}
+
+type sharedUserProps struct {
+	FullName        string  `json:"full_name" gorm:"not null;type:varchar(255);index" validate:""`
+	UserName        *string `json:"user_name" gorm:"type:varchar(255);index" validate:""`
+	Email           string  `json:"email" gorm:"unique;not null;type:varchar(255);index"`
+	PhoneNumber     *string `json:"phone_number" gorm:"type:varchar(20)" validate:""`
+	Image           *string `json:"image" validate:"url"`
+	Country         uint    `json:"country" gorm:"index"`
+	IsEmailVerified bool    `json:"email_verified" gorm:"default:FALSE;not null"`
+	Password        *string `json:"password,omitempty" validate:"required"`
 }
 
 type BackendUser struct {
 	ID        uint `gorm:"primarykey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	models.ApiBackendUser
+	sharedUserProps
+	Role         string `json:"role" gorm:"type:varchar(50)"`
 	PasswordHash string `json:"-" gorm:"not null"`
 }
 
@@ -66,7 +74,17 @@ type Product struct {
 	ID        uint      `gorm:"primarykey" redis:"id"`
 	UpdatedAt time.Time `redis:"updated_at"`
 	CreatedAt time.Time `redis:"created_at"`
-	models.ApiProducts
+	Name      string    `json:"name" gorm:"not null;index;type:text"`
+	SKU       string    `json:"sku" gorm:"not null;index"`
+	// Just made the precision to be 15 (Don't know how bad the ecomomy of some countries are)
+	Price      float64   `json:"price" gorm:"not null;type:numeric(15, 2)"`
+	DscPercent float64   `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
+	DscPeriod  time.Time `json:"dsc_period" gorm:""`
+	Enabled    bool      `json:"enabled" gorm:""`
+	// Warranty   string    `json:"warranty"`
+	Description string
+	Url         string `json:"url"`
+	// models.ApiProducts
 }
 
 type ApiKey struct {

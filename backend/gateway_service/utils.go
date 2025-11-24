@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"os"
 	v1 "vuecom/gateway/api/v1"
 	"vuecom/gateway/config"
 
@@ -11,7 +13,35 @@ import (
 	"gorm.io/gorm"
 )
 
-func loadCloudinary() *cloudinary.Cloudinary {
+func getEnv(env string, sub ...string) string {
+	val := os.Getenv(env)
+	if val == "" {
+		if len(sub) > 0 {
+			return sub[0]
+		}
+		panic("Environment Variable " + env + " not set")
+	}
+	return val
+}
+
+func loadPostgresDSN() string {
+
+	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
+
+	host := getEnv("PG_HOST")
+
+	user := getEnv("PG_USER")
+
+	passwd := getEnv("PG_PASSWD")
+
+	dbName := getEnv("PG_DBNAME")
+
+	port := getEnv("PG_PORT")
+
+	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
+}
+
+func plugCloudinary(api *v1.Api) {
 	cldKey := config.GetEnv("CLOUDINARY_KEY")
 	cldSecret := config.GetEnv("CLOUDINARY_SECRET")
 	cldName := config.GetEnv("CLOUDINARY_CLOUD_NAME")
@@ -21,27 +51,22 @@ func loadCloudinary() *cloudinary.Cloudinary {
 		panic("Error setting up Cloudinary!!!")
 	}
 
-	return cld
+	api.Deps.Cld = cld
 }
 
-func plugDB(api *v1.Api, dsn string) {
+func plugDB(api *v1.Api) {
+	dsn := loadPostgresDSN()
 	db, err := gorm.Open(postgres.Open(dsn))
 
 	if err != nil {
 		panic(err)
 	}
 
-	api.DB = db
+	api.Deps.DB = db
 }
 
-func plugRedis(api *v1.Api, redisUrl string) {
-	// db, err := gorm.Open(postgres.Open(dsn))
-
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// api.DB = db
+func plugRedis(api *v1.Api) {
+	redisUrl := getEnv("REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
 		panic("REDIS_URL should be set!!!")
@@ -52,5 +77,5 @@ func plugRedis(api *v1.Api, redisUrl string) {
 	if cmd.Err() != nil {
 		panic("Could not connect to Redis!!!")
 	}
-	api.Redis = client
+	api.Deps.Redis = client
 }

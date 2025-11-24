@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/base64"
-	"fmt"
 	"os"
 )
 
@@ -28,23 +27,6 @@ func loadMasterKey() []byte {
 		panic("Invalid API_ENC_KEY")
 	}
 	return masterKey
-}
-
-func loadPostgresDSN() string {
-
-	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
-
-	host := GetEnv("PG_HOST")
-
-	user := GetEnv("PG_USER")
-
-	passwd := GetEnv("PG_PASSWD")
-
-	dbName := GetEnv("PG_DBNAME")
-
-	port := GetEnv("PG_PORT")
-
-	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }
 
 func isSaaS() bool {

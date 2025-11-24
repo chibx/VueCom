@@ -1,129 +1,143 @@
 package v1
 
-import (
-	"errors"
-	"mime/multipart"
-	"strings"
-	"vuecom/shared/models"
-	"vuecom/shared/models/db"
+// import (
+// 	"errors"
+// 	"mime/multipart"
+// 	"strings"
+// 	"vuecom/shared/models"
+// 	dbModels "vuecom/shared/models/db"
 
-	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
-	"github.com/cloudinary/cloudinary-go/v2/api/admin"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
-	"github.com/gofiber/fiber/v2"
-)
+// 	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
+// 	"github.com/cloudinary/cloudinary-go/v2/api/admin"
+// 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
+// 	"github.com/gofiber/fiber/v2"
+// 	"gorm.io/gorm"
+// )
 
-func (api *Api) DoesOwnerExist(ctx *fiber.Ctx) (bool, error) {
-	backendUser := &db.BackendUser{}
-	result := api.DB.Select("role").Where("role = 'owner'").First(backendUser)
-	if result.Error != nil {
-		return false, result.Error
-	}
+// func (api *Api) DoesOwnerExist(ctx *fiber.Ctx) (bool, error) {
+// 	db := api.Deps.DB
+// 	backendUser, err := gorm.G[dbModels.BackendUser](db).Select("role").Where("role = 'owner'").First(ctx.Context())
+// 	if err != nil {
+// 		return false, err
+// 	}
 
-	if backendUser.Role != "owner" {
-		return false, nil
-	}
+// 	if backendUser.Role != "owner" {
+// 		return false, nil
+// 	}
 
-	return true, nil
-}
+// 	return true, nil
+// }
 
-//  Name       string `json:"app_name"`
-// 	AdminRoute string `json:"admin_route"`
-// 	Plan       int    `json:"app_plan"`
-// 	LogoUrl   string `json:"app_logo"`
+// //  Name       string `json:"app_name"`
+// // 	AdminRoute string `json:"admin_route"`
+// // 	Plan       int    `json:"app_plan"`
+// // 	LogoUrl   string `json:"app_logo"`
 
-// TODO: Validate the business name and the admin route to avoid clashes with url and also storage buckets
+// // TODO: Validate the business name and the admin route to avoid clashes with url and also storage buckets
 
-func (api *Api) InitializeApp(ctx *fiber.Ctx) error {
-	form, err := ctx.MultipartForm()
-	if err != nil {
-		return fiber.ErrInternalServerError
-	}
+// func (api *Api) InitializeApp(ctx *fiber.Ctx) error {
+// 	db := api.Deps.DB
+// 	cld := api.Deps.Cld
+// 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing app. Try again")
+// 	var appData *models.AppData = new(models.AppData)
+// 	// cache
+// 	_data, err := gorm.G[models.AppData](db).First(ctx.Context())
+// 	if err != nil {
+// 		return err500
+// 	}
+// 	if _data.Name != "" {
+// 		return fiber.NewError(fiber.StatusBadRequest, "An active app was found!!")
+// 	}
 
-	appData, logoFile, err := validateInitializeProps(form)
-	if err != nil {
-		return ctx.Status(404).SendString(err.Error())
-	}
-	_, err = api.Cld.Admin.CreateFolder(ctx.Context(), admin.CreateFolderParams{
-		Folder: appData.Name,
-	})
+// 	form, err := ctx.MultipartForm()
+// 	if err != nil {
+// 		return err500
+// 	}
 
-	err500 := fiber.NewError(500, "Error initializing app. Try again")
+// 	appData, logoFile, err := validateInitializeProps(form)
+// 	if err != nil {
+// 		return ctx.Status(fiber.StatusBadRequest).SendString(err.Error())
+// 	}
+// 	_, err = cld.Admin.CreateFolder(ctx.Context(), admin.CreateFolderParams{
+// 		Folder: appData.Name,
+// 	})
 
-	if err != nil {
-		return err500
-	}
+// 	if err != nil {
+// 		return err500
+// 	}
 
-	fileIO, err := logoFile.Open()
-	if err != nil {
-		return err500
-	}
+// 	fileIO, err := logoFile.Open()
+// 	if err != nil {
+// 		return err500
+// 	}
 
-	_, err = api.Cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
-		Folder:      appData.Name,
-		Overwrite:   cldApi.Bool(true),
-		DisplayName: appData.Name + "_logo",
-		PublicID:    appData.Name + "_logo",
-	})
+// 	upploadRes, err := cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
+// 		Folder:      appData.Name,
+// 		Overwrite:   cldApi.Bool(true),
+// 		DisplayName: appData.Name + "_logo",
+// 		PublicID:    appData.Name + "_logo",
+// 	})
 
-	result := api.DB.Create(appData)
-	if result.Error != nil {
-		return err500
-	}
-	// if err != nil {
-	// 	return ctx.Status(fiber.StatusBadRequest).SendString(err.Error())
-	// }
+// 	appData.LogoUrl = upploadRes.SecureURL
 
-	return nil
-}
+// 	err = gorm.G[models.AppData](db).Create(ctx.Context(), appData)
+// 	if err != nil {
+// 		return err500
+// 	}
 
-func RegisterOwner(api *Api, owner *db.BackendUser) error {
-	result := api.DB.Create(owner)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
-}
+// 	return nil
+// }
 
-func validateInitializeProps(form *multipart.Form) (appData *models.AppData, file *multipart.FileHeader, err error) {
-	fields := form.Value
-	files := form.File
-	nameField := fields["name"]
-	adminRouteField := fields["admin_route"]
-	logoFileField := files["app_logo"]
+// func (api *Api) RegisterOwner(ctx *fiber.Ctx) error {
+// 	db := api.Deps.DB
+// 	owner := &dbModels.BackendUser{}
 
-	switch {
-	case len(nameField) == 0:
-		return nil, nil, errors.New(fieldIsMissing("`Name` field"))
-	case len(adminRouteField) == 0:
-		return nil, nil, errors.New(fieldIsMissing("`Admin Route` field"))
-	case len(logoFileField) == 0:
-		return nil, nil, errors.New(fieldIsMissing("`Application logo`"))
-	}
+// 	err := gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), owner)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
 
-	name := strings.TrimSpace(nameField[0])
-	adminRoute := strings.TrimSpace(adminRouteField[0])
-	logoFile := logoFileField[0]
+// func validateInitializeProps(form *multipart.Form) (appData *models.AppData, file *multipart.FileHeader, err error) {
+// 	fields := form.Value
+// 	files := form.File
+// 	nameField := fields["name"]
+// 	adminRouteField := fields["admin_route"]
+// 	logoFileField := files["app_logo"]
 
-	switch {
-	case len(name) <= 3:
-		return nil, nil, errors.New("`Name` should have more than 3 characters")
-	case len(adminRoute) < 8:
-		return nil, nil, errors.New("`Admin Route` should have at least 8 characters and should be contain alphanumeric characters")
-	}
+// 	switch {
+// 	case len(nameField) == 0:
+// 		return nil, nil, errors.New(fieldIsMissing("`Name` field"))
+// 	case len(adminRouteField) == 0:
+// 		return nil, nil, errors.New(fieldIsMissing("`Admin Route` field"))
+// 	case len(logoFileField) == 0:
+// 		return nil, nil, errors.New(fieldIsMissing("`Application logo`"))
+// 	}
 
-	if logoFile.Size > MAX_IMAGE_UPLOAD {
-		return nil, nil, errors.New("The uploaded logo must not be more than 5MB in size")
-	}
+// 	name := strings.TrimSpace(nameField[0])
+// 	adminRoute := strings.TrimSpace(adminRouteField[0])
+// 	logoFile := logoFileField[0]
 
-	appData = &models.AppData{
-		Name:       name,
-		AdminRoute: adminRoute,
-	}
+// 	switch {
+// 	case len(name) <= 3:
+// 		return nil, nil, errors.New("`Name` should have more than 3 characters")
+// 	case len(adminRoute) < 8:
+// 		return nil, nil, errors.New("`Admin Route` should have at least 8 characters and should be contain alphanumeric characters")
+// 	}
 
-	return appData, logoFile, nil
-}
+// 	if logoFile.Size > MAX_IMAGE_UPLOAD {
+// 		return nil, nil, errors.New("The uploaded logo must not be more than 5MB in size")
+// 	}
 
-func fieldIsMissing(field string) string {
-	return field + " is either missing or invalid"
-}
+// 	appData = &models.AppData{
+// 		Name:       name,
+// 		AdminRoute: adminRoute,
+// 	}
+
+// 	return appData, logoFile, nil
+// }
+
+// func fieldIsMissing(field string) string {
+// 	return field + " is either missing or invalid"
+// }

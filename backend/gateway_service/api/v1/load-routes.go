@@ -1,18 +1,31 @@
 package v1
 
 import (
+	"vuecom/gateway/api/v1/handlers"
+	"vuecom/gateway/internal/v1/types"
+
 	"github.com/gofiber/fiber/v2"
 )
 
 // Potentially Long Function | Just stack all the routes in here
-func (v1_api *Api) LoadRoutes(app fiber.Router) {
+func LoadRoutes(app fiber.Router, api *types.Api) {
+	/**
+	  * 	func(ctx *fiber.Ctx) error {
+	  		return
+	    	}
+	  *
+	*/
 
-	/* /api handlers */
-	api := app.Group("/api")
-	api.Post("/product", v1_api.CreateProduct)
-	api.Get("/product/:id", v1_api.GetProduct)
-	api.Post("/app/admin-exist")
+	/* /v1 handlers */
+	v1 := app.Group("/api/v1")
+	v1.Post("/product", func(ctx *fiber.Ctx) error {
+		return handlers.CreateProduct(ctx, api)
+	})
+	v1.Get("/product/:id", func(ctx *fiber.Ctx) error {
+		return handlers.GetProduct(ctx, api)
+	})
+	v1.Post("/app/admin-exist")
 
 	// Normal App Handlers
-	app.Use("/:admin/*", v1_api.ValidateSlug)
+	app.Use("/:admin/*", handlers.ValidateSlug)
 }

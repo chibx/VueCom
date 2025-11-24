@@ -1,13 +1,13 @@
 package v1
 
-import "github.com/gofiber/fiber/v2"
+// import "github.com/gofiber/fiber/v2"
 
-func (api *Api) LoginUser(ctx *fiber.Ctx) error {
+// func (api *Api) LoginUser(ctx *fiber.Ctx) error {
 
-	return nil
-}
+// 	return nil
+// }
 
-func (api *Api) RegisterUser(ctx *fiber.Ctx) error {
+// func (api *Api) RegisterUser(ctx *fiber.Ctx) error {
 
-	return nil
-}
+// 	return nil
+// }

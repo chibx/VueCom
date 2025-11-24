@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"slices"
+	"vuecom/gateway/internal/utils"
 	"vuecom/gateway/internal/v1/types"
-	"vuecom/gateway/utils"
 
 	// "github.com/cloudinary/cloudinary-go/v2"
 	// "github.com/redis/go-redis/v9"

@@ -5,7 +5,7 @@ import (
 )
 
 // Potentially Long Function | Just stack all the routes in here
-func (v1_api *Api) LoadApis(app fiber.Router) {
+func (v1_api *Api) LoadRoutes(app fiber.Router) {
 
 	/* /api handlers */
 	api := app.Group("/api")

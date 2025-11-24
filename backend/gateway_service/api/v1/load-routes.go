@@ -24,8 +24,18 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 	v1.Get("/product/:id", func(ctx *fiber.Ctx) error {
 		return handlers.GetProduct(ctx, api)
 	})
-	v1.Post("/app/admin-exist")
+	v1.Get("/admin-exist", func(ctx *fiber.Ctx) error {
+		exists, err := handlers.DoesOwnerExist(ctx, api)
+		if err != nil {
+			return fiber.ErrInternalServerError
+		}
+		return ctx.JSON(fiber.Map{
+			"exists": exists,
+		})
+	})
 
 	// Normal App Handlers
-	app.Use("/:admin/*", handlers.ValidateSlug)
+	app.Use("/:admin/*", func(ctx *fiber.Ctx) error {
+		return handlers.ValidateSlug(ctx, api)
+	})
 }

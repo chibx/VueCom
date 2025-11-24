@@ -6,6 +6,7 @@ import (
 	// "sync"
 	v1 "vuecom/gateway/api/v1"
 	"vuecom/gateway/config"
+	"vuecom/gateway/internal/v1/types"
 	"vuecom/shared/deps"
 
 	"github.com/goccy/go-json"
@@ -24,7 +25,7 @@ func main() {
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusNotFound)
 	})
-	v1_api := &v1.Api{Config: config, Deps: &deps.Deps{}}
+	v1_api := &types.Api{Config: config, Deps: &deps.Deps{}}
 
 	plugDB(v1_api)
 	plugRedis(v1_api)
@@ -35,7 +36,7 @@ func main() {
 		panic("Error while migration")
 	}
 
-	v1_api.LoadRoutes(app)
+	v1.LoadRoutes(app, v1_api)
 
 	app.Static("/", "./dist")
 

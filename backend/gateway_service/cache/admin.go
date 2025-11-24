@@ -1,7 +1,9 @@
 package cache
 
-import v1 "vuecom/gateway/api/v1"
+import (
+	"vuecom/gateway/internal/v1/types"
+)
 
-func FetchAppData(api *v1.Api) {
+func FetchAppData(api *types.Api) {
 
 }

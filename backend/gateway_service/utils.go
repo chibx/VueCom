@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
-	v1 "vuecom/gateway/api/v1"
 	"vuecom/gateway/config"
+	"vuecom/gateway/internal/v1/types"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/redis/go-redis/v9"
@@ -41,7 +41,7 @@ func loadPostgresDSN() string {
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }
 
-func plugCloudinary(api *v1.Api) {
+func plugCloudinary(api *types.Api) {
 	cldKey := config.GetEnv("CLOUDINARY_KEY")
 	cldSecret := config.GetEnv("CLOUDINARY_SECRET")
 	cldName := config.GetEnv("CLOUDINARY_CLOUD_NAME")
@@ -54,7 +54,7 @@ func plugCloudinary(api *v1.Api) {
 	api.Deps.Cld = cld
 }
 
-func plugDB(api *v1.Api) {
+func plugDB(api *types.Api) {
 	dsn := loadPostgresDSN()
 	db, err := gorm.Open(postgres.Open(dsn))
 
@@ -65,7 +65,7 @@ func plugDB(api *v1.Api) {
 	api.Deps.DB = db
 }
 
-func plugRedis(api *v1.Api) {
+func plugRedis(api *types.Api) {
 	redisUrl := getEnv("REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {

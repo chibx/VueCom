@@ -1,18 +1,20 @@
 package config
 
-type Config struct {
-	Host string
-	Port string
-	// PostgresDSN   string
-	// RedisUrl      string
-	AllowedPaths  []string
-	MockAdminSlug string
-	ApiMasterKey  []byte
-	isSaas        bool
-}
+import "vuecom/gateway/internal/v1/types"
 
-func GetConfig() *Config {
-	return &Config{
+// type Config struct {
+// 	Host string
+// 	Port string
+// 	// PostgresDSN   string
+// 	// RedisUrl      string
+// 	AllowedPaths  []string
+// 	MockAdminSlug string
+// 	ApiMasterKey  []byte
+// 	isSaas        bool
+// }
+
+func GetConfig() *types.Config {
+	return &types.Config{
 		Host: GetEnv("GO_HOST", "127.0.0.1"),
 		Port: GetEnv("GO_PORT", "2500"),
 		// PostgresDSN:   loadPostgresDSN(),
@@ -20,6 +22,6 @@ func GetConfig() *Config {
 		AllowedPaths:  allowedPaths,
 		MockAdminSlug: "admin123",
 		ApiMasterKey:  loadMasterKey(),
-		isSaas:        isSaaS(),
+		IsSaas:        isSaaS(),
 	}
 }

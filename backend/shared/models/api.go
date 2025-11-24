@@ -3,9 +3,9 @@ package models
 import "time"
 
 type AppData struct {
-	Name       string `json:"app_name" gorm:""`
-	AdminRoute string `json:"-" gorm:""`
-	LogoUrl    string `json:"app_logo" gorm:""`
+	Name       string `json:"app_name" gorm:"" redis:"name"`
+	AdminRoute string `json:"-" gorm:"" redis:"admin_route"`
+	LogoUrl    string `json:"app_logo" gorm:"" redis:"logo_url"`
 	// Plan       int    `json:"app_plan"`
 }
 

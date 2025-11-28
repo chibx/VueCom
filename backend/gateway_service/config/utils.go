@@ -32,9 +32,5 @@ func loadMasterKey() []byte {
 func isSaaS() bool {
 	saas := GetEnv("IS_SAAS", "false")
 
-	if saas == "true" {
-		return true
-	}
-
-	return false
+	return saas == "true"
 }

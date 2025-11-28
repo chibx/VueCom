@@ -2,6 +2,9 @@ package v1
 
 import (
 	"vuecom/gateway/api/v1/handlers"
+	adminHandler "vuecom/gateway/api/v1/handlers/admin"
+	orderHandler "vuecom/gateway/api/v1/handlers/orders"
+	productHandler "vuecom/gateway/api/v1/handlers/products"
 	"vuecom/gateway/internal/v1/types"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,21 +21,9 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 
 	/* /v1 handlers */
 	v1 := app.Group("/api/v1")
-	v1.Post("/product", func(ctx *fiber.Ctx) error {
-		return handlers.CreateProduct(ctx, api)
-	})
-	v1.Get("/product/:id", func(ctx *fiber.Ctx) error {
-		return handlers.GetProduct(ctx, api)
-	})
-	v1.Get("/admin-exist", func(ctx *fiber.Ctx) error {
-		exists, err := handlers.DoesOwnerExist(ctx, api)
-		if err != nil {
-			return fiber.ErrInternalServerError
-		}
-		return ctx.JSON(fiber.Map{
-			"exists": exists,
-		})
-	})
+	productHandler.RegisterRoutes(v1, api)
+	adminHandler.RegisterRoutes(v1, api)
+	orderHandler.RegisterRoutes(v1, api)
 
 	// Normal App Handlers
 	app.Use("/:admin/*", func(ctx *fiber.Ctx) error {

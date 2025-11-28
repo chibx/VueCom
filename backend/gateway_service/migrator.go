@@ -11,7 +11,7 @@ func migrate(db *gorm.DB) error {
 		model.BackendUser{},
 		model.Product{},
 		model.Customer{},
-		model.OTP{},
+		model.CustomerOTP{},
 		model.CustomerSession{},
 		model.BackendSession{},
 	)

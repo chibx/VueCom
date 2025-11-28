@@ -11,6 +11,10 @@ type Attribute struct {
 	Name      string `gorm:"type:varchar(50);index;not null;unique"`
 }
 
+func (Attribute) TableName() string {
+	return "catalog.attributes"
+}
+
 // ID: 131 | Name: Size | Value: XL
 // ID: 138 | Name: Color | Value: Black
 // TODO: Add a unique constraint on (attribute_id, value)
@@ -22,12 +26,20 @@ type Category struct {
 	Value       string `json:"value" gorm:"index;type:varchar(50);not null"`
 }
 
+func (Category) TableName() string {
+	return "catalog.category"
+}
+
 /**
  * A set of grouped categories that a product should make use of i.e Electronics, Computing
  */
 type Preset struct {
 	ID   uint   `gorm:"primarykey;index"`
 	Name string `gorm:"index;type:varchar(50);not null;unique"`
+}
+
+func (Preset) TableName() string {
+	return "catalog.presets"
 }
 
 /**
@@ -42,13 +54,47 @@ type PresetAttributes struct {
 	CategoryID uint `gorm:""`
 }
 
+func (PresetAttributes) TableName() string {
+	return "catalog.preset_attributes"
+}
+
 type Tag struct {
 	ID   uint   `gorm:"primarykey"`
 	Name string `gorm:"not null;unique"`
+}
+
+func (Tag) TableName() string {
+	return "catalog.tags"
 }
 
 // TODO: Primary Key (ProductID, TagID)
 type ProductTags struct {
 	ProductID uint
 	TagID     uint
+}
+
+func (ProductTags) TableName() string {
+	return "catalog.product_tags"
+}
+
+type Product struct {
+	ID        uint      `gorm:"primarykey" redis:"id"`
+	UpdatedAt time.Time `gorm:"" redis:"updated_at"`
+	CreatedAt time.Time `gorm:"" redis:"created_at"`
+	Name      string    `json:"name" gorm:"not null;index;type:text"`
+	SKU       string    `json:"sku" gorm:"not null;index"`
+	// Just made the precision to be 15 (Don't know how bad the ecomomy of some countries are) :(
+	Price      float64   `json:"price" gorm:"not null;type:numeric(15, 2)"`
+	DscPercent float64   `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
+	DscPeriod  time.Time `json:"dsc_period" gorm:""`
+	Enabled    bool      `json:"enabled" gorm:"default:TRUE;not null"`
+	// Warranty   string    `json:"warranty"`
+	Description string
+	Url         string  `json:"url"`
+	ImageUrl    *string `gorm:"column:image_url"`
+	PresetID    uint    `gorm:"index"`
+}
+
+func (Product) TableName() string {
+	return "catalog.products"
 }

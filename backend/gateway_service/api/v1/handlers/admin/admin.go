@@ -32,11 +32,6 @@ func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
 	return true, nil
 }
 
-//  Name       string `json:"app_name"`
-// 	AdminRoute string `json:"admin_route"`
-// 	Plan       int    `json:"app_plan"`
-// 	LogoUrl   string `json:"app_logo"`
-
 // TODO: Validate the business name and the admin route to avoid clashes with url and also storage buckets
 
 func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {

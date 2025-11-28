@@ -10,7 +10,7 @@ type CustomerOTP struct {
 }
 
 func (CustomerOTP) TableName() string {
-	return "users.customer_otps"
+	return "customer.customer_otps"
 }
 
 type Customer struct {
@@ -31,7 +31,7 @@ type Customer struct {
 }
 
 func (Customer) TableName() string {
-	return "users.customers"
+	return "customer.customers"
 }
 
 type CustomerSession struct {
@@ -44,5 +44,5 @@ type CustomerSession struct {
 }
 
 func (CustomerSession) TableName() string {
-	return "users.customer_sessions"
+	return "customer.customer_sessions"
 }

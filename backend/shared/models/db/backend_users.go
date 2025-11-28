@@ -9,7 +9,7 @@ type AppData struct {
 	Name       string             `json:"app_name" gorm:"" redis:"name"`
 	AdminRoute string             `json:"-" gorm:"" redis:"admin_route"`
 	LogoUrl    string             `json:"app_logo" gorm:"" redis:"logo_url"`
-	Settings   models.AppSettings `json:"settings" gorm:"-" redis:"settings"`
+	Settings   models.AppSettings `json:"settings" gorm:"type:jsonb;default:\"{}\"" redis:"settings"`
 }
 
 func (AppData) TableName() string {

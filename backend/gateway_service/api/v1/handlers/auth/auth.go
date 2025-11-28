@@ -1,4 +1,4 @@
-package handlers
+package auth
 
 import (
 	"vuecom/gateway/internal/v1/types"

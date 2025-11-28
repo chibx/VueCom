@@ -1,8 +1,8 @@
-package handlers
+package orders
 
 import (
+	"vuecom/gateway/api/v1/request"
 	"vuecom/gateway/internal/v1/types"
-	"vuecom/shared/models"
 
 	dbModel "vuecom/shared/models/db"
 
@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateProduct(ctx *fiber.Ctx, api *types.Api) error {
+func CreateOrder(ctx *fiber.Ctx, api *types.Api) error {
 	db := api.Deps.DB
 	product := dbModel.Product{}
 
@@ -29,14 +29,13 @@ func CreateProduct(ctx *fiber.Ctx, api *types.Api) error {
 	return ctx.Status(fiber.StatusCreated).SendString("Product Created Succesfully")
 }
 
-func UpdateProduct(ctx *fiber.Ctx) error {
+func UpdateOrder(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func GetProduct(ctx *fiber.Ctx, api *types.Api) error {
+func GetOrder(ctx *fiber.Ctx, api *types.Api) error {
 	db := api.Deps.DB
-	toGet := models.OnlyID{}
-	// err := ctx.BodyParser(&toGet)
+	toGet := request.OnlyID{}
 	err := ctx.ParamsParser(&toGet)
 
 	if err != nil {
@@ -56,14 +55,14 @@ func GetProduct(ctx *fiber.Ctx, api *types.Api) error {
 	return ctx.JSON(product)
 }
 
-func ListProducts(ctx *fiber.Ctx, api *types.Api) error {
+func ListOrders(ctx *fiber.Ctx, api *types.Api) error {
 	return nil
 }
 
-func DeleteProduct(ctx *fiber.Ctx) error {
+func DeleteOrder(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func DeleteProducts(ctx *fiber.Ctx, api *types.Api) error {
+func DeleteOrders(ctx *fiber.Ctx, api *types.Api) error {
 	return nil
 }

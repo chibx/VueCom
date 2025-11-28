@@ -1,11 +1,11 @@
-package handlers
+package admin
 
 import (
 	"errors"
 	"mime/multipart"
 	"strings"
+	"vuecom/gateway/api/v1/handlers"
 	"vuecom/gateway/internal/v1/types"
-	"vuecom/shared/models"
 	dbModels "vuecom/shared/models/db"
 
 	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
@@ -43,9 +43,9 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	db := api.Deps.DB
 	cld := api.Deps.Cld
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing app. Try again")
-	var appData *models.AppData = new(models.AppData)
+	var appData = new(dbModels.AppData)
 	// cache
-	_data, err := gorm.G[models.AppData](db).First(ctx.Context())
+	_data, err := gorm.G[dbModels.AppData](db).First(ctx.Context())
 	if err != nil {
 		return err500
 	}
@@ -82,9 +82,13 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 		PublicID:    appData.Name + "_logo",
 	})
 
+	if err != nil {
+		return err500
+	}
+
 	appData.LogoUrl = upploadRes.SecureURL
 
-	err = gorm.G[models.AppData](db).Create(ctx.Context(), appData)
+	err = gorm.G[dbModels.AppData](db).Create(ctx.Context(), appData)
 	if err != nil {
 		return err500
 	}
@@ -103,7 +107,7 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 	return nil
 }
 
-func validateInitializeProps(form *multipart.Form) (appData *models.AppData, file *multipart.FileHeader, err error) {
+func validateInitializeProps(form *multipart.Form) (appData *dbModels.AppData, file *multipart.FileHeader, err error) {
 	fields := form.Value
 	files := form.File
 	nameField := fields["name"]
@@ -130,11 +134,11 @@ func validateInitializeProps(form *multipart.Form) (appData *models.AppData, fil
 		return nil, nil, errors.New("`Admin Route` should have at least 8 characters and should be contain alphanumeric characters")
 	}
 
-	if logoFile.Size > MAX_IMAGE_UPLOAD {
-		return nil, nil, errors.New("The uploaded logo must not be more than 5MB in size")
+	if logoFile.Size > handlers.MAX_IMAGE_UPLOAD {
+		return nil, nil, errors.New("uploaded logo must not be more than 5MB in size")
 	}
 
-	appData = &models.AppData{
+	appData = &dbModels.AppData{
 		Name:       name,
 		AdminRoute: adminRoute,
 	}

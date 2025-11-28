@@ -16,7 +16,7 @@ func ValidateSlug(ctx *fiber.Ctx, api *types.Api) error {
 	var routeParts = utils.ExtractRouteParts(ctx.Path())
 	// var partLen = len(routeParts)
 	// /"" OR /"admin"
-	var adminPart string = routeParts[0]
+	var adminPart = routeParts[0]
 
 	if slices.Contains(api.Config.AllowedPaths, adminPart) {
 		return ctx.Next()

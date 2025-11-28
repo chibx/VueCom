@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/cloudinary/cloudinary-go/v2 v2.14.0
+	github.com/goccy/go-json v0.10.5
 	github.com/redis/go-redis/v9 v9.17.0
 	gorm.io/gorm v1.31.1
 )

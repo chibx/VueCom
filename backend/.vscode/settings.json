@@ -1,5 +1,6 @@
 {
     "code-runner.executorMap": {
         "go": "gow run $workspaceRoot"
-    }
+    },
+    "markdown.validate.enabled": true
 }

@@ -42,19 +42,19 @@ type BackendUser struct {
 	ID              uint `gorm:"primarykey"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	UserName        *string                `gorm:"type:varchar(255);index" validate:""`
-	FullName        string                 `gorm:"not null;type:varchar(255);index" validate:""`
-	Email           string                 `gorm:"unique;not null;type:varchar(255);index"`
-	PhoneNumber     *string                `gorm:"type:varchar(20)" validate:""`
-	Image           *string                `gorm:"column:image_url"`
-	Country         *uint                  `gorm:"index"`
-	IsEmailVerified bool                   `gorm:"default:FALSE;not null"`
-	Role            string                 `gorm:"type:varchar(50)"`
-	PasswordHash    string                 `gorm:"not null"`
-	CreatedBy       uint                   `gorm:"index,not null"`
-	Activity        *[]BackendUserActivity `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Sessions        *[]BackendSession      `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	OTP             *[]BackendOTP          `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserName        *string `gorm:"type:varchar(255);index" validate:""`
+	FullName        string  `gorm:"not null;type:varchar(255);index" validate:""`
+	Email           string  `gorm:"unique;not null;type:varchar(255);index"`
+	PhoneNumber     *string `gorm:"type:varchar(20)" validate:""`
+	Image           *string `gorm:"column:image_url"`
+	Country         *uint   `gorm:"index"`
+	IsEmailVerified bool    `gorm:"default:FALSE;not null"`
+	Role            string  `gorm:"type:varchar(50)"`
+	PasswordHash    string  `gorm:"not null"`
+	CreatedBy       uint    `gorm:"index,not null"`
+	// Activity        *[]BackendUserActivity `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	// Sessions        *[]BackendSession      `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	// OTP             *[]BackendOTP          `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 func (BackendUser) TableName() string {
@@ -66,7 +66,7 @@ type BackendSession struct {
 	ExpiredAt time.Time `gorm:"not null" redis:"expired_at"`
 	IpAddr    string    `gorm:"column:ip_address" redis:"ip_address"`
 	UserAgent string    `gorm:"not null" redis:"user_agent"`
-	UserID    uint      `gorm:"not null" redis:"user_id"`
+	UserId    uint      `gorm:"not null" redis:"user_id"`
 }
 
 func (BackendSession) TableName() string {
@@ -74,7 +74,7 @@ func (BackendSession) TableName() string {
 }
 
 type BackendUserActivity struct {
-	UserID uint `gorm:"index;not null"`
+	UserId uint `gorm:"index;not null"`
 	// This would be like "Login", "Password Change", "Profile Update", "Order Handling"
 	LogTitle  string    `gorm:"type:varchar(100);not null"`
 	Activity  string    `gorm:"type:text;not null"`

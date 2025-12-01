@@ -21,9 +21,9 @@ func (Attribute) TableName() string {
 type Category struct {
 	ID          uint `gorm:"primarykey"`
 	CreatedAt   time.Time
-	AttributeID uint   `json:"attributeId" gorm:"index;not null"`
-	Value       string `json:"value" gorm:"index;type:varchar(50);not null"`
-	// Attribute   *Attribute `gorm:"foreignKey:AttributeID"`
+	AttributeID uint       `json:"attributeId" gorm:"index;not null"`
+	Value       string     `json:"value" gorm:"index;type:varchar(50);not null"`
+	Attribute   *Attribute `gorm:"foreignKey:AttributeID"`
 }
 
 func (Category) TableName() string {
@@ -34,12 +34,12 @@ func (Category) TableName() string {
  * A set of grouped categories that a product should make use of i.e Electronics, Computing
  */
 type Preset struct {
-	ID        uint      `gorm:"primarykey;index"`
-	Name      string    `gorm:"index;type:varchar(50);not null;unique"`
-	CreatedAt time.Time `gorm:""`
-	UpdatedAt time.Time `gorm:""`
-	// Attributes []PresetAttributes `gorm:"foreignKey:PresetID"`
-	// Products   []Product          `gorm:"foreignKey:PresetID"`
+	ID         uint               `gorm:"primarykey;index"`
+	Name       string             `gorm:"index;type:varchar(50);not null;unique"`
+	CreatedAt  time.Time          `gorm:""`
+	UpdatedAt  time.Time          `gorm:""`
+	Attributes []PresetAttributes `gorm:"foreignKey:PresetID"`
+	Products   []Product          `gorm:"foreignKey:PresetID"`
 }
 
 func (Preset) TableName() string {
@@ -54,10 +54,10 @@ func (Preset) TableName() string {
  * TODO: Primary Key (PresetID, CategoryID)
  */
 type PresetAttributes struct {
-	PresetID   uint `gorm:"primaryKey;index"`
-	CategoryID uint `gorm:"primaryKey;index"`
-	// Preset     *Preset   `gorm:"foreignKey:PresetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	// Category   *Category `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	PresetID   uint      `gorm:"primaryKey;index"`
+	CategoryID uint      `gorm:"primaryKey;index"`
+	Preset     *Preset   `gorm:"foreignKey:PresetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Category   *Category `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 func (PresetAttributes) TableName() string {
@@ -75,8 +75,8 @@ func (Tag) TableName() string {
 
 // TODO: Primary Key (ProductID, TagID)
 type ProductTags struct {
-	ProductID uint
-	TagID     uint
+	ProductID uint `gorm:"primaryKey;autoIncrement:false;"`
+	TagID     uint `gorm:"primaryKey;autoIncrement:false;"`
 }
 
 func (ProductTags) TableName() string {
@@ -84,21 +84,21 @@ func (ProductTags) TableName() string {
 }
 
 type Product struct {
-	ID          uint      `gorm:"primarykey" redis:"id"`
-	UpdatedAt   time.Time `gorm:"" redis:"updated_at"`
-	CreatedAt   time.Time `gorm:"" redis:"created_at"`
-	Name        string    `json:"name" gorm:"not null;index;type:text"`
-	SKU         string    `json:"sku" gorm:"not null;index"`
-	Price       float64   `json:"price" gorm:"not null;type:numeric(15, 2)"`
-	DscPercent  float64   `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
-	DscPeriod   time.Time `json:"dsc_period" gorm:""`
-	Enabled     bool      `json:"enabled" gorm:"default:TRUE;not null"`
-	Description string    `json:"description"`
-	Url         string    `json:"url"`
-	ImageUrl    *string   `gorm:"column:image_url"`
-	PresetID    *uint     `gorm:"index"`
-	// Preset      *Preset    `gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;"`
-	// Categories  []Category `gorm:"many2many:catalog.product_attribute_values;"`
+	ID          uint       `gorm:"primarykey" redis:"id"`
+	UpdatedAt   time.Time  `gorm:"" redis:"updated_at"`
+	CreatedAt   time.Time  `gorm:"" redis:"created_at"`
+	Name        string     `json:"name" gorm:"not null;index;type:text"`
+	SKU         string     `json:"sku" gorm:"not null;index"`
+	Price       float64    `json:"price" gorm:"not null;type:numeric(15, 2)"`
+	DscPercent  float64    `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
+	DscPeriod   time.Time  `json:"dsc_period" gorm:""`
+	Enabled     bool       `json:"enabled" gorm:"default:TRUE;not null"`
+	Description string     `json:"description"`
+	Url         string     `json:"url"`
+	ImageUrl    *string    `gorm:"column:image_url"`
+	PresetID    *uint      `gorm:"index"`
+	Preset      *Preset    `gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;"`
+	Categories  []Category `gorm:"many2many:catalog.product_attribute_values;"`
 }
 
 func (Product) TableName() string {

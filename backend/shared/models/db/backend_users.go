@@ -5,6 +5,18 @@ import (
 	"vuecom/shared/models"
 )
 
+// Country represents a country in the system
+type Country struct {
+	ID        uint      `gorm:"primarykey"`
+	Name      string    `gorm:"not null;unique;index"`
+	Code      string    `gorm:"not null;unique;index;type:varchar(5)"`
+	CreatedAt time.Time `gorm:""`
+}
+
+func (Country) TableName() string {
+	return "backend.countries"
+}
+
 type AppData struct {
 	Name       string             `json:"app_name" gorm:"" redis:"name"`
 	AdminRoute string             `json:"-" gorm:"" redis:"admin_route"`
@@ -42,19 +54,19 @@ type BackendUser struct {
 	ID              uint `gorm:"primarykey"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	UserName        *string `gorm:"type:varchar(255);index" validate:""`
-	FullName        string  `gorm:"not null;type:varchar(255);index" validate:""`
-	Email           string  `gorm:"unique;not null;type:varchar(255);index"`
-	PhoneNumber     *string `gorm:"type:varchar(20)" validate:""`
-	Image           *string `gorm:"column:image_url"`
-	Country         *uint   `gorm:"index"`
-	IsEmailVerified bool    `gorm:"default:FALSE;not null"`
-	Role            string  `gorm:"type:varchar(50)"`
-	PasswordHash    string  `gorm:"not null"`
-	CreatedBy       uint    `gorm:"index,not null"`
-	// Activity        *[]BackendUserActivity `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	// Sessions        *[]BackendSession      `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	// OTP             *[]BackendOTP          `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserName        *string               `gorm:"type:varchar(255);index" validate:""`
+	FullName        string                `gorm:"not null;type:varchar(255);index" validate:""`
+	Email           string                `gorm:"unique;not null;type:varchar(255);index"`
+	PhoneNumber     *string               `gorm:"type:varchar(20)" validate:""`
+	Image           *string               `gorm:"column:image_url"`
+	Country         *uint                 `gorm:"index"`
+	IsEmailVerified bool                  `gorm:"default:FALSE;not null"`
+	Role            string                `gorm:"type:varchar(50)"`
+	PasswordHash    string                `gorm:"not null"`
+	CreatedBy       uint                  `gorm:"index,not null"`
+	Activity        []BackendUserActivity `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Sessions        []BackendSession      `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	OTP             []BackendOTP          `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 func (BackendUser) TableName() string {

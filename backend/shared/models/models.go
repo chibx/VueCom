@@ -8,19 +8,19 @@ import (
 )
 
 type AppSettings struct {
-	DefaultCurrency        string   `json:"default_currency"`
-	SupportedCurrencies    []string `json:"supported_currencies"`
-	DefaultLanguage        string   `json:"default_language"`
-	SupportedLanguages     []string `json:"supported_languages"`
-	SEOMetaTitle           string   `json:"seo_meta_title"`
-	SEOMetaDescription     string   `json:"seo_meta_description"`
-	EnableSSL              bool     `json:"enable_ssl"`
-	DefaultShippingCountry string   `json:"default_shipping_country"`
-	EnableRealtimeRates    bool     `json:"enable_realtime_rates"`
-	EnabledPaymentGateways []string `json:"enabled_payment_gateways"`
-	AllowGuestCheckout     bool     `json:"allow_guest_checkout"`
-	TrackInventory         bool     `json:"track_inventory"`
-	LowStockThreshold      int      `json:"low_stock_threshold"`
+	DefaultCurrency        string   `json:"default_currency" validate:"required"`
+	SupportedCurrencies    []string `json:"supported_currencies" validate:"required"`
+	DefaultLanguage        string   `json:"default_language" validate:"required"`
+	SupportedLanguages     []string `json:"supported_languages" validate:"required"`
+	SEOMetaTitle           string   `json:"seo_meta_title" validate:""`
+	SEOMetaDescription     string   `json:"seo_meta_description" validate:""`
+	EnableSSL              bool     `json:"enable_ssl" validate:""`
+	DefaultShippingCountry string   `json:"default_shipping_country" validate:"required,min=2,max=5"`
+	EnableRealtimeRates    bool     `json:"enable_realtime_rates" validate:""`
+	EnabledPaymentGateways []string `json:"enabled_payment_gateways" validate:"required"`
+	AllowGuestCheckout     bool     `json:"allow_guest_checkout" validate:""`
+	TrackInventory         bool     `json:"track_inventory" validate:""`
+	LowStockThreshold      int      `json:"low_stock_threshold" validate:"gt=0"`
 }
 
 func (c AppSettings) Value() (driver.Value, error) {

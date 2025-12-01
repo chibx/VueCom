@@ -15,7 +15,6 @@ CREATE TABLE catalog.category (
     attribute_id INTEGER NOT NULL REFERENCES catalog.attributes(id) ON DELETE CASCADE,
     value TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (attribute_id, value)  -- Prevent duplicate values per attribute
 );
 
@@ -39,6 +38,7 @@ CREATE TABLE catalog.preset_attributes (
 CREATE INDEX idx_preset_attributes_preset_id ON catalog.preset_attributes (preset_id);
 CREATE INDEX idx_preset_attributes_attribute_id ON catalog.preset_attributes (attribute_id);
 
+-- I sense a bug here
 CREATE TABLE catalog.product_attribute_values (
     product_id INTEGER NOT NULL REFERENCES catalog.products(id) ON DELETE CASCADE,
     option_id INTEGER NOT NULL REFERENCES catalog.category(id) ON DELETE CASCADE,
@@ -51,8 +51,6 @@ CREATE INDEX idx_product_attribute_values_option_id ON catalog.product_attribute
 CREATE TABLE catalog.tags (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,  -- e.g., 'Men's Shirts'
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE catalog.product_tags (

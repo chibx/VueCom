@@ -16,7 +16,7 @@ CREATE TABLE customer.customers (
     image_url TEXT,
     user_name VARCHAR(50) UNIQUE,
     password_hash TEXT,
-    FOREIGN KEY (country) REFERENCES main.countries(id)
+    FOREIGN KEY (country) REFERENCES backend.countries(id)
 );
 
 CREATE TABLE customer.customer_sessions (

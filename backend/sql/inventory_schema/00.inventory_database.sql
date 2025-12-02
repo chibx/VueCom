@@ -58,7 +58,8 @@ CREATE TABLE inventory.stock_movements (
     inventory_id BIGINT NOT NULL,
     sku VARCHAR(60) NOT NULL,
     warehouse_id INT NOT NULL,
-    movement_type ENUM('RESTOCK', 'SALE', 'RETURN', 'ADJUSTMENT', 'TRANSFER') NOT NULL,
+    -- movement_type ENUM('RESTOCK', 'SALE', 'RETURN', 'ADJUSTMENT', 'TRANSFER') NOT NULL,
+    movement_type VARCHAR(50) NOT NULL,
     quantity INT NOT NULL,
     reference VARCHAR(100), -- e.g., order_id, transfer_id
     notes TEXT,

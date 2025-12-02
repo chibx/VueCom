@@ -5,13 +5,20 @@ CREATE TABLE catalog.orders (
     user_id INTEGER NOT NULL,
     order_number VARCHAR(50) NOT NULL,
     total_amount DECIMAL(12,2) NOT NULL,
-    currency ENUM('NGN', 'USD') DEFAULT 'NGN',
-    status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
+    -- currency ENUM('NGN', 'USD') DEFAULT 'NGN',
+    currency VARCHAR(3) DEFAULT 'NGN',
+    -- status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
+    status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     billing_address_id INTEGER NOT NULL,
     shipping_address_id INTEGER NOT NULL,
     payment_id INTEGER NOT NULL,
+
+    INDEX idx_user (user_id),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at)
+    INDEX idx_updated_at (updated_at)
 );
 
 

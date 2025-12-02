@@ -7,7 +7,16 @@ import (
 )
 
 func migrate(db *gorm.DB) error {
-	err := db.SetupJoinTable(&model.Product{}, "Categories", &model.ProductCategoryValues{})
+	var err error
+	err = db.Exec(`CREATE SCHEMA IF NOT EXISTS backend;
+	CREATE SCHEMA IF NOT EXISTS customer;
+	CREATE SCHEMA IF NOT EXISTS catalog;
+	CREATE SCHEMA IF NOT EXISTS inventory;`).Error
+	if err != nil {
+		return err
+	}
+
+	err = db.SetupJoinTable(&model.Product{}, "Categories", &model.ProductCategoryValues{})
 	if err != nil {
 		return err
 	}

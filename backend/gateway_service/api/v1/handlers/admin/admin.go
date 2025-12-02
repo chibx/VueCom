@@ -41,11 +41,12 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing app. Try again")
 	var appData = new(dbModels.AppData)
 	// cache
-	_data, err := gorm.G[dbModels.AppData](db).First(ctx.Context())
+	_data, err := gorm.G[dbModels.AppData](db).Limit(1).Find(ctx.Context())
 	if err != nil {
 		return err500
 	}
-	if _data.Name != "" {
+
+	if len(_data) > 0 {
 		return fiber.NewError(fiber.StatusBadRequest, "An active app was found!!")
 	}
 
@@ -89,7 +90,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 		return err500
 	}
 
-	return nil
+	return ctx.Status(fiber.StatusOK).SendString("App initialized successfully")
 }
 
 func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
@@ -100,7 +101,7 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return ctx.Status(fiber.StatusOK).SendString("Owner registered successfully")
 }
 
 func validateInitializeProps(form *multipart.Form) (appData *dbModels.AppData, file *multipart.FileHeader, err error) {

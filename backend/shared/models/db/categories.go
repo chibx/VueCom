@@ -115,3 +115,43 @@ type ProductCategoryValues struct {
 func (ProductCategoryValues) TableName() string {
 	return "catalog.product_category_values"
 }
+
+type PromoCode struct {
+	ID                 uint             `gorm:"primarykey" redis:"id"`
+	UpdatedAt          time.Time        `gorm:"" redis:"updated_at"`
+	CreatedAt          time.Time        `gorm:"" redis:"created_at"`
+	Name               string           `json:"name" gorm:"not null;index;type:text"`
+	Code               string           `json:"code" gorm:"not null;index;unique"`
+	Type               string           `json:"type" gorm:"not null"`
+	Discount           float64          `json:"discount" gorm:"not null"`
+	MinCartValue       float64          `json:"min_cart_value" gorm:"not null"`
+	ExpiryDate         time.Time        `json:"expiry_date" gorm:""`
+	StartDate          time.Time        `json:"start_date" gorm:""`
+	UsageLimit         int              `json:"usage_limit" gorm:"not null"`
+	UsageLimitPerUser  int              `json:"usage_limit_per_user" gorm:"not null"`
+	ProductIDs         []uint           `json:"product_ids" gorm:"type:jsonb"`
+	CategoryIDs        []uint           `json:"category_ids" gorm:"type:jsonb"`
+	ExcludeProductIDs  []uint           `json:"exclude_product_ids" gorm:"type:jsonb"`
+	ExcludeCategoryIDs []uint           `json:"exclude_category_ids" gorm:"type:jsonb"`
+	IsActive           bool             `json:"is_active" gorm:"default:TRUE;not null"`
+	Usages             []PromoCodeUsage `gorm:"foreignKey:CodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (PromoCode) TableName() string {
+	return "catalog.promo_codes"
+}
+
+type PromoCodeUsage struct {
+	ID        uint       `gorm:"primarykey" redis:"id"`
+	CodeID    uint       `json:"code_id" gorm:"index;not null"`
+	UserID    uint       `json:"user_id" gorm:"index;not null"`
+	OrderID   uint       `json:"order_id" gorm:"index;not null"`
+	UsedAt    time.Time  `json:"used_at" gorm:""`
+	PromoCode *PromoCode `gorm:"foreignKey:CodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Customer  *Customer  `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Order     *Order     `gorm:"foreignKey:OrderID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (PromoCodeUsage) TableName() string {
+	return "catalog.promo_code_usages"
+}

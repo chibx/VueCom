@@ -27,6 +27,7 @@ func migrate(db *gorm.DB) error {
 		model.BackendOTP{},
 		model.BackendSession{},
 		model.BackendUserActivity{},
+		model.BackendPasswordResetRequest{},
 		// Catalog
 		model.Product{},
 		model.Attribute{},
@@ -36,6 +37,8 @@ func migrate(db *gorm.DB) error {
 		model.ProductCategoryValues{},
 		model.Tag{},
 		model.ProductTags{},
+		model.PromoCode{},
+		model.PromoCodeUsage{},
 		model.Order{},
 		model.OrderItem{},
 		model.OrderReturn{},

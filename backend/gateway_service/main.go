@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	// "sync"
 	v1 "vuecom/gateway/api/v1"
@@ -18,6 +19,18 @@ import (
 
 func main() {
 	config := config.GetConfig()
+	v1_api := &types.Api{Config: config, Deps: &deps.Deps{}}
+
+	plugDB(v1_api)
+	plugRedis(v1_api)
+	plugCloudinary(v1_api)
+
+	now := time.Now()
+	err := migrate(v1_api.Deps.DB)
+	fmt.Println("Migration took", time.Since(now).Milliseconds(), "ms")
+	if err != nil {
+		panic("Error while migration")
+	}
 
 	app := fiber.New(fiber.Config{DisableStartupMessage: true, JSONEncoder: json.Marshal, JSONDecoder: json.Unmarshal})
 
@@ -25,17 +38,8 @@ func main() {
 	// TODO: Add a rate limiter middleware
 	app.Get("/", func(ctx *fiber.Ctx) error {
 		return ctx.SendStatus(fiber.StatusNotFound)
+
 	})
-	v1_api := &types.Api{Config: config, Deps: &deps.Deps{}}
-
-	plugDB(v1_api)
-	plugRedis(v1_api)
-	plugCloudinary(v1_api)
-
-	err := migrate(v1_api.Deps.DB)
-	if err != nil {
-		panic("Error while migration")
-	}
 
 	v1.LoadRoutes(app, v1_api)
 

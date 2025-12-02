@@ -17,15 +17,16 @@ import (
 
 func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
 	db := api.Deps.DB
-	backendUser, err := gorm.G[dbModels.BackendUser](db).Select("role").Where("role = 'owner'").First(ctx.Context())
+	backendUser, err := gorm.G[dbModels.BackendUser](db).Select("role").Where("role = 'owner'").Limit(1).Find(ctx.Context())
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return false, nil
-		}
 		return false, err
 	}
 
-	if backendUser.Role != "owner" {
+	if len(backendUser) == 0 {
+		return false, nil
+	}
+
+	if backendUser[0].Role != "owner" {
 		return false, nil
 	}
 

@@ -11,10 +11,21 @@ type Country struct {
 	Name      string    `gorm:"not null;unique;index"`
 	Code      string    `gorm:"not null;unique;index;type:varchar(5)"`
 	CreatedAt time.Time `gorm:""`
+	States    []State   `gorm:"foreignKey:CountryID;"`
 }
 
 func (Country) TableName() string {
 	return "backend.countries"
+}
+
+type State struct {
+	ID        uint   `gorm:"primarykey"`
+	Name      string `gorm:"not null;unique;index"`
+	CountryID uint   `gorm:"index"`
+}
+
+func (State) TableName() string {
+	return "backend.states"
 }
 
 type AppData struct {
@@ -54,19 +65,20 @@ type BackendUser struct {
 	ID              uint `gorm:"primarykey"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	UserName        *string               `gorm:"type:varchar(255);index" validate:""`
-	FullName        string                `gorm:"not null;type:varchar(255);index" validate:""`
-	Email           string                `gorm:"unique;not null;type:varchar(255);index"`
-	PhoneNumber     *string               `gorm:"type:varchar(20)" validate:""`
-	Image           *string               `gorm:"column:image_url"`
-	Country         *uint                 `gorm:"index"`
-	IsEmailVerified bool                  `gorm:"default:FALSE;not null"`
-	Role            string                `gorm:"type:varchar(50)"`
-	PasswordHash    string                `gorm:"not null"`
-	CreatedBy       uint                  `gorm:"index,not null"`
-	Activity        []BackendUserActivity `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Sessions        []BackendSession      `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	OTP             []BackendOTP          `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserName        *string                       `gorm:"type:varchar(255);index" validate:""`
+	FullName        string                        `gorm:"not null;type:varchar(255);index" validate:""`
+	Email           string                        `gorm:"unique;not null;type:varchar(255);index"`
+	PhoneNumber     *string                       `gorm:"type:varchar(20)" validate:""`
+	Image           *string                       `gorm:"column:image_url"`
+	Country         *uint                         `gorm:"index"`
+	IsEmailVerified bool                          `gorm:"default:FALSE;not null"`
+	Role            string                        `gorm:"type:varchar(50)"`
+	PasswordHash    string                        `gorm:"not null"`
+	CreatedBy       uint                          `gorm:"index,not null"`
+	Activity        []BackendUserActivity         `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	OTP             []BackendOTP                  `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	PassResetReqs   []BackendPasswordResetRequest `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 func (BackendUser) TableName() string {
@@ -95,4 +107,13 @@ type BackendUserActivity struct {
 
 func (BackendUserActivity) TableName() string {
 	return "backend.backend_user_activities"
+}
+
+type BackendPasswordResetRequest struct {
+	Id          uint      `gorm:"primarykey" redis:"id"`
+	UserId      uint      `gorm:"not null;index" redis:"user_id"`
+	ResetToken  string    `gorm:"not null;unique" redis:"reset_token"`
+	RequestedAt time.Time `gorm:"not null" redis:"requested_at"`
+	ExpiresAt   time.Time `gorm:"not null" redis:"expires_at"`
+	Used        bool      `gorm:"default:FALSE;not null" redis:"used"`
 }

@@ -32,9 +32,9 @@ type Customer struct {
 	Address         string            `gorm:"index;not null" redis:"address"`
 	Sessions        []CustomerSession `gorm:"foreignKey:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	OTPs            []CustomerOTP     `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Wishlist        []WishlistItem    `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Cart            []CartItem        `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	// Wishlist        []Product         `gorm:"many2many:customer.customer_wishlists;"`
-	Wishlist []WishlistItem `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Cart     []CartItem     `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 func (Customer) TableName() string {

@@ -34,6 +34,7 @@ func (OrderReturn) TableName() string {
 type OrderItem struct {
 	ID        uint `gorm:"primarykey"`
 	CreatedAt time.Time
+	UpdatedAt time.Time
 	OrderID   uint    `json:"order_id" gorm:"index;not null"`
 	Name      string  `json:"name" gorm:"not null"`
 	Price     float64 `json:"price" gorm:"not null"`

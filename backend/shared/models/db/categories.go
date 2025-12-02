@@ -84,23 +84,34 @@ func (ProductTags) TableName() string {
 }
 
 type Product struct {
-	ID          uint       `gorm:"primarykey" redis:"id"`
-	UpdatedAt   time.Time  `gorm:"" redis:"updated_at"`
-	CreatedAt   time.Time  `gorm:"" redis:"created_at"`
-	Name        string     `json:"name" gorm:"not null;index;type:text"`
-	SKU         string     `json:"sku" gorm:"not null;index"`
-	Price       float64    `json:"price" gorm:"not null;type:numeric(15, 2)"`
-	DscPercent  float64    `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
-	DscPeriod   time.Time  `json:"dsc_period" gorm:""`
-	Enabled     bool       `json:"enabled" gorm:"default:TRUE;not null"`
-	Description string     `json:"description"`
-	Url         string     `json:"url"`
-	ImageUrl    *string    `gorm:"column:image_url"`
-	PresetID    *uint      `gorm:"index"`
-	Preset      *Preset    `gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;"`
-	Categories  []Category `gorm:"many2many:catalog.product_attribute_values;"`
+	ID          uint      `gorm:"primarykey" redis:"id"`
+	UpdatedAt   time.Time `gorm:"" redis:"updated_at"`
+	CreatedAt   time.Time `gorm:"" redis:"created_at"`
+	Name        string    `json:"name" gorm:"not null;index;type:text"`
+	SKU         string    `json:"sku" gorm:"not null;index"`
+	Price       float64   `json:"price" gorm:"not null;type:numeric(15, 2)"`
+	DscPercent  float64   `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
+	DscPeriod   time.Time `json:"dsc_period" gorm:""`
+	Enabled     bool      `json:"enabled" gorm:"default:TRUE;not null"`
+	Description string    `json:"description"`
+	Url         string    `json:"url"`
+	ImageUrl    *string   `gorm:"column:image_url"`
+	PresetID    *uint     `gorm:"index"`
+	Preset      *Preset   `gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;"`
+	// Categories  []Category `gorm:"many2many:catalog.product_category_values;foreignkey:ID;joinforeignKey:ProductId;References:ID;joinReferences:CategoryId;"`
+	Categories []Category `gorm:"many2many:catalog.product_category_values;"`
+	Tags       []Tag      `gorm:"many2many:catalog.product_tags;"`
 }
 
 func (Product) TableName() string {
 	return "catalog.products"
+}
+
+type ProductCategoryValues struct {
+	ProductID  uint `gorm:"primaryKey;autoIncrement:false;"`
+	CategoryID uint `gorm:"primaryKey;autoIncrement:false;"`
+}
+
+func (ProductCategoryValues) TableName() string {
+	return "catalog.product_category_values"
 }

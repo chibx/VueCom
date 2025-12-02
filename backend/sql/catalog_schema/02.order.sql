@@ -20,5 +20,20 @@ CREATE TABLE catalog.order_returns (
     order_id INTEGER NOT NULL,
     reason VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE catalog.order_items (
+    id SERIAL PRIMARY KEY,
+    order_id INTEGER NOT NULL,
+    -- product name
+    -- I could have used the product_id to get the product name from the catalog but I 
+    -- decided to store by name in a case where the product is deleted
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(12,2) NOT NULL,
+    quantity INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    FOREIGN KEY (order_id) REFERENCES catalog.orders(id) ON DELETE CASCADE,
 );

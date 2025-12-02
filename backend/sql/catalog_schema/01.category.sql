@@ -39,14 +39,14 @@ CREATE INDEX idx_preset_attributes_preset_id ON catalog.preset_attributes (prese
 CREATE INDEX idx_preset_attributes_attribute_id ON catalog.preset_attributes (attribute_id);
 
 -- I sense a bug here
-CREATE TABLE catalog.product_attribute_values (
+CREATE TABLE catalog.product_category_values (
     product_id INTEGER NOT NULL REFERENCES catalog.products(id) ON DELETE CASCADE,
-    option_id INTEGER NOT NULL REFERENCES catalog.category(id) ON DELETE CASCADE,
-    PRIMARY KEY (product_id, option_id)
+    category_id INTEGER NOT NULL REFERENCES catalog.category(id) ON DELETE CASCADE,
+    PRIMARY KEY (product_id, category_id)
 );
 
 CREATE INDEX idx_product_attribute_values_product_id ON catalog.product_attribute_values (product_id);
-CREATE INDEX idx_product_attribute_values_option_id ON catalog.product_attribute_values (option_id);
+CREATE INDEX idx_product_attribute_values_category_id ON catalog.product_attribute_values (category_id);
 
 CREATE TABLE catalog.tags (
     id SERIAL PRIMARY KEY,

@@ -5,16 +5,22 @@ CREATE SCHEMA IF NOT EXISTS inventory;
 -- Warehouses (Lagos, Abuja, PH, etc.)
 CREATE TABLE inventory.warehouses (
     id SERIAL PRIMARY KEY,
-    code VARCHAR(20) UNIQUE NOT NULL, -- e.g., LOS1, ABJ1
+    code VARCHAR(10) UNIQUE NOT NULL, -- e.g., LOS1, ABJ1
     name VARCHAR(100) NOT NULL,
     address TEXT,
     city VARCHAR(50),
-    state VARCHAR(50),
-    country VARCHAR(10) DEFAULT 'NG',
+    state INT,
+    country INT,
     is_active BOOLEAN DEFAULT TRUE,
     capacity INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    INDEX idx_warehouse_code (code),
+    FOREIGN KEY (state) REFERENCES backend.states(id),
+    FOREIGN KEY (country) REFERENCES backend.countries(id),
 );
+
 
 -- Inventory (Real-time Stock)
 CREATE TABLE inventory.inventory (

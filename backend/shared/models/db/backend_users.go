@@ -117,3 +117,7 @@ type BackendPasswordResetRequest struct {
 	ExpiresAt   time.Time `gorm:"not null" redis:"expires_at"`
 	Used        bool      `gorm:"default:FALSE;not null" redis:"used"`
 }
+
+func (BackendPasswordResetRequest) TableName() string {
+	return "backend.backend_password_reset_requests"
+}

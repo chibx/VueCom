@@ -18,15 +18,15 @@ func GetEnv(env string, sub ...string) string {
 	return val
 }
 
-func loadMasterKey() []byte {
-	keyBase64 := GetEnv("API_ENC_KEY")
+func loadKey(keyEnv string) []byte {
+	keyBase64 := GetEnv(keyEnv)
 
 	var err error
-	masterKey, err := base64.StdEncoding.DecodeString(keyBase64)
-	if err != nil || len(masterKey) != 32 {
-		panic("Invalid API_ENC_KEY")
+	Key, err := base64.StdEncoding.DecodeString(keyBase64)
+	if err != nil || len(Key) != 32 {
+		panic("Invalid environment variable " + keyEnv)
 	}
-	return masterKey
+	return Key
 }
 
 func isSaaS() bool {

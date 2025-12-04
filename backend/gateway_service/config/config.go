@@ -21,7 +21,9 @@ func GetConfig() *types.Config {
 		// RedisUrl:      GetEnv("REDIS_URL"),
 		AllowedPaths:  allowedPaths,
 		MockAdminSlug: "admin123",
-		ApiMasterKey:  loadMasterKey(),
+		ApiEncKey:     loadKey("API_ENC_KEY"),
+		SecretKey:     loadKey("SECRET_KEY"),
+		DbEncKey:      loadKey("DB_ENC_KEY"),
 		IsSaas:        isSaaS(),
 	}
 }

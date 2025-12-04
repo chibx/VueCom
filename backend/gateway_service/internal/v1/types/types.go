@@ -9,7 +9,9 @@ type Config struct {
 	// RedisUrl      string
 	AllowedPaths  []string
 	MockAdminSlug string
-	ApiMasterKey  []byte
+	ApiEncKey     []byte // For the API Keys
+	SecretKey     []byte // For encrypting jwt
+	DbEncKey      []byte // For encrypting db credentials like user information i.e address and password (after hashing of course)
 	IsSaas        bool
 }
 

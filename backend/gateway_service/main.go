@@ -32,7 +32,12 @@ func main() {
 		panic("Error while migration")
 	}
 
-	app := fiber.New(fiber.Config{DisableStartupMessage: true, JSONEncoder: json.Marshal, JSONDecoder: json.Unmarshal})
+	app := fiber.New(fiber.Config{
+		DisableStartupMessage: true,
+		JSONEncoder:           json.Marshal,
+		JSONDecoder:           json.Unmarshal,
+		StreamRequestBody:     true,
+	})
 
 	app.Use(helmet.New())
 	// TODO: Add a rate limiter middleware

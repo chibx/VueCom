@@ -75,6 +75,7 @@ type BackendUser struct {
 	Role            string                        `gorm:"type:varchar(50)"`
 	PasswordHash    string                        `gorm:"not null"`
 	CreatedBy       uint                          `gorm:"index,not null"`
+	ByApiKey        bool                          `gorm:"-:all"` // Track if the user is acting through an API key
 	Activity        []BackendUserActivity         `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	OTP             []BackendOTP                  `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

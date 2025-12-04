@@ -1,9 +1,14 @@
 package utils
 
 import (
+	"errors"
+	"io"
 	"os"
+	"slices"
 	"strings"
+	"vuecom/gateway/api/v1/request"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/gofiber/fiber/v2/log"
@@ -55,4 +60,16 @@ func writeFile(ctx *fiber.Ctx, path string, ctype string) error {
 	}
 
 	return nil
+}
+
+func IsSupportedImage(image io.Reader) (bool, error) {
+	mtype, err := mimetype.DetectReader(image)
+	if err != nil {
+		return false, err
+	}
+	if !slices.Contains(request.IMAGE_FORMATS, mtype.String()) {
+		return false, errors.New("uploaded logo must be either a jpeg, jpg or png image")
+	}
+
+	return true, nil
 }

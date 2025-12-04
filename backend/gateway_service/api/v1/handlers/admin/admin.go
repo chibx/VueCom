@@ -1,10 +1,13 @@
 package admin
 
 import (
+	"database/sql"
 	"errors"
 	"mime/multipart"
 	"strings"
 	"vuecom/gateway/api/v1/handlers"
+	backendusers "vuecom/gateway/api/v1/request/backend_users"
+	"vuecom/gateway/internal/utils"
 	"vuecom/gateway/internal/v1/types"
 	dbModels "vuecom/shared/models/db"
 
@@ -52,7 +55,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
-		return err500
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid form data")
 	}
 
 	appData, logoFile, err := validateInitializeProps(form)
@@ -94,12 +97,36 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 }
 
 func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
-	db := api.Deps.DB
-	owner := &dbModels.BackendUser{}
+	var err error
 
-	err := gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), owner)
+	doesOwnerExist, err := DoesOwnerExist(ctx, api)
 	if err != nil {
 		return err
+	}
+	if doesOwnerExist {
+		return fiber.NewError(fiber.StatusBadRequest, "An existing owner was found!!")
+	}
+	db := api.Deps.DB
+	var user *backendusers.CreateBackendUserRequest
+	err = ctx.BodyParser(&user)
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+	}
+	// passwordHash, err := auth.GenerateFromPassword(user.Password, auth.DefaultHashParams)
+	// if err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError)
+	// }
+	owner, err := user.ToDBBackendUser(api)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return fiber.NewError(fiber.StatusBadRequest, "Invalid country code")
+		}
+		return fiber.NewError(fiber.StatusInternalServerError)
+	}
+
+	err = gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), owner)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError)
 	}
 	return ctx.Status(fiber.StatusOK).SendString("Owner registered successfully")
 }
@@ -134,7 +161,21 @@ func validateInitializeProps(form *multipart.Form) (appData *dbModels.AppData, f
 	if logoFile.Size > handlers.MAX_IMAGE_UPLOAD {
 		return nil, nil, errors.New("uploaded logo must not be more than 5MB in size")
 	}
+	// fmt.Println(logoFile.Filename, logoFile.Header)
 
+	unknownErr := errors.New("unknown Error Occured! Try again")
+	logo, err := logoFile.Open()
+	if err != nil {
+		return nil, nil, unknownErr
+	}
+
+	isSupported, err := utils.IsSupportedImage(logo)
+	if err != nil {
+		return nil, nil, err
+	}
+	if !isSupported {
+		return nil, nil, errors.New("uploaded logo must be either a jpeg, jpg or png image")
+	}
 	appData = &dbModels.AppData{
 		Name:       name,
 		AdminRoute: adminRoute,

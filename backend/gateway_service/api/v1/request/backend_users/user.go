@@ -1,5 +1,12 @@
 package backendusers
 
+import (
+	"vuecom/gateway/internal/auth"
+	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/validation"
+	dbModels "vuecom/shared/models/db"
+)
+
 // JWT Format sent back to the client dashboard
 type BackendJWTPayload struct {
 	UserId int    `json:"user_id"`
@@ -20,12 +27,80 @@ type BackendJWTPayload struct {
 // Base Backend Panel User
 type CreateBackendUserRequest struct {
 	FullName        string  `json:"full_name" validate:"required,min=5"`
-	UserName        *string `json:"user_name" validate:"required"`
+	UserName        *string `json:"user_name" validate:"required,min=3"`
 	Email           string  `json:"email" validate:"required,email"`
-	PhoneNumber     *string `json:"phone_number" validate:""`
-	Image           *string `json:"image" validate:"http_url"`
-	Country         *uint   `json:"country" validate:"required_if=Role owner"`
+	PhoneNumber     *string `json:"phone_number" validate:"min=10,max=15"`
+	Image           *string `json:"image" validate:"required,http_url"`
+	Country         *string `json:"country" validate:"required_if=Role owner"`
 	IsEmailVerified bool    `json:"email_verified"`
-	Password        *string `json:"password,omitempty" validate:"required"`
+	Password        string  `json:"password" validate:"required,min=8,max=25"`
 	Role            string  `json:"role" validate:"required"`
+}
+
+func (req *CreateBackendUserRequest) Validate() error {
+	return validation.Validator.Struct(req)
+}
+
+func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api) (*dbModels.BackendUser, error) {
+	passwordHash, err := auth.GenerateFromPassword(req.Password, auth.DefaultHashParams)
+	if err != nil {
+		return nil, err
+	}
+
+	hashedFullname, err := auth.Encrypt(req.FullName, api.Config.DbEncKey)
+	if err != nil {
+		return nil, err
+	}
+	var hashedUsername string
+	if req.UserName != nil {
+		hashedUsername, err = auth.Encrypt(*req.UserName, api.Config.DbEncKey)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	hashedEmail, err := auth.Encrypt(req.Email, api.Config.DbEncKey)
+	if err != nil {
+		return nil, err
+	}
+
+	var hashedPhoneNumber string
+	if req.PhoneNumber != nil {
+		hashedPhoneNumber, err = auth.Encrypt(*req.PhoneNumber, api.Config.DbEncKey)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	var countryId uint
+	if req.Country != nil {
+		err = api.Deps.DB.Model(&dbModels.Country{}).Where(dbModels.Country{Code: *req.Country}).Row().Scan(&countryId)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	user := &dbModels.BackendUser{
+		FullName:        hashedFullname,
+		UserName:        nil,
+		Email:           hashedEmail,
+		PhoneNumber:     nil,
+		Image:           req.Image,
+		Country:         nil,
+		IsEmailVerified: req.IsEmailVerified,
+		PasswordHash:    passwordHash,
+		Role:            req.Role,
+	}
+
+	if req.UserName != nil {
+		user.UserName = &hashedUsername
+	}
+	if req.PhoneNumber != nil {
+		user.PhoneNumber = &hashedPhoneNumber
+	}
+	if countryId != 0 {
+		user.Country = &countryId
+	}
+
+	return user, nil
 }

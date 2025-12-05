@@ -6,6 +6,7 @@ import (
 	"os"
 	"vuecom/gateway/config"
 	"vuecom/gateway/internal/v1/types"
+	dbModels "vuecom/shared/models/db"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/redis/go-redis/v9"
@@ -78,4 +79,28 @@ func plugRedis(api *types.Api) {
 		panic("Could not connect to Redis!!!")
 	}
 	api.Deps.Redis = client
+}
+
+func checkIfAppInitialized(api *types.Api) (bool, error) {
+	var appData = &dbModels.AppData{}
+
+	err := api.Deps.DB.First(appData).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return appData.Name != "", nil
+}
+
+func checkIfOwnerExists(api *types.Api) (bool, error) {
+	var count int64
+
+	err := api.Deps.DB.Model(&dbModels.BackendUser{}).Where("role = 'owner'").Count(&count).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }

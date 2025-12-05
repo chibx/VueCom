@@ -17,20 +17,27 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-func main() {
-	config := config.GetConfig()
-	v1_api := &types.Api{Config: config, Deps: &deps.Deps{}}
-
+func initServer(v1_api *types.Api) {
 	plugDB(v1_api)
 	plugRedis(v1_api)
 	plugCloudinary(v1_api)
 
 	now := time.Now()
 	err := migrate(v1_api.Deps.DB)
-	fmt.Println("Migration took", time.Since(now).Milliseconds(), "ms")
+	fmt.Println("Auto Migration took", time.Since(now).Milliseconds(), "ms")
 	if err != nil {
 		panic("Error while migration")
 	}
+
+	v1_api.IsAppInit, _ = checkIfAppInitialized(v1_api)
+	v1_api.HasAdmin, _ = checkIfOwnerExists(v1_api)
+}
+
+func main() {
+	config := config.GetConfig()
+	v1_api := &types.Api{Config: config, Deps: &deps.Deps{}}
+
+	initServer(v1_api)
 
 	app := fiber.New(fiber.Config{
 		DisableStartupMessage: true,

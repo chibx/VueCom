@@ -19,7 +19,8 @@ type Api struct {
 	// DB       *gorm.DB
 	// Redis    *redis.Client
 	// Cld      *cloudinary.Cloudinary
-	Deps     *deps.Deps
-	Config   *Config
-	HasAdmin bool
+	Deps      *deps.Deps
+	Config    *Config
+	HasAdmin  bool
+	IsAppInit bool
 }

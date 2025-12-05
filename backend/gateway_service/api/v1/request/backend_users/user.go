@@ -26,15 +26,14 @@ type BackendJWTPayload struct {
 
 // Base Backend Panel User
 type CreateBackendUserRequest struct {
-	FullName        string  `json:"full_name" validate:"required,min=5"`
-	UserName        *string `json:"user_name" validate:"required,min=3"`
-	Email           string  `json:"email" validate:"required,email"`
-	PhoneNumber     *string `json:"phone_number" validate:"min=10,max=15"`
-	Image           *string `json:"image" validate:"required,http_url"`
-	Country         *string `json:"country" validate:"required_if=Role owner"`
-	IsEmailVerified bool    `json:"email_verified"`
-	Password        string  `json:"password" validate:"required,min=8,max=25"`
-	Role            string  `json:"role" validate:"required"`
+	FullName        string  `form:"full_name" validate:"required,min=5"`
+	UserName        *string `form:"user_name" validate:"required,min=3"`
+	Email           string  `form:"email" validate:"required,email"`
+	PhoneNumber     *string `form:"phone_number" validate:"min=10,max=15"`
+	Country         *string `form:"country" validate:"required_if=Role owner"`
+	IsEmailVerified bool    `form:"email_verified"`
+	Password        string  `form:"password" validate:"required,min=8,max=25"`
+	Role            string  `form:"role" validate:"required"`
 }
 
 func (req *CreateBackendUserRequest) Validate() error {
@@ -85,7 +84,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api) (*dbModels.
 		UserName:        nil,
 		Email:           hashedEmail,
 		PhoneNumber:     nil,
-		Image:           req.Image,
+		Image:           nil,
 		Country:         nil,
 		IsEmailVerified: req.IsEmailVerified,
 		PasswordHash:    passwordHash,

@@ -98,6 +98,8 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 
 func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 	var err error
+	var db = api.Deps.DB
+	var cld = api.Deps.Cld
 
 	doesOwnerExist, err := DoesOwnerExist(ctx, api)
 	if err != nil {
@@ -106,28 +108,61 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 	if doesOwnerExist {
 		return fiber.NewError(fiber.StatusBadRequest, "An existing owner was found!!")
 	}
-	db := api.Deps.DB
-	var user *backendusers.CreateBackendUserRequest
-	err = ctx.BodyParser(&user)
+
+	var reqUser *backendusers.CreateBackendUserRequest
+	err = ctx.BodyParser(&reqUser)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
 	}
-	// passwordHash, err := auth.GenerateFromPassword(user.Password, auth.DefaultHashParams)
-	// if err != nil {
-	// 	return fiber.NewError(fiber.StatusInternalServerError)
-	// }
-	owner, err := user.ToDBBackendUser(api)
+
+	err = reqUser.Validate()
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "One or more fields do not satisfy the requirements")
+	}
+
+	backUser, err := reqUser.ToDBBackendUser(api)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return fiber.NewError(fiber.StatusBadRequest, "Invalid country code")
 		}
+
 		return fiber.NewError(fiber.StatusInternalServerError)
 	}
 
-	err = gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), owner)
+	reqUserImage, err := ctx.FormFile("image")
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError)
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid form data")
 	}
+	if reqUserImage != nil {
+		if reqUserImage.Size > handlers.MAX_IMAGE_UPLOAD {
+			return fiber.NewError(fiber.StatusBadRequest, "uploaded image must not be more than 5MB in size")
+		}
+		fileIO, err := reqUserImage.Open()
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError)
+		}
+
+		_, err = utils.IsSupportedImage(fileIO)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, "uploaded image must be either a jpeg, jpg or png image")
+		}
+		result, err := cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
+			Folder:      "backend_users",
+			Overwrite:   cldApi.Bool(true),
+			DisplayName: backUser.FullName,
+			PublicID:    backUser.FullName,
+		})
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError)
+		}
+		backUser.Image = &result.SecureURL
+	}
+
+	err = gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), backUser)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Error registering owner")
+	}
+
 	return ctx.Status(fiber.StatusOK).SendString("Owner registered successfully")
 }
 
@@ -139,11 +174,11 @@ func validateInitializeProps(form *multipart.Form) (appData *dbModels.AppData, f
 	logoFileField := files["app_logo"]
 
 	switch {
-	case len(nameField) == 0:
+	case nameField == nil:
 		return nil, nil, errors.New(fieldIsMissing("`Name` field"))
-	case len(adminRouteField) == 0:
+	case adminRouteField == nil:
 		return nil, nil, errors.New(fieldIsMissing("`Admin Route` field"))
-	case len(logoFileField) == 0:
+	case logoFileField == nil:
 		return nil, nil, errors.New(fieldIsMissing("`Application logo`"))
 	}
 

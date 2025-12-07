@@ -6,6 +6,7 @@ import (
 	"mime/multipart"
 	"strings"
 	"vuecom/gateway/api/v1/handlers"
+	"vuecom/gateway/api/v1/request"
 	backendusers "vuecom/gateway/api/v1/request/backend_users"
 	"vuecom/gateway/internal/utils"
 	"vuecom/gateway/internal/v1/types"
@@ -39,6 +40,10 @@ func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
 // TODO: Validate the business name and the admin route to avoid clashes with url and also storage buckets
 
 func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
+	if api.IsAppInit {
+		return fiber.NewError(fiber.StatusBadRequest, "An active app was found!!\nIf you want to initialize a new app, please connect new database")
+	}
+
 	db := api.Deps.DB
 	cld := api.Deps.Cld
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing app. Try again")
@@ -93,10 +98,17 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 		return err500
 	}
 
+	api.IsAppInit = true
+	api.AppName = appData.Name
+
 	return ctx.Status(fiber.StatusOK).SendString("App initialized successfully")
 }
 
 func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
+	if api.HasAdmin {
+		return fiber.NewError(fiber.StatusBadRequest, "An existing owner was found!!")
+	}
+
 	var err error
 	var db = api.Deps.DB
 	var cld = api.Deps.Cld
@@ -147,7 +159,7 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 			return fiber.NewError(fiber.StatusBadRequest, "uploaded image must be either a jpeg, jpg or png image")
 		}
 		result, err := cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
-			Folder:      "backend_users",
+			Folder:      request.GetBackendFolder(api),
 			Overwrite:   cldApi.Bool(true),
 			DisplayName: backUser.FullName,
 			PublicID:    backUser.FullName,
@@ -163,6 +175,7 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "Error registering owner")
 	}
 
+	api.HasAdmin = true
 	return ctx.Status(fiber.StatusOK).SendString("Owner registered successfully")
 }
 

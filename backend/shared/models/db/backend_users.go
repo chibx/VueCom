@@ -74,7 +74,8 @@ type BackendUser struct {
 	IsEmailVerified bool                          `gorm:"default:FALSE;not null"`
 	Role            string                        `gorm:"type:varchar(50)"`
 	PasswordHash    string                        `gorm:"not null"`
-	CreatedBy       uint                          `gorm:"index,not null"`
+	CreatedBy       *uint                         `gorm:"index"`
+	AccountsCreated []BackendUser                 `gorm:"foreignKey:CreatedBy;"`
 	ByApiKey        bool                          `gorm:"-:all"` // Track if the user is acting through an API key
 	Activity        []BackendUserActivity         `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

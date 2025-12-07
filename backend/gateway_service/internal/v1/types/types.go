@@ -23,4 +23,5 @@ type Api struct {
 	Config    *Config
 	HasAdmin  bool
 	IsAppInit bool
+	AppName   string
 }

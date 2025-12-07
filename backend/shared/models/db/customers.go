@@ -14,6 +14,18 @@ func (CustomerOTP) TableName() string {
 	return "customer.customer_otps"
 }
 
+type CustomerAddress struct {
+	ID            uint     `gorm:"primarykey" redis:"id"`
+	CustomerID    uint     `gorm:"not null;index" redis:"user_id"`
+	StreetAddress string   `gorm:"index;not null" redis:"address"`
+	City          string   `gorm:"index;not null" redis:"city"`
+	ZipCode       string   `gorm:"index;not null" redis:"zip_code"`
+	StateID       *uint    `gorm:"column:state;index" redis:"state"`
+	CountryID     *uint    `gorm:"column:country;index" redis:"country"`
+	State         *State   `gorm:"foreignKey:StateID;"`
+	Country       *Country `gorm:"foreignKey:CountryID;"`
+}
+
 type Customer struct {
 	ID              uint              `gorm:"primarykey" redis:"id"`
 	CreatedAt       time.Time         `gorm:"" redis:"created_at"`
@@ -22,14 +34,10 @@ type Customer struct {
 	PasswordHash    *string           `gorm:"" redis:"-"`
 	Email           string            `gorm:"unique;not null;type:varchar(255);index" redis:"email"`
 	IsEmailVerified bool              `gorm:"default:FALSE;not null" redis:"is_email_verified"`
-	PhoneNumber     string            `gorm:"type:varchar(20);not null" redis:"phone_number"`
+	PhoneNumber     *string           `gorm:"type:varchar(20);" redis:"phone_number"`
 	Image           *string           `gorm:"column:image_url" redis:"image_url"`
-	CountryID       uint              `gorm:"column:country;index;not null" redis:"country"`
-	Country         *Country          `gorm:"foreignKey:CountryID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	City            string            `gorm:"index;not null" redis:"city"`
-	State           string            `gorm:"index;not null" redis:"state"`
-	ZipCode         string            `gorm:"index;not null" redis:"zip_code"`
-	Address         string            `gorm:"index;not null" redis:"address"`
+	BillingAddress  *CustomerAddress  `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ShippingAddress *CustomerAddress  `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Sessions        []CustomerSession `gorm:"foreignKey:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	OTPs            []CustomerOTP     `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Wishlist        []WishlistItem    `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

@@ -29,8 +29,11 @@ func initServer(v1_api *types.Api) {
 		panic("Error while migration")
 	}
 
-	v1_api.IsAppInit, _ = checkIfAppInitialized(v1_api)
+	appData, _ := appIfInitialized(v1_api)
 	v1_api.HasAdmin, _ = checkIfOwnerExists(v1_api)
+
+	v1_api.IsAppInit = appData != nil
+	v1_api.AppName = appData.Name
 }
 
 func main() {

@@ -81,16 +81,16 @@ func plugRedis(api *types.Api) {
 	api.Deps.Redis = client
 }
 
-func checkIfAppInitialized(api *types.Api) (bool, error) {
+func appIfInitialized(api *types.Api) (*dbModels.AppData, error) {
 	var appData = &dbModels.AppData{}
 
 	err := api.Deps.DB.First(appData).Error
 
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return appData.Name != "", nil
+	return appData, nil
 }
 
 func checkIfOwnerExists(api *types.Api) (bool, error) {

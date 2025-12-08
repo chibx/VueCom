@@ -5,6 +5,11 @@ import (
 	"vuecom/gateway/internal/v1/types"
 )
 
+const CUSTOMER_KEY = "customer"
+const CUSTOMER_TOKEN = "c_token"
+const BACKEND_USER_KEY = "backend_user"
+const BACKEND_TOKEN = "b_token"
+
 type OnlyID struct {
 	ID int `json:"id" params:"id"`
 }

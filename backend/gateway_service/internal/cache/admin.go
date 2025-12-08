@@ -34,6 +34,8 @@ func GetAppData(ctx context.Context, api *types.Api) (*dbModels.AppData, error) 
 		}
 
 		go func() {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+			defer cancel()
 			// Cache for 5 minutes
 			// TODO: The error could be sent to a logger or monitoring tool/service
 			_ = cache.Set(ctx, keys.APP_DATA_KEY, appData, time.Minute*5).Err()

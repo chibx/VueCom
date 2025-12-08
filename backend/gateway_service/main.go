@@ -34,6 +34,11 @@ func initServer(v1_api *types.Api) {
 
 	v1_api.IsAppInit = appData != nil
 	v1_api.AppName = appData.Name
+	if len(appData.AdminRoute) > 0 {
+		v1_api.AdminSlug = appData.AdminRoute
+	} else {
+		v1_api.AdminSlug = "admin123"
+	}
 }
 
 func main() {

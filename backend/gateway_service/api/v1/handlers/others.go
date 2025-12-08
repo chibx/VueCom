@@ -23,7 +23,7 @@ func ValidateSlug(ctx *fiber.Ctx, api *types.Api) error {
 	}
 
 	// TODO: Remove when true setting up
-	if adminPart != api.Config.MockAdminSlug {
+	if adminPart != api.AdminSlug {
 		ctx.Set(fiber.HeaderContentType, fiber.MIMETextHTMLCharsetUTF8)
 		return ctx.Status(404).SendString(Page_404)
 	}

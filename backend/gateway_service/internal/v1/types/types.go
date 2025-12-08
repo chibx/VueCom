@@ -7,12 +7,11 @@ type Config struct {
 	Port string
 	// PostgresDSN   string
 	// RedisUrl      string
-	AllowedPaths  []string
-	MockAdminSlug string
-	ApiEncKey     []byte // For the API Keys
-	SecretKey     []byte // For encrypting jwt
-	DbEncKey      []byte // For encrypting db credentials like user information i.e address and password (after hashing of course)
-	IsSaas        bool
+	ApiEncKey    []byte // For the API Keys
+	SecretKey    []byte // For encrypting jwt
+	DbEncKey     []byte // For encrypting db credentials like user information i.e address and password (after hashing of course)
+	IsSaas       bool
+	AllowedPaths []string
 }
 
 type Api struct {
@@ -24,4 +23,5 @@ type Api struct {
 	HasAdmin  bool
 	IsAppInit bool
 	AppName   string
+	AdminSlug string
 }

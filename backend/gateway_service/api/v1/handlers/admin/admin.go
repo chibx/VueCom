@@ -100,6 +100,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 
 	api.IsAppInit = true
 	api.AppName = appData.Name
+	api.AdminSlug = appData.AdminRoute
 
 	return ctx.Status(fiber.StatusOK).SendString("App initialized successfully")
 }

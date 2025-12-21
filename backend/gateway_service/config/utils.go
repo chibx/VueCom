@@ -23,7 +23,7 @@ func loadKey(keyEnv string) []byte {
 
 	var err error
 	Key, err := base64.StdEncoding.DecodeString(keyBase64)
-	if err != nil || len(Key) != 32 {
+	if err != nil || len(Key) != 64 {
 		panic("Invalid environment variable " + keyEnv)
 	}
 	return Key

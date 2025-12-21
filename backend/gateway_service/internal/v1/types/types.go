@@ -1,6 +1,9 @@
 package types
 
-import "vuecom/shared/deps"
+import (
+	"vuecom/shared/deps"
+	"vuecom/shared/models"
+)
 
 type Config struct {
 	Host string
@@ -18,10 +21,11 @@ type Api struct {
 	// DB       *gorm.DB
 	// Redis    *redis.Client
 	// Cld      *cloudinary.Cloudinary
-	Deps      *deps.Deps
-	Config    *Config
-	HasAdmin  bool
-	IsAppInit bool
-	AppName   string
-	AdminSlug string
+	Deps        *deps.Deps
+	Config      *Config
+	HasAdmin    bool
+	IsAppInit   bool
+	AppName     string
+	AdminSlug   string
+	AppSettings models.AppSettings
 }

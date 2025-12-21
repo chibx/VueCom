@@ -8,6 +8,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.10
 	github.com/go-playground/validator/v10 v10.28.0
 	github.com/goccy/go-json v0.10.5
+	github.com/golang-jwt/jwt/v5 v5.3.0
 )
 
 require (

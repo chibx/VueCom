@@ -12,28 +12,31 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/gofiber/fiber/v2/log"
-	"github.com/gofiber/fiber/v2/utils"
 )
 
+// func ExtractRouteParts(route string) []string {
+// 	route = utils.CopyString(route)
+// 	var routeLength = len(route)
+// 	var routeParts []string
+
+// 	if routeLength == 1 {
+// 		// It's just "/"
+// 		routeParts = []string{""}
+// 	} else {
+// 		var hasTrailingSlash = string(route[routeLength-1]) == "/"
+
+// 		if hasTrailingSlash {
+// 			route = route[:len(route)-1]
+// 		}
+// 		// First index is gonna be ""
+// 		routeParts = strings.Split(route, "/")[1:]
+// 	}
+
+// 	return routeParts
+// }
+
 func ExtractRouteParts(route string) []string {
-	route = utils.CopyString(route)
-	var routeLength = len(route)
-	var routeParts []string
-
-	if routeLength == 1 {
-		// It's just "/"
-		routeParts = []string{""}
-	} else {
-		var hasTrailingSlash = string(route[routeLength-1]) == "/"
-
-		if hasTrailingSlash {
-			route = route[:len(route)-1]
-		}
-		// First index is gonna be ""
-		routeParts = strings.Split(route, "/")[1:]
-	}
-
-	return routeParts
+	return strings.Split(strings.TrimRight(route, "/"), "/")
 }
 
 func ServeIndex(ctx *fiber.Ctx) error {

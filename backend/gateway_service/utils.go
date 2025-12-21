@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
+	"time"
 	"vuecom/gateway/config"
 	"vuecom/gateway/internal/v1/types"
 	dbModels "vuecom/shared/models/db"
@@ -87,6 +89,9 @@ func appIfInitialized(api *types.Api) (*dbModels.AppData, error) {
 	err := api.Deps.DB.First(appData).Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &dbModels.AppData{}, err
+		}
 		return nil, err
 	}
 
@@ -103,4 +108,34 @@ func checkIfOwnerExists(api *types.Api) (bool, error) {
 	}
 
 	return count > 0, nil
+}
+
+func initServer(v1_api *types.Api) {
+	plugDB(v1_api)
+	plugRedis(v1_api)
+	plugCloudinary(v1_api)
+
+	now := time.Now()
+	err := migrate(v1_api.Deps.DB)
+	fmt.Println("Auto Migration took", time.Since(now).Milliseconds(), "ms")
+	if err != nil {
+		panic("Error while migration")
+	}
+
+	appData, _ := appIfInitialized(v1_api)
+	v1_api.HasAdmin, _ = checkIfOwnerExists(v1_api)
+
+	v1_api.IsAppInit = appData.Name != ""
+
+	if len(v1_api.AppName) > 0 {
+		v1_api.AppName = appData.Name
+	} else {
+		v1_api.AppName = "Vuecom_test"
+	}
+
+	if len(appData.AdminRoute) > 0 {
+		v1_api.AdminSlug = appData.AdminRoute
+	} else {
+		v1_api.AdminSlug = "admin123"
+	}
 }

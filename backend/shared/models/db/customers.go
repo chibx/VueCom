@@ -38,7 +38,7 @@ type Customer struct {
 	Image           *string           `gorm:"column:image_url" redis:"image_url"`
 	BillingAddress  *CustomerAddress  `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	ShippingAddress *CustomerAddress  `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Sessions        []CustomerSession `gorm:"foreignKey:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Sessions        []CustomerSession `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	OTPs            []CustomerOTP     `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Wishlist        []WishlistItem    `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Cart            []CartItem        `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
@@ -50,14 +50,12 @@ func (Customer) TableName() string {
 }
 
 type CustomerSession struct {
-	ID         uint      `gorm:"primarykey" redis:"id"`
-	CustomerID uint      `gorm:"not null;index" redis:"user_id"`
-	Token      string    `gorm:"not null;unique;index" redis:"token"`
+	CustomerID uint      `gorm:"not null" redis:"user_id"`
+	Token      string    `gorm:"not null" redis:"-"` // redis key would be the token
 	ExpiredAt  time.Time `gorm:"not null" redis:"expired_at"`
-	IpAddr     string    `gorm:"column:ip_address" redis:"ip_addr"`
+	IpAddr     string    `gorm:"column:ip_address" redis:"ip_address"`
 	UserAgent  string    `gorm:"not null" redis:"user_agent"`
-	CreatedAt  time.Time `gorm:""`
-	Customer   *Customer `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Customer   *Customer `gorm:"foreignKey:CustomerID;constraint:OnDelete:CASCADE;"`
 }
 
 func (CustomerSession) TableName() string {

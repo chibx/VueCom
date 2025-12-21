@@ -13,11 +13,10 @@ const BACKEND_USER_KEY_PATTERN = "backend_user:*"
 
 // TODO: I believe this simple function could be better optimized later
 
-func InvalidateCache(rdb *redis.Client, pattern string) {
+func InvalidateCache(rdb *redis.Client, pattern string, ctx context.Context) {
 	go func() {
 		var cursor uint64
 		var deletedCount int
-		ctx := context.Background()
 		for {
 			keys, nextCursor, _ := rdb.Scan(ctx, cursor, pattern, DEFAULT_BATCH_SIZE).Result()
 			// if err != nil {

@@ -4,6 +4,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func CheckIfEmailExist(db gorm.DB, email string) bool {
+func CheckIfEmailExist(db *gorm.DB, email string) bool {
 	return true
 }

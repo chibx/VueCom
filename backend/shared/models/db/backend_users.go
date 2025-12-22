@@ -7,10 +7,10 @@ import (
 
 // Country represents a country in the system
 type Country struct {
-	ID        uint      `gorm:"primarykey"`
-	Name      string    `gorm:"not null;unique;index"`
-	Code      string    `gorm:"not null;unique;index;type:varchar(5)"`
-	CreatedAt time.Time `gorm:""`
+	ID        uint      `gorm:"primarykey" redis:"id"`
+	Name      string    `gorm:"not null;unique;index" redis:"name"`
+	Code      string    `gorm:"not null;unique;index;type:varchar(5)" redis:"code"`
+	CreatedAt time.Time `gorm:"" redis:"created_at"`
 	States    []State   `gorm:"foreignKey:CountryID;"`
 }
 
@@ -19,9 +19,9 @@ func (Country) TableName() string {
 }
 
 type State struct {
-	ID        uint   `gorm:"primarykey"`
-	Name      string `gorm:"not null;unique;index"`
-	CountryID uint   `gorm:"index"`
+	ID        uint   `gorm:"primarykey" redis:"id"`
+	Name      string `gorm:"not null;unique;index" redis:"name"`
+	CountryID uint   `gorm:"index" redis:"country_id"`
 }
 
 func (State) TableName() string {
@@ -62,25 +62,25 @@ func (BackendOTP) TableName() string {
 }
 
 type BackendUser struct {
-	ID              uint `gorm:"primarykey"`
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
-	UserName        *string                       `gorm:"type:varchar(255);index" validate:""`
-	FullName        string                        `gorm:"not null;type:varchar(255);index" validate:""`
-	Email           string                        `gorm:"unique;not null;type:varchar(255);index"`
-	PhoneNumber     *string                       `gorm:"type:varchar(20)" validate:""`
-	Image           *string                       `gorm:"column:image_url"`
-	Country         *uint                         `gorm:"index"`
-	IsEmailVerified bool                          `gorm:"default:FALSE;not null"`
-	Role            string                        `gorm:"type:varchar(50)"`
-	PasswordHash    string                        `gorm:"not null"`
-	CreatedBy       *uint                         `gorm:"index"`
-	AccountsCreated []BackendUser                 `gorm:"foreignKey:CreatedBy;"`
-	ByApiKey        bool                          `gorm:"-:all"` // Track if the user is acting through an API key
-	Activity        []BackendUserActivity         `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	OTP             []BackendOTP                  `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	PassResetReqs   []BackendPasswordResetRequest `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ID              uint                          `gorm:"primarykey" redis:"id"`
+	CreatedAt       time.Time                     `gorm:"" redis:"created_at"`
+	UpdatedAt       time.Time                     `gorm:"" redis:"updated_at"`
+	UserName        *string                       `gorm:"type:varchar(255);index" validate:"" redis:"user_name"`
+	FullName        string                        `gorm:"not null;type:varchar(255);index" validate:"" redis:"full_name"`
+	Email           string                        `gorm:"unique;not null;type:varchar(255);index" redis:"email"`
+	PhoneNumber     *string                       `gorm:"type:varchar(20)" validate:"" redis:"phone_number"`
+	Image           *string                       `gorm:"column:image_url" redis:"image_url"`
+	Country         *uint                         `gorm:"index" redis:"country"`
+	IsEmailVerified bool                          `gorm:"default:FALSE;not null" redis:"-"`
+	Role            string                        `gorm:"type:varchar(50)" redis:"role"`
+	PasswordHash    string                        `gorm:"not null" redis:"-"`
+	CreatedBy       *uint                         `gorm:"index" redis:"created_by"`
+	AccountsCreated []BackendUser                 `gorm:"foreignKey:CreatedBy;" redis:"-"`
+	ByApiKey        bool                          `gorm:"-:all" redis:"-"` // Track if the user is acting through an API key
+	Activity        []BackendUserActivity         `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" redis:"-"`
+	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
+	OTP             []BackendOTP                  `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
+	PassResetReqs   []BackendPasswordResetRequest `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 }
 
 func (BackendUser) TableName() string {
@@ -93,7 +93,7 @@ type BackendSession struct {
 	ExpiredAt time.Time    `gorm:"not null" redis:"expired_at"`
 	IpAddr    string       `gorm:"column:ip_address" redis:"ip_address"`
 	UserAgent string       `gorm:"not null" redis:"user_agent"`
-	User      *BackendUser `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;"`
+	User      *BackendUser `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;" redis:"-"`
 }
 
 func (BackendSession) TableName() string {
@@ -101,11 +101,11 @@ func (BackendSession) TableName() string {
 }
 
 type BackendUserActivity struct {
-	UserId uint `gorm:"index;not null"`
+	UserId uint `gorm:"index;not null" redis:"user_id"`
 	// This would be like "Login", "Password Change", "Profile Update", "Order Handling"
-	LogTitle  string    `gorm:"type:varchar(100);not null"`
-	Activity  string    `gorm:"type:text;not null"`
-	CreatedAt time.Time `gorm:""`
+	LogTitle  string    `gorm:"type:varchar(100);not null" redis:"log_title"`
+	Activity  string    `gorm:"type:text;not null" redis:"activity"`
+	CreatedAt time.Time `gorm:"" redis:"created_at"`
 }
 
 func (BackendUserActivity) TableName() string {
@@ -115,7 +115,7 @@ func (BackendUserActivity) TableName() string {
 type BackendPasswordResetRequest struct {
 	Id          uint      `gorm:"primarykey" redis:"id"`
 	UserId      uint      `gorm:"not null;index" redis:"user_id"`
-	ResetToken  string    `gorm:"not null;unique" redis:"reset_token"`
+	ResetToken  string    `gorm:"not null;unique" redis:"-"` // the key would be the token
 	RequestedAt time.Time `gorm:"not null" redis:"requested_at"`
 	ExpiresAt   time.Time `gorm:"not null" redis:"expires_at"`
 	Used        bool      `gorm:"default:FALSE;not null" redis:"used"`

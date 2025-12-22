@@ -6,17 +6,17 @@ type Inventory struct {
 	ID              uint      `gorm:"primarykey" redis:"id"`
 	UpdatedAt       time.Time `gorm:"" redis:"updated_at"`
 	CreatedAt       time.Time `gorm:"" redis:"created_at"`
-	Sku             string    `json:"sku" gorm:"not null;index"`
-	ProductId       uint      `json:"product_id" gorm:"not null"`
-	WarehouseId     uint      `json:"warehouse_id" gorm:"not null"`
-	AvailableQty    int       `json:"available_qty" gorm:"default:0"`
-	ReservedQty     int       `json:"reserved_qty" gorm:"default:0"`
-	OnHoldQty       int       `json:"on_hold_qty" gorm:"default:0"`
-	TotalQty        int       `json:"total_qty" gorm:"default:0"`
-	SafetyStock     int       `json:"safety_stock" gorm:"default:0"`
-	ReorderLevel    int       `json:"reorder_level" gorm:"default:0"`
-	LastRestockedAt time.Time `json:"last_restocked_at" gorm:""`
-	LastSoldAt      time.Time `json:"last_sold_at" gorm:""`
+	Sku             string    `json:"sku" gorm:"not null;index" redis:"sku"`
+	ProductId       uint      `json:"product_id" gorm:"not null" redis:"product_id"`
+	WarehouseId     uint      `json:"warehouse_id" gorm:"not null" redis:"warehouse_id"`
+	AvailableQty    int       `json:"available_qty" gorm:"default:0" redis:"available_qty"`
+	ReservedQty     int       `json:"reserved_qty" gorm:"default:0" redis:"reserved_qty"`
+	OnHoldQty       int       `json:"on_hold_qty" gorm:"default:0" redis:"on_hold_qty"`
+	TotalQty        int       `json:"total_qty" gorm:"default:0" redis:"total_qty"`
+	SafetyStock     int       `json:"safety_stock" gorm:"default:0" redis:"safety_stock"`
+	ReorderLevel    int       `json:"reorder_level" gorm:"default:0" redis:"reorder_level"`
+	LastRestockedAt time.Time `json:"last_restocked_at" gorm:"" redis:"last_restocked_at"`
+	LastSoldAt      time.Time `json:"last_sold_at" gorm:"" redis:"last_sold_at"`
 }
 
 func (Inventory) TableName() string {
@@ -36,8 +36,8 @@ type Warehouse struct {
 	CreatedAt time.Time `gorm:"" redis:"created_at"`
 	UpdatedAt time.Time `gorm:"" redis:"updated_at"`
 
-	State   *State   `gorm:"foreignKey:StateId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Country *Country `gorm:"foreignKey:CountryId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	State   *State   `gorm:"foreignKey:StateId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" redis:"-"`
+	Country *Country `gorm:"foreignKey:CountryId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" redis:"-"`
 }
 
 func (Warehouse) TableName() string {
@@ -48,14 +48,14 @@ type StockMovement struct {
 	ID           uint      `gorm:"primarykey" redis:"id"`
 	UpdatedAt    time.Time `gorm:"" redis:"updated_at"`
 	CreatedAt    time.Time `gorm:"" redis:"created_at"`
-	InventoryId  uint      `json:"inventory_id" gorm:"not null"`
-	Sku          string    `json:"sku" gorm:"not null;index"`
-	WarehouseId  uint      `json:"warehouse_id" gorm:"not null"`
-	MovementType string    `json:"movement_type" gorm:"not null"`
-	Quantity     int       `json:"quantity" gorm:"not null"`
-	Reference    string    `json:"reference" gorm:"not null"`
-	Notes        string    `json:"notes"`
-	CreatedBy    string    `json:"created_by" gorm:"not null"`
+	InventoryId  uint      `json:"inventory_id" gorm:"not null" redis:"inventory_id"`
+	Sku          string    `json:"sku" gorm:"not null;index" redis:"sku"`
+	WarehouseId  uint      `json:"warehouse_id" gorm:"not null" redis:"warehouse_id"`
+	MovementType string    `json:"movement_type" gorm:"not null" redis:"movement_type"`
+	Quantity     int       `json:"quantity" gorm:"not null" redis:"quantity"`
+	Reference    string    `json:"reference" gorm:"not null" redis:"reference"`
+	Notes        string    `json:"notes" redis:"notes"`
+	CreatedBy    string    `json:"created_by" gorm:"not null" redis:"created_by"`
 }
 
 func (StockMovement) TableName() string {

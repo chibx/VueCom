@@ -11,6 +11,9 @@ import (
 	dbModels "vuecom/shared/models/db"
 
 	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/getsentry/sentry-go"
+	sentryfiber "github.com/getsentry/sentry-go/fiber"
+	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -83,6 +86,26 @@ func plugRedis(api *types.Api) {
 	api.Deps.Redis = client
 }
 
+func attachSentry(app *fiber.App) {
+	sentry_dsn := getEnv("SENTRY_DSN", "")
+	if sentry_dsn != "" {
+		if err := sentry.Init(sentry.ClientOptions{
+			Dsn: getEnv("SENTRY_DSN"),
+		}); err != nil {
+			fmt.Printf("Sentry initialization failed: %v\n", err)
+		}
+
+		// Later in the code
+		sentryHandler := sentryfiber.New(sentryfiber.Options{
+			WaitForDelivery: true,
+		})
+
+		app.Use(sentryHandler)
+	} else {
+		fmt.Println("Skipping Sentry Initialization! SENTRY_DSN not found")
+	}
+}
+
 func appIfInitialized(api *types.Api) (*dbModels.AppData, error) {
 	var appData = &dbModels.AppData{}
 
@@ -110,10 +133,11 @@ func checkIfOwnerExists(api *types.Api) (bool, error) {
 	return count > 0, nil
 }
 
-func initServer(v1_api *types.Api) {
+func initServer(app *fiber.App, v1_api *types.Api) {
 	plugDB(v1_api)
 	plugRedis(v1_api)
 	plugCloudinary(v1_api)
+	attachSentry(app)
 
 	now := time.Now()
 	err := migrate(v1_api.Deps.DB)

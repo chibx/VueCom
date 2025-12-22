@@ -17,10 +17,10 @@ import (
 )
 
 func main() {
+
+	// --------------------------------------------------------
 	config := config.GetConfig()
 	v1_api := &types.Api{Config: config, Deps: &deps.Deps{}}
-
-	initServer(v1_api)
 
 	app := fiber.New(fiber.Config{
 		DisableStartupMessage: true,
@@ -34,6 +34,8 @@ func main() {
 	// app.Get("/", func(ctx *fiber.Ctx) error {
 	// 	return ctx.SendStatus(fiber.StatusNotFound)
 	// })
+
+	initServer(app, v1_api)
 
 	v1.LoadRoutes(app, v1_api)
 

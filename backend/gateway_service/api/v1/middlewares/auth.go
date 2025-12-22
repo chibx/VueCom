@@ -41,10 +41,11 @@ import (
 func AuthMiddleware(api *types.Api) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		auth := ctx.Get("Authorization")
-		if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
-			return ctx.Status(fiber.StatusUnauthorized).SendString("Unauthorized")
+		if auth != "" && strings.HasPrefix(auth, "Bearer ") {
+			tokenStr := strings.TrimPrefix(auth, "Bearer ")
+			// TODO: Use tokenStr to validate the api (key) token
+			_ = tokenStr
 		}
-		// tokenStr := strings.TrimPrefix(auth, "Bearer ")
 
 		routeParts := utils.ExtractRouteParts(ctx.Path())
 

@@ -48,6 +48,8 @@ func writeFile(ctx *fiber.Ctx, path string, ctype string) error {
 
 	if err != nil {
 		log.Error(err)
+
+		// Just simply return "not found"
 		return fiber.ErrNotFound
 	}
 

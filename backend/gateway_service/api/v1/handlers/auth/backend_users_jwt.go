@@ -83,7 +83,7 @@ func RefreshJWT(ctx *fiber.Ctx) error {
 
 	// Step 1: Check Redis (cache) for fast validation.
 	userIDStr, err := rdb.Get(ctx.Context(), "refresh:"+refresh).Result()
-	if err == redis.Nil {
+	if !errors.Is(err, redis.Nil) {
 		// Cache miss: Fall back to DB.
 		if err := db.Where("token = ? AND expires_at > ?", refresh, time.Now()).First(&refToken).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {

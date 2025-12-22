@@ -76,3 +76,17 @@ func IsSupportedImage(image io.Reader) (bool, error) {
 
 	return true, nil
 }
+
+func GetAbsoluteUrl(ctx *fiber.Ctx) string {
+	full_path := ctx.Protocol() + "://" + ctx.Hostname() + ctx.Path()
+
+	if query := string(ctx.Context().URI().QueryString()); query != "" {
+		return full_path + "?" + query
+	}
+
+	if hash := string(ctx.Context().URI().Hash()); hash != "" {
+		return full_path + "#" + hash
+	}
+
+	return full_path
+}

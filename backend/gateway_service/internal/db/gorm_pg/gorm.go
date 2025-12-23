@@ -41,3 +41,7 @@ func (d *GormPGDatabase) Inventory() types.InventoryRepository {
 func (d *GormPGDatabase) AppData() types.AppDataRepository {
 	return &appdataRepository{db: d.db}
 }
+
+func (d *GormPGDatabase) Migrate() error {
+	return migrate(d.db)
+}

@@ -1,10 +1,10 @@
 package v1
 
 import (
-	"vuecom/gateway/api/v1/handlers"
 	adminHandler "vuecom/gateway/api/v1/handlers/admin"
 	orderHandler "vuecom/gateway/api/v1/handlers/orders"
 	productHandler "vuecom/gateway/api/v1/handlers/products"
+	"vuecom/gateway/api/v1/middlewares"
 	"vuecom/gateway/internal/v1/types"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,7 +26,9 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 	orderHandler.RegisterRoutes(v1, api)
 
 	// Normal App Handlers
-	app.Use("/:admin/*", func(ctx *fiber.Ctx) error {
-		return handlers.ValidateSlug(ctx, api)
+	app.Get("*", middlewares.RequireLogin(api), func(ctx *fiber.Ctx) error {
+		// return handlers.ValidateSlug(ctx, api)
+
+		return nil
 	})
 }

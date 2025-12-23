@@ -8,8 +8,8 @@ import (
 	"vuecom/gateway/api/v1/handlers"
 	"vuecom/gateway/api/v1/request"
 	backendusers "vuecom/gateway/api/v1/request/backend_users"
+	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/utils"
-	"vuecom/gateway/internal/v1/types"
 	dbModels "vuecom/shared/models/db"
 
 	cldApi "github.com/cloudinary/cloudinary-go/v2/api"

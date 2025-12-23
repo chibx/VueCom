@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strconv"
 	"time"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 	serverErrors "vuecom/shared/errors/server"
 	dbModels "vuecom/shared/models/db"
 

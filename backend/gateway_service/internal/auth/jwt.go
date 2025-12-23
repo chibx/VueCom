@@ -3,7 +3,7 @@ package auth
 
 import (
 	"fmt"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 
 	"github.com/golang-jwt/jwt/v5"
 )

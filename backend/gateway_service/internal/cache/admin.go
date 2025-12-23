@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 	"vuecom/gateway/internal/cache/keys"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 	dbModels "vuecom/shared/models/db"
 
 	"github.com/gofiber/fiber/v2"

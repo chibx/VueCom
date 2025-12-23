@@ -1,6 +1,6 @@
 package config
 
-import "vuecom/gateway/internal/v1/types"
+import "vuecom/gateway/internal/types"
 
 // type Config struct {
 // 	Host string

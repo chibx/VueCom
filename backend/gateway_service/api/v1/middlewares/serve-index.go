@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"fmt"
+	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/utils"
-	"vuecom/gateway/internal/v1/types"
 
 	"github.com/gofiber/fiber/v2"
 )

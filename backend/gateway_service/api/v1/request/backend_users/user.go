@@ -2,7 +2,7 @@ package backendusers
 
 import (
 	"vuecom/gateway/internal/auth"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/validation"
 	dbModels "vuecom/shared/models/db"
 )

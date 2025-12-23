@@ -5,7 +5,7 @@ import (
 	orderHandler "vuecom/gateway/api/v1/handlers/orders"
 	productHandler "vuecom/gateway/api/v1/handlers/products"
 	"vuecom/gateway/api/v1/middlewares"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -2,7 +2,7 @@ package request
 
 import (
 	"path"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 )
 
 const CUSTOMER_KEY = "customer"

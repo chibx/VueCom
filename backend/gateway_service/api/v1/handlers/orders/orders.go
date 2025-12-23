@@ -2,7 +2,7 @@ package orders
 
 import (
 	"vuecom/gateway/api/v1/request"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 
 	dbModel "vuecom/shared/models/db"
 

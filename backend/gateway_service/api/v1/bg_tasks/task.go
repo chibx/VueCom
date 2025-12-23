@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 	"vuecom/gateway/internal/cache"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 )
 
 // This helps to refresh the local copy of the slug from the data fetching function

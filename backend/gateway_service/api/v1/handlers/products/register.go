@@ -1,7 +1,7 @@
 package products
 
 import (
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 
 	"github.com/gofiber/fiber/v2"
 )

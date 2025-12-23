@@ -6,7 +6,7 @@ import (
 	// "sync"
 	v1 "vuecom/gateway/api/v1"
 	"vuecom/gateway/config"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 	"vuecom/shared/deps"
 
 	"github.com/goccy/go-json"

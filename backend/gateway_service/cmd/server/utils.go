@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 	"vuecom/gateway/config"
-	"vuecom/gateway/internal/v1/types"
+	"vuecom/gateway/internal/types"
 	dbModels "vuecom/shared/models/db"
 
 	"github.com/cloudinary/cloudinary-go/v2"

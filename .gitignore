@@ -44,4 +44,4 @@ playwright-report/
 
 # binaries
 gateway
-
+backend/**/bin/

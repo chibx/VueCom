@@ -16,22 +16,13 @@ import (
 	"github.com/cloudinary/cloudinary-go/v2/api/admin"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 )
 
 func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
 	db := api.Deps.DB
-	backendUser, err := gorm.G[dbModels.BackendUser](db).Select("role").Where("role = 'owner'").Limit(1).Find(ctx.Context())
+	_, err := db.BackendUsers().GetAdmin(ctx.Context())
 	if err != nil {
 		return false, err
-	}
-
-	if len(backendUser) == 0 {
-		return false, nil
-	}
-
-	if backendUser[0].Role != "owner" {
-		return false, nil
 	}
 
 	return true, nil
@@ -49,12 +40,15 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing app. Try again")
 	var appData = new(dbModels.AppData)
 	// cache
-	_data, err := gorm.G[dbModels.AppData](db).Limit(1).Find(ctx.Context())
+	_data, err := db.AppData().GetAppData(ctx.Context())
 	if err != nil {
 		return err500
 	}
 
-	if len(_data) > 0 {
+	if _data != nil {
+		api.IsAppInit = true
+		api.AppName = _data.Name
+		api.AdminSlug = _data.AdminRoute // Just store the values if the IsAppInit guard does not do anything
 		return fiber.NewError(fiber.StatusBadRequest, "An active app was found!!")
 	}
 
@@ -93,7 +87,8 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 
 	appData.LogoUrl = upploadRes.SecureURL
 
-	err = gorm.G[dbModels.AppData](db).Create(ctx.Context(), appData)
+	// err = gorm.G[dbModels.AppData](db).Create(ctx.Context(), appData)
+	err = db.AppData().CreateAppData(appData, ctx.Context())
 	if err != nil {
 		return err500
 	}
@@ -133,7 +128,7 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 		return fiber.NewError(fiber.StatusBadRequest, "One or more fields do not satisfy the requirements")
 	}
 
-	backUser, err := reqUser.ToDBBackendUser(api)
+	backUser, err := reqUser.ToDBBackendUser(api, ctx.Context())
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return fiber.NewError(fiber.StatusBadRequest, "Invalid country code")
@@ -171,7 +166,8 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 		backUser.Image = &result.SecureURL
 	}
 
-	err = gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), backUser)
+	// err = gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), backUser)
+	err = db.BackendUsers().CreateUser(backUser, ctx.Context())
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Error registering owner")
 	}

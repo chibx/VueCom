@@ -7,7 +7,6 @@ import (
 	v1 "vuecom/gateway/api/v1"
 	"vuecom/gateway/config"
 	"vuecom/gateway/internal/types"
-	"vuecom/shared/deps"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -20,7 +19,7 @@ func main() {
 
 	// --------------------------------------------------------
 	config := config.GetConfig()
-	v1_api := &types.Api{Config: config, Deps: &deps.Deps{}}
+	v1_api := &types.Api{Config: config, Deps: &types.Deps{}}
 
 	app := fiber.New(fiber.Config{
 		DisableStartupMessage: true,

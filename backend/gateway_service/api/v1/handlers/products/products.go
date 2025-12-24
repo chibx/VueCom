@@ -1,13 +1,13 @@
 package products
 
 import (
+	"errors"
 	"vuecom/gateway/api/v1/request"
 	"vuecom/gateway/internal/types"
 
 	dbModel "vuecom/shared/models/db"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 )
 
 func CreateProduct(ctx *fiber.Ctx, api *types.Api) error {
@@ -20,7 +20,7 @@ func CreateProduct(ctx *fiber.Ctx, api *types.Api) error {
 		return ctx.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	err = gorm.G[dbModel.Product](db).Create(ctx.Context(), &product)
+	err = db.Products().CreateProduct(&product, ctx.Context())
 
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusInternalServerError)
@@ -47,9 +47,13 @@ func GetProduct(ctx *fiber.Ctx, api *types.Api) error {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 
-	product, err := gorm.G[dbModel.Product](db).Where("id = ?", toGet.ID).First(ctx.Context())
+	// product, err := gorm.G[dbModel.Product](db).Where("id = ?", toGet.ID).First(ctx.Context())
+	product, err := db.Products().GetProductById(toGet.ID, ctx.Context())
 
 	if err != nil {
+		if errors.Is(err, types.ErrDbNil) {
+			return ctx.Status(fiber.StatusNotFound).SendString("Product with ID " + string(toGet.ID) + " not found")
+		}
 		return ctx.SendStatus(fiber.StatusInternalServerError)
 	}
 

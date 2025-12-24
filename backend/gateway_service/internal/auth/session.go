@@ -25,16 +25,16 @@ func GenerateCustomerSessionToken() (string, error) {
 	return "c_sess:" + string(bytes), nil
 }
 
-func DeleteBackendSession(ctx context.Context, api *types.Api, token string) error {
+func DeleteBackendSession(ctx context.Context, api *types.Api, session *dbModels.BackendSession) error {
 	// Delete the session from the database and cache
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	backendSession := &dbModels.BackendSession{}
-	if err := cache.Unlink(ctx, "b_sess:"+token).Err(); err != nil {
+	if err := cache.Unlink(ctx, "b_sess:"+session.Token).Err(); err != nil {
 		return err
 	}
 
-	err := db.Model(backendSession).Where("token = ?", token).Delete(backendSession).Error
+	// err := db.Model(backendSession).Where("token = ?", token).Delete(backendSession).Error
+	err := db.BackendUsers().DeleteSession(session, ctx)
 	if err != nil {
 		return err
 	}
@@ -42,16 +42,16 @@ func DeleteBackendSession(ctx context.Context, api *types.Api, token string) err
 	return nil
 }
 
-func DeleteCustomerSession(ctx context.Context, api *types.Api, token string) error {
+func DeleteCustomerSession(ctx context.Context, api *types.Api, session *dbModels.CustomerSession) error {
 	// Delete the session from the database and cache
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	customerSession := &dbModels.CustomerSession{}
-	if err := cache.Unlink(ctx, "c_sess:"+token).Err(); err != nil {
+	if err := cache.Unlink(ctx, "c_sess:"+session.Token).Err(); err != nil {
 		return err
 	}
 
-	err := db.Model(customerSession).Where("token = ?", token).Delete(customerSession).Error
+	// err := db.Model(customerSession).Where("token = ?", token).Delete(customerSession).Error
+	err := db.Customers().DeleteSession(session, ctx)
 	if err != nil {
 		return err
 	}

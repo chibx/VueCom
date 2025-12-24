@@ -1,67 +1,58 @@
 package main
 
 import (
-	model "vuecom/shared/models/db"
+	"fmt"
+	"os"
+	"time"
+	"vuecom/gateway/internal/db/gorm_pg"
 
+	_ "github.com/joho/godotenv/autoload"
+
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func migrate(db *gorm.DB) error {
-	var err error
-	// I would add this to a docker init script for PostgreSQL
-	err = db.Exec(`CREATE SCHEMA IF NOT EXISTS backend;
-	CREATE SCHEMA IF NOT EXISTS customer;
-	CREATE SCHEMA IF NOT EXISTS catalog;
-	CREATE SCHEMA IF NOT EXISTS inventory;`).Error
+func getEnv(env string, sub ...string) string {
+	val := os.Getenv(env)
+	if val == "" {
+		if len(sub) > 0 {
+			return sub[0]
+		}
+		panic("Environment Variable " + env + " not set")
+	}
+	return val
+}
+
+func loadPostgresDSN() string {
+	host := getEnv("PG_HOST")
+
+	user := getEnv("PG_USER")
+
+	passwd := getEnv("PG_PASSWD")
+
+	dbName := getEnv("PG_DBNAME")
+
+	port := getEnv("PG_PORT")
+
+	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
+}
+
+func main() {
+	now := time.Now()
+	dsn := loadPostgresDSN()
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
 	if err != nil {
-		return err
+		panic("failed to connect database")
 	}
 
-	err = db.SetupJoinTable(&model.Product{}, "Categories", &model.ProductCategoryValues{})
+	err = gorm_pg.NewGormPGDatabase(db).Migrate()
+
 	if err != nil {
-		return err
-	}
-	err = db.SetupJoinTable(&model.Product{}, "Tags", &model.ProductTags{})
-	if err != nil {
-		return err
+		fmt.Println("failed to migrate: " + err.Error())
+		return
 	}
 
-	return db.AutoMigrate(
-		// Important Tables
-		model.AppData{},
-		model.Country{},
-		model.State{},
-		// Backend
-		model.BackendUser{},
-		model.ApiKey{},
-		model.BackendOTP{},
-		model.BackendSession{},
-		model.BackendUserActivity{},
-		model.BackendPasswordResetRequest{},
-		// Catalog
-		model.Product{},
-		model.Attribute{},
-		model.Category{},
-		model.Preset{},
-		model.PresetAttributes{},
-		model.ProductCategoryValues{},
-		model.Tag{},
-		model.ProductTags{},
-		model.PromoCode{},
-		model.PromoCodeUsage{},
-		model.Order{},
-		model.OrderItem{},
-		model.OrderReturn{},
-		// Customer
-		model.Customer{},
-		model.CustomerOTP{},
-		model.CustomerSession{},
-		model.CartItem{},
-		model.WishlistItem{},
-
-		// Inventory
-		model.Inventory{},
-		model.Warehouse{},
-		model.StockMovement{},
-	)
+	fmt.Println("Migration successful")
+	fmt.Println("Migration done in", time.Since(now).Milliseconds(), "ms")
 }

@@ -1,9 +1,20 @@
 package types
 
 import (
-	"vuecom/shared/deps"
 	"vuecom/shared/models"
+
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/redis/go-redis/v9"
 )
+
+// "gorm.io/gorm"
+
+type Deps struct {
+	// DB    *gorm.DB
+	DB    Database
+	Redis *redis.Client
+	Cld   *cloudinary.Cloudinary
+}
 
 type Config struct {
 	Host string
@@ -21,7 +32,7 @@ type Api struct {
 	// DB       *gorm.DB
 	// Redis    *redis.Client
 	// Cld      *cloudinary.Cloudinary
-	Deps        *deps.Deps
+	Deps        *Deps
 	Config      *Config
 	HasAdmin    bool
 	IsAppInit   bool

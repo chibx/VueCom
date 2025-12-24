@@ -10,7 +10,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
-	"gorm.io/gorm"
 )
 
 func GetAppData(ctx context.Context, api *types.Api) (*dbModels.AppData, error) {
@@ -25,7 +24,9 @@ func GetAppData(ctx context.Context, api *types.Api) (*dbModels.AppData, error) 
 		}
 
 		// Key Not Found
-		if err := db.WithContext(ctx).Limit(1).First(appData).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		// err := db.WithContext(ctx).Limit(1).First(appData).Error;
+		appData, err = db.AppData().GetAppData(ctx)
+		if err != nil && !errors.Is(err, types.ErrDbNil) {
 			return nil, fiber.NewError(fiber.StatusInternalServerError, "Error fetching app data")
 		}
 

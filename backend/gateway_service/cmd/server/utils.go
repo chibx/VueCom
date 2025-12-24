@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 	"vuecom/gateway/config"
+	"vuecom/gateway/internal/db/gorm_pg"
 	"vuecom/gateway/internal/types"
 	dbModels "vuecom/shared/models/db"
 
@@ -68,7 +69,7 @@ func plugDB(api *types.Api) {
 		panic(err)
 	}
 
-	api.Deps.DB = db
+	api.Deps.DB = gorm_pg.NewGormPGDatabase(db)
 }
 
 func plugRedis(api *types.Api) {
@@ -107,12 +108,10 @@ func attachSentry(app *fiber.App) {
 }
 
 func appIfInitialized(api *types.Api) (*dbModels.AppData, error) {
-	var appData = &dbModels.AppData{}
-
-	err := api.Deps.DB.First(appData).Error
+	appData, err := api.Deps.DB.AppData().GetAppData(context.Background())
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, types.ErrDbNil) {
 			return &dbModels.AppData{}, err
 		}
 		return nil, err
@@ -122,9 +121,7 @@ func appIfInitialized(api *types.Api) (*dbModels.AppData, error) {
 }
 
 func checkIfOwnerExists(api *types.Api) (bool, error) {
-	var count int64
-
-	err := api.Deps.DB.Model(&dbModels.BackendUser{}).Where("role = 'owner'").Count(&count).Error
+	count, err := api.Deps.DB.AppData().CountOwner(context.Background())
 
 	if err != nil {
 		return false, err
@@ -140,7 +137,8 @@ func initServer(app *fiber.App, v1_api *types.Api) {
 	attachSentry(app)
 
 	now := time.Now()
-	err := migrate(v1_api.Deps.DB)
+	// err := migrate(v1_api.Deps.DB)
+	err := v1_api.Deps.DB.Migrate()
 	fmt.Println("Auto Migration took", time.Since(now).Milliseconds(), "ms")
 	if err != nil {
 		panic("Error while migration")

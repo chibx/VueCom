@@ -2,6 +2,7 @@ package gorm_pg
 
 import (
 	"context"
+	"errors"
 
 	"vuecom/gateway/internal/types"
 	dbModels "vuecom/shared/models/db"
@@ -14,5 +15,19 @@ type orderRepository struct {
 }
 
 func (o *orderRepository) GetOrderById(id int, ctx context.Context) (*dbModels.Order, error) {
-	return nil, types.ErrDbUnimplemented
+	order := &dbModels.Order{}
+
+	err := o.db.WithContext(ctx).Where("id = ?", id).First(order).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, types.ErrDbNil
+		}
+		return nil, err
+	}
+
+	return order, nil
+}
+
+func (o *orderRepository) CreateOrder(order *dbModels.Order, ctx context.Context) error {
+	return o.db.WithContext(ctx).Create(order).Error
 }

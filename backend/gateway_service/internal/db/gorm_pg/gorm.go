@@ -6,42 +6,71 @@ import (
 	"gorm.io/gorm"
 )
 
-type GormPGDatabase struct {
+var backendR *backendUserRepository
+var customerR *customerRepository
+var productR *productRepository
+var categoryR *categoryRepository
+var ordersR *orderRepository
+var inventoryR *inventoryRepository
+var appdataR *appdataRepository
+
+type gormPGDatabase struct {
 	db *gorm.DB
 }
 
-func NewGormPGDatabase(db *gorm.DB) *GormPGDatabase {
-	return &GormPGDatabase{db: db}
+func NewGormPGDatabase(db *gorm.DB) *gormPGDatabase {
+	return &gormPGDatabase{db: db}
 }
 
-func (d *GormPGDatabase) BackendUsers() types.BackendUserRepository {
-	return &backendUserRepository{db: d.db}
+func (d *gormPGDatabase) BackendUsers() types.BackendUserRepository {
+	if backendR == nil {
+		backendR = &backendUserRepository{db: d.db}
+	}
+	return backendR
 }
 
-func (d *GormPGDatabase) Customers() types.CustomerRepository {
-	return &customerRepository{db: d.db}
+func (d *gormPGDatabase) Customers() types.CustomerRepository {
+	if customerR == nil {
+		customerR = &customerRepository{db: d.db}
+	}
+	return customerR
 }
 
-func (d *GormPGDatabase) Categories() types.CategoryRepository {
-	return &categoryRepository{db: d.db}
+func (d *gormPGDatabase) Categories() types.CategoryRepository {
+	if categoryR == nil {
+		categoryR = &categoryRepository{db: d.db}
+	}
+	return categoryR
 }
 
-func (d *GormPGDatabase) Products() types.ProductRepository {
-	return &productRepository{db: d.db}
+func (d *gormPGDatabase) Products() types.ProductRepository {
+	if productR == nil {
+		productR = &productRepository{db: d.db}
+	}
+	return productR
 }
 
-func (d *GormPGDatabase) Orders() types.OrderRepository {
-	return &orderRepository{db: d.db}
+func (d *gormPGDatabase) Orders() types.OrderRepository {
+	if ordersR == nil {
+		ordersR = &orderRepository{db: d.db}
+	}
+	return ordersR
 }
 
-func (d *GormPGDatabase) Inventory() types.InventoryRepository {
-	return &inventoryRepository{db: d.db}
+func (d *gormPGDatabase) Inventory() types.InventoryRepository {
+	if inventoryR == nil {
+		inventoryR = &inventoryRepository{db: d.db}
+	}
+	return inventoryR
 }
 
-func (d *GormPGDatabase) AppData() types.AppDataRepository {
-	return &appdataRepository{db: d.db}
+func (d *gormPGDatabase) AppData() types.AppDataRepository {
+	if appdataR == nil {
+		appdataR = &appdataRepository{db: d.db}
+	}
+	return appdataR
 }
 
-func (d *GormPGDatabase) Migrate() error {
+func (d *gormPGDatabase) Migrate() error {
 	return migrate(d.db)
 }

@@ -7,26 +7,25 @@ import (
 	dbModel "vuecom/shared/models/db"
 
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 )
 
 func CreateOrder(ctx *fiber.Ctx, api *types.Api) error {
 	db := api.Deps.DB
-	product := dbModel.Product{}
+	order := dbModel.Order{}
 
-	err := ctx.BodyParser(&product)
-
-	if err != nil {
-		return ctx.SendStatus(fiber.StatusInternalServerError)
-	}
-
-	err = gorm.G[dbModel.Product](db).Create(ctx.Context(), &product)
+	err := ctx.BodyParser(&order)
 
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	return ctx.Status(fiber.StatusCreated).SendString("Product Created Succesfully")
+	err = db.Orders().CreateOrder(&order, ctx.Context())
+
+	if err != nil {
+		return ctx.SendStatus(fiber.StatusInternalServerError)
+	}
+
+	return ctx.Status(fiber.StatusCreated).SendString("Order Created Succesfully")
 }
 
 func UpdateOrder(ctx *fiber.Ctx) error {
@@ -46,13 +45,13 @@ func GetOrder(ctx *fiber.Ctx, api *types.Api) error {
 		return ctx.SendStatus(fiber.StatusBadRequest)
 	}
 
-	product, err := gorm.G[dbModel.Product](db).Where("id = ?", toGet.ID).First(ctx.Context())
+	order, err := db.Orders().GetOrderById(toGet.ID, ctx.Context())
 
 	if err != nil {
 		return ctx.SendStatus(fiber.StatusInternalServerError)
 	}
 
-	return ctx.JSON(product)
+	return ctx.JSON(order)
 }
 
 func ListOrders(ctx *fiber.Ctx, api *types.Api) error {

@@ -1,6 +1,7 @@
 package backendusers
 
 import (
+	"context"
 	"vuecom/gateway/internal/auth"
 	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/validation"
@@ -40,7 +41,9 @@ func (req *CreateBackendUserRequest) Validate() error {
 	return validation.Validator.Struct(req)
 }
 
-func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api) (*dbModels.BackendUser, error) {
+func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context.Context) (*dbModels.BackendUser, error) {
+	db := api.Deps.DB
+
 	passwordHash, err := auth.GenerateFromPassword(req.Password, auth.DefaultHashParams)
 	if err != nil {
 		return nil, err
@@ -52,11 +55,12 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api) (*dbModels.
 	}
 	var hashedUsername string
 	if req.UserName != nil {
-		hashedUsername, err = auth.Encrypt(*req.UserName, api.Config.DbEncKey)
+		// hashedUsername, err = auth.Encrypt(*req.UserName, api.Config.DbEncKey)
+		hashedUsername = *req.UserName // There is no need to encrypt the username (App specific)
 	}
-	if err != nil {
-		return nil, err
-	}
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	hashedEmail, err := auth.Encrypt(req.Email, api.Config.DbEncKey)
 	if err != nil {
@@ -73,19 +77,22 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api) (*dbModels.
 
 	var countryId uint
 	if req.Country != nil {
-		err = api.Deps.DB.Model(&dbModels.Country{}).Where(dbModels.Country{Code: *req.Country}).Row().Scan(&countryId)
+		// err = api.Deps.DB.Model(&dbModels.Country{}).Where(dbModels.Country{Code: *req.Country}).Row().Scan(&countryId)
+		countryId, err = db.BackendUsers().GetCountryIdByCode(*req.Country, ctx)
 		if err != nil {
 			return nil, err
 		}
 	}
 
+	// TODO: Implement
+	// TODO: Implement image upload
+
 	user := &dbModels.BackendUser{
 		FullName:        hashedFullname,
-		UserName:        nil,
+		UserName:        &hashedUsername,
 		Email:           hashedEmail,
-		PhoneNumber:     nil,
+		PhoneNumber:     &hashedPhoneNumber,
 		Image:           nil,
-		Country:         nil,
 		IsEmailVerified: req.IsEmailVerified,
 		PasswordHash:    passwordHash,
 		Role:            req.Role,
@@ -98,7 +105,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api) (*dbModels.
 		user.PhoneNumber = &hashedPhoneNumber
 	}
 	if countryId != 0 {
-		user.Country = &countryId
+		user.CountryId = &countryId
 	}
 
 	return user, nil

@@ -11,7 +11,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
-	"gorm.io/gorm"
 )
 
 func GetCustomerSession(token string, api *types.Api, context context.Context) (*dbModels.CustomerSession, error) {
@@ -27,9 +26,11 @@ func GetCustomerSession(token string, api *types.Api, context context.Context) (
 			return nil, serverErrors.NewTokenErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
 		}
 
-		result := db.WithContext(context).First(cus_session, "token = ?", token)
-		if result.Error != nil {
-			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		// result := db.WithContext(context).First(cus_session, "token = ?", token)
+
+		cus_session, err = db.Customers().GetSessionByToken(token, context)
+		if err != nil {
+			if errors.Is(err, types.ErrDbNil) {
 				return nil, serverErrors.NewTokenErr(fiber.StatusUnauthorized, "User Session not found. Consider logging in again")
 			}
 
@@ -68,9 +69,12 @@ func GetBackendUserSession(token string, api *types.Api, context context.Context
 			return nil, serverErrors.NewTokenErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
 		}
 
-		result := db.WithContext(context).First(backend_session, "token = ?", token)
-		if result.Error != nil {
-			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		// result := db.WithContext(context).First(backend_session, "token = ?", token)
+
+		backend_session, err = db.BackendUsers().GetSessionByToken(token, context)
+
+		if err != nil {
+			if errors.Is(err, types.ErrDbNil) {
 				return nil, serverErrors.NewTokenErr(fiber.StatusUnauthorized, "User Session not found. Consider logging in again")
 			}
 
@@ -108,9 +112,11 @@ func GetBackendUserById(api *types.Api, id int, context context.Context) (*dbMod
 			return nil, serverErrors.NewTokenErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
 		}
 
-		result := db.WithContext(context).First(backendUser, "id = ?", id)
-		if result.Error != nil {
-			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		// result := db.WithContext(context).First(backendUser, "id = ?", id)
+		backendUser, err = db.BackendUsers().GetUserById(id, context)
+
+		if err != nil {
+			if errors.Is(err, types.ErrDbNil) {
 				return nil, serverErrors.NewTokenErr(fiber.StatusUnauthorized, "User not found. Consider logging in again")
 			}
 
@@ -148,9 +154,10 @@ func GetCustomerById(api *types.Api, id int, context context.Context) (*dbModels
 			return nil, serverErrors.NewTokenErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
 		}
 
-		result := db.WithContext(context).First(customer, "id = ?", id)
-		if result.Error != nil {
-			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		customer, err = db.Customers().GetUserById(id, context)
+
+		if err != nil {
+			if errors.Is(err, types.ErrDbNil) {
 				return nil, serverErrors.NewTokenErr(fiber.StatusUnauthorized, "Customer not found. Consider logging in again")
 			}
 

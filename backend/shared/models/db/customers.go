@@ -21,9 +21,9 @@ type CustomerAddress struct {
 	City          string   `gorm:"index;not null" redis:"city"`
 	ZipCode       string   `gorm:"index;not null" redis:"zip_code"`
 	StateID       *uint    `gorm:"column:state;index" redis:"state"`
-	CountryID     *uint    `gorm:"column:country;index" redis:"country"`
-	State         *State   `gorm:"foreignKey:StateID;"`
-	Country       *Country `gorm:"foreignKey:CountryID;"`
+	CountryId     *uint    `gorm:"column:country;index" redis:"country"`
+	State         *State   `gorm:"foreignKey:StateID;" redis:"-"`
+	Country       *Country `gorm:"foreignKey:CountryId;" redis:"-"`
 }
 
 type Customer struct {

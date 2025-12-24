@@ -70,7 +70,7 @@ type BackendUser struct {
 	Email           string                        `gorm:"unique;not null;type:varchar(255);index" redis:"email"`
 	PhoneNumber     *string                       `gorm:"type:varchar(20)" validate:"" redis:"phone_number"`
 	Image           *string                       `gorm:"column:image_url" redis:"image_url"`
-	Country         *uint                         `gorm:"index" redis:"country"`
+	CountryId       *uint                         `gorm:"index" redis:"country"`
 	IsEmailVerified bool                          `gorm:"default:FALSE;not null" redis:"-"`
 	Role            string                        `gorm:"type:varchar(50)" redis:"role"`
 	PasswordHash    string                        `gorm:"not null" redis:"-"`
@@ -81,6 +81,7 @@ type BackendUser struct {
 	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	OTP             []BackendOTP                  `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	PassResetReqs   []BackendPasswordResetRequest `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
+	Country         *Country                      `gorm:"foreignKey:CountryId;" redis:"-"`
 }
 
 func (BackendUser) TableName() string {

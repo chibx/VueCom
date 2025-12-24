@@ -76,7 +76,7 @@ type BackendUser struct {
 	PasswordHash    string                        `gorm:"not null" redis:"-"`
 	CreatedBy       *uint                         `gorm:"index" redis:"created_by"`
 	AccountsCreated []BackendUser                 `gorm:"foreignKey:CreatedBy;" redis:"-"`
-	ByApiKey        bool                          `gorm:"-:all" redis:"-"` // Track if the user is acting through an API key
+	ByApiKey        bool                          `gorm:"-:all" redis:"by_api_key"` // Track if the user is acting through an API key
 	Activity        []BackendUserActivity         `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" redis:"-"`
 	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	OTP             []BackendOTP                  `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`

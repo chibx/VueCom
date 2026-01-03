@@ -14,6 +14,7 @@ type Deps struct {
 	DB    Database
 	Redis *redis.Client
 	Cld   *cloudinary.Cloudinary
+	// Logger Logger
 }
 
 type Config struct {

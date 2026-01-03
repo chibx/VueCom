@@ -45,3 +45,9 @@ playwright-report/
 # binaries
 gateway
 backend/**/bin/
+
+# Miscellaneous
+# This is personally for me due to an issue where systemd runs on the default port 9090
+prometheus.sh
+
+

@@ -2,8 +2,6 @@ package gorm_pg
 
 import (
 	"context"
-	"errors"
-	"vuecom/gateway/internal/types"
 	dbModels "vuecom/shared/models/db"
 
 	"gorm.io/gorm"
@@ -21,9 +19,6 @@ func (ar *appdataRepository) CountOwner(ctx context.Context) (int64, error) {
 	count := int64(0)
 	err := ar.db.WithContext(ctx).Model(&dbModels.BackendUser{}).Where("role = 'owner'").Count(&count).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return 0, types.ErrDbNil
-		}
 		return 0, err
 	}
 	return count, nil
@@ -35,9 +30,6 @@ func (ar *appdataRepository) GetAppData(ctx context.Context) (*dbModels.AppData,
 	appData := &dbModels.AppData{}
 	err := ar.db.WithContext(ctx).First(appData).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, types.ErrDbNil
-		}
 		return nil, err
 	}
 	return appData, nil

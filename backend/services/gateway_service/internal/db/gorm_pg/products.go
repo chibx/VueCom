@@ -2,9 +2,7 @@ package gorm_pg
 
 import (
 	"context"
-	"errors"
 
-	"vuecom/gateway/internal/types"
 	dbModels "vuecom/shared/models/db"
 
 	"gorm.io/gorm"
@@ -23,9 +21,6 @@ func (p *productRepository) GetProductById(id int, ctx context.Context) (*dbMode
 
 	err := p.db.WithContext(ctx).Where("id = ?", id).First(product).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, types.ErrDbNil
-		}
 		return nil, err
 	}
 

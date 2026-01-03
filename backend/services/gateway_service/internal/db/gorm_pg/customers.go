@@ -2,9 +2,7 @@ package gorm_pg
 
 import (
 	"context"
-	"errors"
 
-	"vuecom/gateway/internal/types"
 	dbModels "vuecom/shared/models/db"
 
 	"gorm.io/gorm"
@@ -22,9 +20,6 @@ func (c *customerRepository) GetUserById(id int, ctx context.Context) (*dbModels
 	customer := &dbModels.Customer{}
 	err := c.db.WithContext(ctx).First(customer, "id = ?", id).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, types.ErrDbNil
-		}
 		return nil, err
 	}
 	return customer, nil
@@ -35,10 +30,6 @@ func (c *customerRepository) GetSessionByToken(token string, ctx context.Context
 
 	err := c.db.WithContext(ctx).First(sessionData, "token = ?", token).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, types.ErrDbNil
-		}
-
 		return nil, err
 	}
 

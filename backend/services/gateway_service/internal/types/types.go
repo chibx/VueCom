@@ -1,20 +1,22 @@
 package types
 
 import (
+	"vuecom/gateway/internal/db/gorm_pg"
 	"vuecom/shared/models"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 )
 
 // "gorm.io/gorm"
 
 type Deps struct {
 	// DB    *gorm.DB
-	DB    Database
-	Redis *redis.Client
-	Cld   *cloudinary.Cloudinary
-	// Logger Logger
+	DB     *gorm_pg.GormPGDatabase
+	Redis  *redis.Client
+	Cld    *cloudinary.Cloudinary
+	Logger *zap.Logger
 }
 
 type Config struct {

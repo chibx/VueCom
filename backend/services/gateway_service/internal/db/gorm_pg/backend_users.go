@@ -2,8 +2,6 @@ package gorm_pg
 
 import (
 	"context"
-	"errors"
-	"vuecom/gateway/internal/types"
 	dbModels "vuecom/shared/models/db"
 
 	"gorm.io/gorm"
@@ -23,10 +21,6 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*dbModels.Backen
 
 	err := br.db.Select("role").Where("role = 'owner'").First(admin).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, types.ErrDbNil
-		}
-
 		return nil, err
 	}
 
@@ -37,10 +31,6 @@ func (br *backendUserRepository) GetUserById(id int, ctx context.Context) (*dbMo
 	backendUser := &dbModels.BackendUser{}
 	err := br.db.WithContext(ctx).First(backendUser, "id = ?", id).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, types.ErrDbNil
-		}
-
 		return nil, err
 	}
 
@@ -48,7 +38,7 @@ func (br *backendUserRepository) GetUserById(id int, ctx context.Context) (*dbMo
 }
 
 func (br *backendUserRepository) GetUserByApiKey(apiKey string, ctx context.Context) (*dbModels.BackendUser, error) {
-	return nil, types.ErrDbUnimplemented
+	return nil, errDbUnimplemented
 }
 
 func (br *backendUserRepository) GetSessionByToken(token string, ctx context.Context) (*dbModels.BackendSession, error) {
@@ -56,10 +46,6 @@ func (br *backendUserRepository) GetSessionByToken(token string, ctx context.Con
 
 	err := br.db.WithContext(ctx).First(sessionData, "token = ?", token).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, types.ErrDbNil
-		}
-
 		return nil, err
 	}
 
@@ -98,9 +84,6 @@ func (br *backendUserRepository) GetCountryIdByCode(code string, ctx context.Con
 	var country dbModels.Country
 	err := br.db.WithContext(ctx).Omit(clause.Associations).Select("id").Where("code = ?", code).First(&country).Error
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return 0, types.ErrDbNil
-		}
 		return 0, err
 	}
 	return country.ID, nil

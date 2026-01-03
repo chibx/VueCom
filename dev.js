@@ -2,8 +2,8 @@ import "dotenv/config";
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 let prev = "f"; // Switch to preserve grouping
-const backend = spawn("gow", ["run", "."], {
-    cwd: join(process.cwd(), "./backend"),
+const backend = spawn("air", [], {
+    cwd: join(process.cwd(), "./backend/gateway_service"),
 });
 const frontend = spawn("npm", ["run", "dev"], {
     cwd: join(process.cwd(), "./frontend"),

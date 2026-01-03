@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+prometheus_data
 
 node_modules
 .DS_Store
@@ -41,3 +42,12 @@ components.d.ts
 
 test-results/
 playwright-report/
+
+# binaries
+gateway
+backend/**/bin/
+
+# Miscellaneous
+# This is personally for me due to an issue where systemd runs on the default port 9090
+prometheus.sh
+

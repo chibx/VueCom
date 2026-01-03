@@ -10,13 +10,15 @@ import (
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	_ "github.com/joho/godotenv/autoload"
+	"go.uber.org/zap"
+	// "go.uber.org/zap"
 )
 
 func main() {
 
+	// logger.Info()
 	// --------------------------------------------------------
 	config := config.GetConfig()
 	v1_api := &types.Api{Config: config, Deps: &types.Deps{}}
@@ -35,8 +37,12 @@ func main() {
 	// })
 
 	initServer(app, v1_api)
+	logger := v1_api.Deps.Logger
+	defer func() {
+		_ = logger.Sync()
+	}()
 
 	v1.LoadRoutes(app, v1_api)
 
-	log.Fatal(app.Listen(fmt.Sprintf("%s:%s", config.Host, config.Port)))
+	logger.Fatal("Error starting server:", zap.Error(app.Listen(fmt.Sprintf("%s:%s", config.Host, config.Port))))
 }

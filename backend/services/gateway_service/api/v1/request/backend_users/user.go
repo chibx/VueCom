@@ -6,6 +6,8 @@ import (
 	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/validation"
 	dbModels "vuecom/shared/models/db"
+
+	"go.uber.org/zap"
 )
 
 // JWT Format sent back to the client dashboard
@@ -43,14 +45,17 @@ func (req *CreateBackendUserRequest) Validate() error {
 
 func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context.Context) (*dbModels.BackendUser, error) {
 	db := api.Deps.DB
+	logger := api.Deps.Logger
 
 	passwordHash, err := auth.GenerateFromPassword(req.Password, auth.DefaultHashParams)
 	if err != nil {
+		logger.Error("Failed to hash password for new backend user", zap.Error(err))
 		return nil, err
 	}
 
 	hashedFullname, err := auth.Encrypt(req.FullName, api.Config.DbEncKey)
 	if err != nil {
+		logger.Error("Failed to encrypt fullname for new backend user", zap.Error(err))
 		return nil, err
 	}
 	var hashedUsername string
@@ -64,6 +69,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 
 	hashedEmail, err := auth.Encrypt(req.Email, api.Config.DbEncKey)
 	if err != nil {
+		logger.Error("Failed to encrypt email for new backend user", zap.Error(err))
 		return nil, err
 	}
 
@@ -72,6 +78,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 		hashedPhoneNumber, err = auth.Encrypt(*req.PhoneNumber, api.Config.DbEncKey)
 	}
 	if err != nil {
+		logger.Error("Failed to encrypt phone number for new backend user", zap.Error(err))
 		return nil, err
 	}
 
@@ -80,6 +87,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 		// err = api.Deps.DB.Model(&dbModels.Country{}).Where(dbModels.Country{Code: *req.Country}).Row().Scan(&countryId)
 		countryId, err = db.BackendUsers().GetCountryIdByCode(*req.Country, ctx)
 		if err != nil {
+			logger.Error("Failed to get country ID for new backend user", zap.Error(err))
 			return nil, err
 		}
 	}

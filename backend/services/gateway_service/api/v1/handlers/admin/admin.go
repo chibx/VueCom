@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"database/sql"
 	"errors"
 	"mime/multipart"
 	"strings"
@@ -10,12 +9,14 @@ import (
 	backendusers "vuecom/gateway/api/v1/request/backend_users"
 	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/utils"
+	"vuecom/shared/errors/server"
 	dbModels "vuecom/shared/models/db"
 
 	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
 	"github.com/cloudinary/cloudinary-go/v2/api/admin"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
@@ -31,17 +32,19 @@ func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
 // TODO: Validate the business name and the admin route to avoid clashes with url and also storage buckets
 
 func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
+	logger := api.Deps.Logger
 	if api.IsAppInit {
 		return fiber.NewError(fiber.StatusBadRequest, "An active app was found!!\nIf you want to initialize a new app, please connect new database")
 	}
 
 	db := api.Deps.DB
 	cld := api.Deps.Cld
-	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing app. Try again")
+	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing application. Try again later")
 	var appData = new(dbModels.AppData)
 	// cache
 	_data, err := db.AppData().GetAppData(ctx.Context())
 	if err != nil {
+		logger.Error("Error getting AppData upon app initialization", zap.Error(err))
 		return err500
 	}
 
@@ -66,11 +69,13 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	})
 
 	if err != nil {
+		logger.Error("Error creating application folder", zap.Error(err))
 		return err500
 	}
 
 	fileIO, err := logoFile.Open()
 	if err != nil {
+		logger.Error("Error opening logo file during initialization", zap.Error(err))
 		return err500
 	}
 
@@ -82,6 +87,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	})
 
 	if err != nil {
+		logger.Error("Error uploading application logo upon initialization", zap.Error(err))
 		return err500
 	}
 
@@ -90,6 +96,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	// err = gorm.G[dbModels.AppData](db).Create(ctx.Context(), appData)
 	err = db.AppData().CreateAppData(appData, ctx.Context())
 	if err != nil {
+		logger.Error("Error creating app AppData", zap.Error(err))
 		return err500
 	}
 
@@ -101,6 +108,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 }
 
 func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
+	logger := api.Deps.Logger
 	if api.HasAdmin {
 		return fiber.NewError(fiber.StatusBadRequest, "An existing owner was found!!")
 	}
@@ -109,11 +117,12 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 	var db = api.Deps.DB
 	var cld = api.Deps.Cld
 
-	doesOwnerExist, err := DoesOwnerExist(ctx, api)
+	userExists, err := DoesOwnerExist(ctx, api)
 	if err != nil {
+		logger.Error("Error checking for existing users", zap.Error(err))
 		return err
 	}
-	if doesOwnerExist {
+	if userExists {
 		return fiber.NewError(fiber.StatusBadRequest, "An existing owner was found!!")
 	}
 
@@ -125,16 +134,18 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 
 	err = reqUser.Validate()
 	if err != nil {
+		logger.Error("Validation Error: Owner Registration", zap.Error(err))
 		return fiber.NewError(fiber.StatusBadRequest, "One or more fields do not satisfy the requirements")
 	}
 
 	backUser, err := reqUser.ToDBBackendUser(api, ctx.Context())
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return fiber.NewError(fiber.StatusBadRequest, "Invalid country code")
+		var serverErr *server.ServerErr
+		if errors.As(err, &serverErr) {
+			return fiber.NewError(serverErr.Code, serverErr.Message)
 		}
 
-		return fiber.NewError(fiber.StatusInternalServerError)
+		return fiber.NewError(fiber.StatusInternalServerError, "An error occurred, please try again")
 	}
 
 	reqUserImage, err := ctx.FormFile("image")

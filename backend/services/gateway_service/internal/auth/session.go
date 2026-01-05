@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"vuecom/gateway/internal/types"
+	"vuecom/gateway/internal/types/constants"
 	dbModels "vuecom/shared/models/db"
 )
 
@@ -13,7 +14,7 @@ func GenerateSessionToken() (string, error) {
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
 	}
-	return "b_sess:" + string(bytes), nil
+	return constants.BU_KEY + string(bytes), nil
 }
 
 func GenerateCustomerSessionToken() (string, error) {
@@ -22,14 +23,14 @@ func GenerateCustomerSessionToken() (string, error) {
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err
 	}
-	return "c_sess:" + string(bytes), nil
+	return constants.CUST_KEY + string(bytes), nil
 }
 
 func DeleteBackendSession(ctx context.Context, api *types.Api, session *dbModels.BackendSession) error {
 	// Delete the session from the database and cache
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	if err := cache.Unlink(ctx, "b_sess:"+session.Token).Err(); err != nil {
+	if err := cache.Unlink(ctx, constants.BU_KEY+session.Token).Err(); err != nil {
 		return err
 	}
 
@@ -46,7 +47,7 @@ func DeleteCustomerSession(ctx context.Context, api *types.Api, session *dbModel
 	// Delete the session from the database and cache
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	if err := cache.Unlink(ctx, "c_sess:"+session.Token).Err(); err != nil {
+	if err := cache.Unlink(ctx, constants.CUST_KEY+session.Token).Err(); err != nil {
 		return err
 	}
 

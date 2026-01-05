@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 	"vuecom/gateway/internal/types"
+	"vuecom/gateway/internal/types/constants"
 	serverErrors "vuecom/shared/errors/server"
 	dbModels "vuecom/shared/models/db"
 
@@ -19,7 +20,7 @@ func GetCustomerSession(token string, api *types.Api, context context.Context) (
 
 	cus_session := &dbModels.CustomerSession{}
 
-	err := cache.HGetAll(context, "c_sess:"+token).Scan(cus_session)
+	err := cache.HGetAll(context, constants.CUST_SESS+token).Scan(cus_session)
 
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
@@ -39,12 +40,12 @@ func GetCustomerSession(token string, api *types.Api, context context.Context) (
 
 		go func() {
 			_, err := cache.TxPipelined(context, func(pipe redis.Pipeliner) error {
-				pipe.HSet(context, "c_sess:"+token, cus_session)
-				pipe.Expire(context, "c_sess:"+token, 5*time.Minute) // Global expiry on the key.
+				pipe.HSet(context, constants.CUST_SESS+token, cus_session)
+				pipe.Expire(context, constants.CUST_SESS+token, 5*time.Minute) // Global expiry on the key.
 				return nil
 			})
 
-			// err = cache.HSet(context, "c_sess:"+token, cus_session).Err()
+			// err = cache.HSet(context, constants.C_SESS+token, cus_session).Err()
 			if err != nil {
 				// Log the error but don't fail the request
 				// The user session is still returned from the database
@@ -62,7 +63,7 @@ func GetBackendUserSession(token string, api *types.Api, context context.Context
 
 	backend_session := &dbModels.BackendSession{}
 
-	err := cache.HGetAll(context, "b_sess:"+token).Scan(backend_session)
+	err := cache.HGetAll(context, constants.BU_SESS+token).Scan(backend_session)
 
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
@@ -83,12 +84,12 @@ func GetBackendUserSession(token string, api *types.Api, context context.Context
 
 		go func() {
 			_, err := cache.TxPipelined(context, func(pipe redis.Pipeliner) error {
-				pipe.HSet(context, "b_sess:"+token, backend_session)
-				pipe.Expire(context, "b_sess:"+token, 5*time.Minute) // Global expiry on the key.
+				pipe.HSet(context, constants.BU_SESS+token, backend_session)
+				pipe.Expire(context, constants.BU_SESS+token, 5*time.Minute) // Global expiry on the key.
 				return nil
 			})
 
-			// err = cache.HSet(context, "b_sess:"+token, backend_session).Err()
+			// err = cache.HSet(context, constants.BU_SESS+token, backend_session).Err()
 			if err != nil {
 				// Log the error but don't fail the request
 				// The user session is still returned from the database
@@ -106,7 +107,7 @@ func GetBackendUserById(api *types.Api, id int, context context.Context) (*dbMod
 	backendUser := &dbModels.BackendUser{}
 
 	// Try to get from cache first
-	err := cache.HGetAll(context, "b_user:"+strconv.Itoa(id)).Scan(backendUser)
+	err := cache.HGetAll(context, constants.BU_KEY+strconv.Itoa(id)).Scan(backendUser)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			return nil, serverErrors.NewTokenErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
@@ -125,12 +126,12 @@ func GetBackendUserById(api *types.Api, id int, context context.Context) (*dbMod
 
 		go func() {
 			_, err := cache.TxPipelined(context, func(pipe redis.Pipeliner) error {
-				pipe.HSet(context, "b_user:"+strconv.Itoa(id), backendUser)
-				pipe.Expire(context, "b_user:"+strconv.Itoa(id), 10*time.Minute) // Global expiry on the key.
+				pipe.HSet(context, constants.BU_KEY+strconv.Itoa(id), backendUser)
+				pipe.Expire(context, constants.BU_KEY+strconv.Itoa(id), 5*time.Minute) // Global expiry on the key.
 				return nil
 			})
 
-			// err = cache.HSet(context, "b_user:"+strconv.Itoa(id), backendUser).Err()
+			// err = cache.HSet(context, constants.BU_KEY+strconv.Itoa(id), backendUser).Err()
 			if err != nil {
 				// Log the error but don't fail the request
 				// The user session is still returned from the database
@@ -148,7 +149,7 @@ func GetCustomerById(api *types.Api, id int, context context.Context) (*dbModels
 	customer := &dbModels.Customer{}
 
 	// Try to get from cache first
-	err := cache.HGetAll(context, "cust:"+strconv.Itoa(id)).Scan(customer)
+	err := cache.HGetAll(context, constants.CUST_KEY+strconv.Itoa(id)).Scan(customer)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			return nil, serverErrors.NewTokenErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
@@ -166,12 +167,12 @@ func GetCustomerById(api *types.Api, id int, context context.Context) (*dbModels
 
 		go func() {
 			_, err := cache.TxPipelined(context, func(pipe redis.Pipeliner) error {
-				pipe.HSet(context, "cust:"+strconv.Itoa(id), customer)
-				pipe.Expire(context, "cust:"+strconv.Itoa(id), 10*time.Minute) // Global expiry on the key.
+				pipe.HSet(context, constants.CUST_KEY+strconv.Itoa(id), customer)
+				pipe.Expire(context, constants.CUST_KEY+strconv.Itoa(id), 5*time.Minute) // Global expiry on the key.
 				return nil
 			})
 
-			// err = cache.HSet(context, "cust:"+strconv.Itoa(id), customer).Err()
+			// err = cache.HSet(context, constants.CUST_KEY+strconv.Itoa(id), customer).Err()
 			if err != nil {
 				// Log the error but don't fail the request
 				// The user session is still returned from the database

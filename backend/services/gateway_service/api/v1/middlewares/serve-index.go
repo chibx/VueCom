@@ -4,6 +4,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
@@ -49,13 +50,18 @@ func ServeIndex(api *types.Api) fiber.Handler {
 
 func ServeAssets() fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
+		path := ctx.Path()
+		routeParts := utils.ExtractRouteParts(path)
+		if len(routeParts) > 1 && !slices.Contains(constants.PublicAssets, routeParts[1]) {
+			return ctx.Next()
+		}
 		// Check if the path exists in the public folder
-		path := filepath.Join(constants.PublicFolder, ctx.Path())
+		publicPath := filepath.Join(constants.PublicFolder, path)
 
-		_, err := os.ReadFile(path)
+		_, err := os.ReadFile(publicPath)
 
 		if err == nil {
-			return ctx.SendFile(path)
+			return ctx.SendFile(publicPath)
 		}
 
 		return ctx.Next()

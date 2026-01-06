@@ -2,12 +2,17 @@ package backendusers
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"vuecom/gateway/internal/auth"
 	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/validation"
+	"vuecom/shared/errors/server"
 	dbModels "vuecom/shared/models/db"
 
+	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 // JWT Format sent back to the client dashboard
@@ -87,7 +92,10 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 		// err = api.Deps.DB.Model(&dbModels.Country{}).Where(dbModels.Country{Code: *req.Country}).Row().Scan(&countryId)
 		countryId, err = db.BackendUsers().GetCountryIdByCode(*req.Country, ctx)
 		if err != nil {
-			logger.Error("Failed to get country ID for new backend user", zap.Error(err))
+			logger.Error(fmt.Sprintf("Failed to get country ID for `%s` for new backend user", *req.Country), zap.Error(err))
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, server.NewServerErr(fiber.StatusBadRequest, fmt.Sprintf("Record for Country %s does not exist", *req.Country))
+			}
 			return nil, err
 		}
 	}

@@ -2,7 +2,6 @@ package gorm_pg
 
 import (
 	"errors"
-	"vuecom/gateway/internal/types/database"
 
 	"gorm.io/gorm"
 )
@@ -25,49 +24,49 @@ func NewGormPGDatabase(db *gorm.DB) *GormPGDatabase {
 	return &GormPGDatabase{db: db}
 }
 
-func (d *GormPGDatabase) BackendUsers() database.BackendUserRepository {
+func (d *GormPGDatabase) BackendUsers() *backendUserRepository {
 	if backendR == nil {
 		backendR = &backendUserRepository{db: d.db}
 	}
 	return backendR
 }
 
-func (d *GormPGDatabase) Customers() database.CustomerRepository {
+func (d *GormPGDatabase) Customers() *customerRepository {
 	if customerR == nil {
 		customerR = &customerRepository{db: d.db}
 	}
 	return customerR
 }
 
-func (d *GormPGDatabase) Categories() database.CategoryRepository {
+func (d *GormPGDatabase) Categories() *categoryRepository {
 	if categoryR == nil {
 		categoryR = &categoryRepository{db: d.db}
 	}
 	return categoryR
 }
 
-func (d *GormPGDatabase) Products() database.ProductRepository {
+func (d *GormPGDatabase) Products() *productRepository {
 	if productR == nil {
 		productR = &productRepository{db: d.db}
 	}
 	return productR
 }
 
-func (d *GormPGDatabase) Orders() database.OrderRepository {
+func (d *GormPGDatabase) Orders() *orderRepository {
 	if ordersR == nil {
 		ordersR = &orderRepository{db: d.db}
 	}
 	return ordersR
 }
 
-func (d *GormPGDatabase) Inventory() database.InventoryRepository {
+func (d *GormPGDatabase) Inventory() *inventoryRepository {
 	if inventoryR == nil {
 		inventoryR = &inventoryRepository{db: d.db}
 	}
 	return inventoryR
 }
 
-func (d *GormPGDatabase) AppData() database.AppDataRepository {
+func (d *GormPGDatabase) AppData() *appdataRepository {
 	if appdataR == nil {
 		appdataR = &appdataRepository{db: d.db}
 	}

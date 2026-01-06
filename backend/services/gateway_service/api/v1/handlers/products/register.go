@@ -13,4 +13,13 @@ func RegisterRoutes(app fiber.Router, api *types.Api) {
 	app.Get("/product/:id", func(ctx *fiber.Ctx) error {
 		return GetProduct(ctx, api)
 	})
+	app.Put("/product/:id", func(ctx *fiber.Ctx) error {
+		return UpdateProduct(ctx)
+	})
+	app.Delete("/product/:id", func(ctx *fiber.Ctx) error {
+		return DeleteProduct(ctx)
+	})
+	app.Delete("/products", func(ctx *fiber.Ctx) error {
+		return DeleteProducts(ctx, api)
+	})
 }

@@ -2,8 +2,9 @@ package invalidators
 
 import (
 	"context"
+	"vuecom/gateway/internal/types"
 
-	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 )
 
 const DEFAULT_BATCH_SIZE = 100
@@ -13,20 +14,23 @@ const BACKEND_USER_KEY_PATTERN = "backend_user:*"
 
 // TODO: I believe this simple function could be better optimized later
 
-func InvalidateCache(rdb *redis.Client, pattern string, ctx context.Context) {
+func InvalidateCache(ctx context.Context, api *types.Api, pattern string) {
+	logger := api.Deps.Logger
+	rdb := api.Deps.Redis
 	go func() {
 		var cursor uint64
 		var deletedCount int
 		for {
-			keys, nextCursor, _ := rdb.Scan(ctx, cursor, pattern, DEFAULT_BATCH_SIZE).Result()
+			keys, nextCursor, err := rdb.Scan(ctx, cursor, pattern, DEFAULT_BATCH_SIZE).Result()
+			logger.Error("Error getting pattern "+pattern, zap.Error(err))
 			// if err != nil {
 			// 	return deletedCount, err
 			// }
 			if len(keys) > 0 {
-				_, _ = rdb.Unlink(ctx, keys...).Result()
-				// if err != nil {
-				// 	return deletedCount, err
-				// }
+				_, err = rdb.Unlink(ctx, keys...).Result()
+				if err != nil {
+					logger.Error("Error unlinking cache keys", zap.Error(err))
+				}
 				deletedCount += len(keys)
 			}
 			cursor = nextCursor
@@ -34,6 +38,8 @@ func InvalidateCache(rdb *redis.Client, pattern string, ctx context.Context) {
 				break
 			}
 		}
+
+		logger.Info("Total Keys Invalidated for pattern "+pattern, zap.Int("keys", deletedCount))
 	}()
 	// return deletedCount, nil
 }

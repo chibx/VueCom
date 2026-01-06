@@ -1,21 +1,24 @@
 package admin
 
 import (
-	"database/sql"
 	"errors"
 	"mime/multipart"
 	"strings"
 	"vuecom/gateway/api/v1/handlers"
 	"vuecom/gateway/api/v1/request"
 	backendusers "vuecom/gateway/api/v1/request/backend_users"
+	"vuecom/gateway/api/v1/response"
 	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/utils"
+	"vuecom/shared/errors/server"
 	dbModels "vuecom/shared/models/db"
 
 	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
 	"github.com/cloudinary/cloudinary-go/v2/api/admin"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
@@ -31,47 +34,51 @@ func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
 // TODO: Validate the business name and the admin route to avoid clashes with url and also storage buckets
 
 func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
+	logger := api.Deps.Logger
 	if api.IsAppInit {
-		return fiber.NewError(fiber.StatusBadRequest, "An active app was found!!\nIf you want to initialize a new app, please connect new database")
+		return response.NewResponse(ctx, fiber.StatusBadRequest, "An active app was found!!\nIf you want to initialize a new app, please connect new database")
 	}
 
 	db := api.Deps.DB
 	cld := api.Deps.Cld
-	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing app. Try again")
+	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing application. Try again later")
 	var appData = new(dbModels.AppData)
 	// cache
 	_data, err := db.AppData().GetAppData(ctx.Context())
 	if err != nil {
-		return err500
+		logger.Error("Error getting AppData upon app initialization", zap.Error(err))
+		return response.FromFiberError(ctx, err500)
 	}
 
 	if _data != nil {
 		api.IsAppInit = true
 		api.AppName = _data.Name
 		api.AdminSlug = _data.AdminRoute // Just store the values if the IsAppInit guard does not do anything
-		return fiber.NewError(fiber.StatusBadRequest, "An active app was found!!")
+		return response.NewResponse(ctx, fiber.StatusBadRequest, "An active app was found!!")
 	}
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Invalid form data")
+		return response.NewResponse(ctx, fiber.StatusBadRequest, "Invalid form data")
 	}
 
 	appData, logoFile, err := validateInitializeProps(form)
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).SendString(err.Error())
+		return response.NewResponse(ctx, fiber.StatusBadRequest, err.Error())
 	}
 	_, err = cld.Admin.CreateFolder(ctx.Context(), admin.CreateFolderParams{
 		Folder: appData.Name,
 	})
 
 	if err != nil {
-		return err500
+		logger.Error("Error creating application folder", zap.Error(err))
+		return response.FromFiberError(ctx, err500)
 	}
 
 	fileIO, err := logoFile.Open()
 	if err != nil {
-		return err500
+		logger.Error("Error opening logo file during initialization", zap.Error(err))
+		return response.FromFiberError(ctx, err500)
 	}
 
 	upploadRes, err := cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
@@ -82,7 +89,8 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	})
 
 	if err != nil {
-		return err500
+		logger.Error("Error uploading application logo upon initialization", zap.Error(err))
+		return response.FromFiberError(ctx, err500)
 	}
 
 	appData.LogoUrl = upploadRes.SecureURL
@@ -90,69 +98,77 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	// err = gorm.G[dbModels.AppData](db).Create(ctx.Context(), appData)
 	err = db.AppData().CreateAppData(appData, ctx.Context())
 	if err != nil {
-		return err500
+		logger.Error("Error creating app AppData", zap.Error(err))
+		return response.FromFiberError(ctx, err500)
 	}
 
 	api.IsAppInit = true
 	api.AppName = appData.Name
 	api.AdminSlug = appData.AdminRoute
 
-	return ctx.Status(fiber.StatusOK).SendString("App initialized successfully")
+	return response.NewResponse(ctx, fiber.StatusOK, "App initialized successfully")
 }
 
 func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
+	logger := api.Deps.Logger
 	if api.HasAdmin {
-		return fiber.NewError(fiber.StatusBadRequest, "An existing owner was found!!")
+		return response.NewResponse(ctx, fiber.StatusBadRequest, "An existing owner was found!!")
 	}
 
 	var err error
 	var db = api.Deps.DB
 	var cld = api.Deps.Cld
 
-	doesOwnerExist, err := DoesOwnerExist(ctx, api)
+	userExists, err := DoesOwnerExist(ctx, api)
 	if err != nil {
-		return err
+		logger.Error("Error checking for existing users", zap.Error(err))
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return response.NewResponse(ctx, fiber.StatusBadRequest, "Owner does not exist")
+		}
+		return response.NewResponse(ctx, fiber.StatusInternalServerError, "An Error occurred, please try again")
 	}
-	if doesOwnerExist {
-		return fiber.NewError(fiber.StatusBadRequest, "An existing owner was found!!")
+	if userExists {
+		return response.NewResponse(ctx, fiber.StatusBadRequest, "An existing owner was found!!")
 	}
 
 	var reqUser *backendusers.CreateBackendUserRequest
 	err = ctx.BodyParser(&reqUser)
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+		return response.NewResponse(ctx, fiber.StatusBadRequest, "Invalid request body")
 	}
 
 	err = reqUser.Validate()
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "One or more fields do not satisfy the requirements")
+		logger.Error("Validation Error: Owner Registration", zap.Error(err))
+		return response.NewResponse(ctx, fiber.StatusBadRequest, "One or more fields do not satisfy the requirements")
 	}
 
 	backUser, err := reqUser.ToDBBackendUser(api, ctx.Context())
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return fiber.NewError(fiber.StatusBadRequest, "Invalid country code")
+		var serverErr *server.ServerErr
+		if errors.As(err, &serverErr) {
+			return response.NewResponse(ctx, serverErr.Code, serverErr.Message)
 		}
 
-		return fiber.NewError(fiber.StatusInternalServerError)
+		return response.NewResponse(ctx, fiber.StatusInternalServerError, "An error occurred, please try again")
 	}
 
 	reqUserImage, err := ctx.FormFile("image")
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Invalid form data")
+		return response.NewResponse(ctx, fiber.StatusBadRequest, "Invalid form data")
 	}
 	if reqUserImage != nil {
 		if reqUserImage.Size > handlers.MAX_IMAGE_UPLOAD {
-			return fiber.NewError(fiber.StatusBadRequest, "uploaded image must not be more than 5MB in size")
+			return response.NewResponse(ctx, fiber.StatusBadRequest, "uploaded image must not be more than 5MB in size")
 		}
 		fileIO, err := reqUserImage.Open()
 		if err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError)
+			return response.NewResponse(ctx, fiber.StatusInternalServerError, "An error occurred, please try again")
 		}
 
 		_, err = utils.IsSupportedImage(fileIO)
 		if err != nil {
-			return fiber.NewError(fiber.StatusBadRequest, "uploaded image must be either a jpeg, jpg or png image")
+			return response.NewResponse(ctx, fiber.StatusBadRequest, "uploaded image must be either a jpeg, jpg or png image")
 		}
 		result, err := cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
 			Folder:      request.GetBackendFolder(api),
@@ -161,7 +177,7 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 			PublicID:    backUser.FullName,
 		})
 		if err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError)
+			return response.NewResponse(ctx, fiber.StatusInternalServerError, "An error occurred, please try again")
 		}
 		backUser.Image = &result.SecureURL
 	}
@@ -169,11 +185,11 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 	// err = gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), backUser)
 	err = db.BackendUsers().CreateUser(backUser, ctx.Context())
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Error registering owner")
+		return response.NewResponse(ctx, fiber.StatusInternalServerError, "Error registering owner")
 	}
 
 	api.HasAdmin = true
-	return ctx.Status(fiber.StatusOK).SendString("Owner registered successfully")
+	return response.NewResponse(ctx, fiber.StatusOK, "Owner registered successfully")
 }
 
 func validateInitializeProps(form *multipart.Form) (appData *dbModels.AppData, file *multipart.FileHeader, err error) {

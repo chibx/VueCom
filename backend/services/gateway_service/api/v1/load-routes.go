@@ -12,12 +12,7 @@ import (
 
 // Potentially Long Function | Just stack all the routes in here
 func LoadRoutes(app fiber.Router, api *types.Api) {
-	/**
-	  * 	func(ctx *fiber.Ctx) error {
-	  		return
-	    	}
-	  *
-	*/
+	app.Use(middlewares.AuthMiddleware(api), middlewares.ServeIndex(api), middlewares.ServeAssets())
 
 	/* /v1 handlers */
 	v1 := app.Group("/api/v1")
@@ -26,9 +21,18 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 	orderHandler.RegisterRoutes(v1, api)
 
 	// Normal App Handlers
-	app.Get("*", middlewares.RequireLogin(api), func(ctx *fiber.Ctx) error {
-		// return handlers.ValidateSlug(ctx, api)
 
-		return nil
-	})
+	// app.Static("*", "./dist", fiber.Static{
+	// 	Next: func(ctx *fiber.Ctx) bool {
+	// 		logger := api.Deps.Logger
+	// 		routeParts := utils.ExtractRouteParts(ctx.Path())
+
+	// 		if len(routeParts) > 1 && routeParts[1] == api.AdminSlug {
+	// 			logger.Info("Admin route detected", zap.String("route", ctx.Path()))
+	// 			return true
+	// 		}
+
+	// 		return false
+	// 	},
+	// })
 }

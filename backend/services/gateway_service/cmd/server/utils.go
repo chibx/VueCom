@@ -13,6 +13,7 @@ import (
 	dbModels "vuecom/shared/models/db"
 
 	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/go-redis/redis_rate/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
@@ -88,6 +89,11 @@ func plugRedis(api *types.Api) {
 	api.Deps.Redis = client
 }
 
+func setupLimiter(api *types.Api) {
+	rdb := api.Deps.Redis
+	api.Deps.Limiter = redis_rate.NewLimiter(rdb)
+}
+
 // func attachSentry(app *fiber.App) {
 // 	sentry_dsn := getEnv("SENTRY_DSN", "")
 // 	if sentry_dsn != "" {
@@ -159,33 +165,37 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 	initLogger(v1_api)
 	plugDB(v1_api)
 	plugRedis(v1_api)
+	setupLimiter(v1_api)
 	plugCloudinary(v1_api)
 	// attachSentry(app)
 	logger := v1_api.Deps.Logger
+	// Migrate DB
 	now := time.Now()
-	// err := migrate(v1_api.Deps.DB)
 	err := v1_api.Deps.DB.Migrate()
 	if err != nil {
 		panic("Error while migration")
 	}
 	logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
+	// --------------------------
 
 	appData, _ := appIfInitialized(v1_api)
 	v1_api.HasAdmin, _ = checkIfOwnerExists(v1_api)
 
-	v1_api.IsAppInit = appData.Name != ""
+	if appData != nil {
+		v1_api.IsAppInit = appData.Name != ""
 
-	if len(v1_api.AppName) > 0 {
-		v1_api.AppName = appData.Name
-	} else {
-		logger.Warn("App Name not found in DB, using default 'Vuecom_test'")
-		v1_api.AppName = "Vuecom_test"
-	}
+		if len(appData.Name) > 0 {
+			v1_api.AppName = appData.Name
+		} /* else {
+			logger.Warn("App Name not found in DB, using default 'Vuecom_test'")
+			v1_api.AppName = "Vuecom_test"
+		} */
 
-	if len(appData.AdminRoute) > 0 {
-		v1_api.AdminSlug = appData.AdminRoute
-	} else {
-		v1_api.AdminSlug = "admin123"
-		logger.Warn("Admin Route not found in DB, using default 'admin123'")
+		if len(appData.AdminRoute) > 0 {
+			v1_api.AdminSlug = appData.AdminRoute
+		} /*  else {
+			v1_api.AdminSlug = "admin123"
+			logger.Warn("Admin Route not found in DB, using default 'admin123'")
+		} */
 	}
 }

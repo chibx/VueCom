@@ -12,7 +12,7 @@ import (
 
 // Potentially Long Function | Just stack all the routes in here
 func LoadRoutes(app fiber.Router, api *types.Api) {
-	app.Use(middlewares.AuthMiddleware(api), middlewares.ServeAssets())
+	app.Use(middlewares.AuthMiddleware(api), middlewares.ServeIndex(api), middlewares.ServeAssets())
 
 	/* /v1 handlers */
 	v1 := app.Group("/api/v1")

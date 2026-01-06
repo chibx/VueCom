@@ -20,9 +20,9 @@ func GetBackendUserSession(token string, api *types.Api, ctx context.Context) (*
 	cache := api.Deps.Redis
 	logger := api.Deps.Logger
 
-	backend_session := &dbModels.BackendSession{}
+	var backend_session *dbModels.BackendSession
 
-	err := cache.HGetAll(ctx, constants.BU_SESS+token).Scan(backend_session)
+	err := cache.HGetAll(ctx, constants.BU_SESS+token).Scan(&backend_session)
 
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {

@@ -5,8 +5,8 @@ import (
 	"strings"
 	"vuecom/gateway/internal/auth"
 	"vuecom/gateway/internal/cache"
+	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
-	"vuecom/gateway/internal/types/constants"
 	"vuecom/shared/errors/server"
 	dbModels "vuecom/shared/models/db"
 

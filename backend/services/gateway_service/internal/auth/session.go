@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 	"crypto/rand"
+	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
-	"vuecom/gateway/internal/types/constants"
 	dbModels "vuecom/shared/models/db"
 )
 

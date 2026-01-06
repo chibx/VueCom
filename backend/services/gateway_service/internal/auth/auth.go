@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"time"
-	"vuecom/gateway/internal/types/constants"
+	"vuecom/gateway/internal/constants"
 	serverErr "vuecom/shared/errors/server"
 	dbModels "vuecom/shared/models/db"
 

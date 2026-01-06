@@ -7,11 +7,13 @@ import (
 	"vuecom/gateway/internal/auth"
 	"vuecom/gateway/internal/cache"
 	"vuecom/gateway/internal/types"
+	"vuecom/gateway/internal/types/constants"
 	"vuecom/gateway/internal/utils"
-	serverErrors "vuecom/shared/errors/server"
+	"vuecom/shared/errors/server"
 	dbModels "vuecom/shared/models/db"
 
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 // Auth middleware: Validates access token.
@@ -41,29 +43,31 @@ import (
 // }
 
 func AuthMiddleware(api *types.Api) fiber.Handler {
+	logger := api.Deps.Logger
 	return func(ctx *fiber.Ctx) error {
 		var backendUserSess *dbModels.BackendSession
 		var apiKeyData *dbModels.ApiKey
 		var backendUser *dbModels.BackendUser
+		var tokenStr string
 		var tokenErr error
 
 		authHeader := ctx.Get("Authorization")
 		if authHeader != "" && strings.HasPrefix(authHeader, "Bearer ") {
-			tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+			tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
 			// TODO: Use tokenStr to validate the api (key) token
 			_ = tokenStr
 			_ = apiKeyData
 		} else {
-			backendToken := ctx.Cookies("backend_session")
+			backendToken := ctx.Cookies(constants.BackendCookieKey)
 
 			backendUserSess, tokenErr = cache.GetBackendUserSession(backendToken, api, ctx.Context())
 		}
 
 		routeParts := utils.ExtractRouteParts(ctx.Path())
+		backend_token := ctx.Cookies(constants.BackendCookieKey)
 
 		// Validate the user if he is accessing the admin panel
 		if len(routeParts) > 1 && routeParts[1] == api.AdminSlug {
-			backend_token := ctx.Cookies("backend_session")
 
 			if len(routeParts) > 2 && routeParts[2] == "login" {
 				// return ctx.Next() // Skip auth for login page
@@ -71,19 +75,20 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			}
 
 			if strings.TrimSpace(backend_token) == "" {
-				return ctx.Redirect(routeParts[1] + "/login")
+				logger.Info("Redirecting to login", zap.String("route", routeParts[1]))
+				return ctx.Redirect("/" + routeParts[1] + "/login")
 			}
 
 			// var tokenErr *serverErrors.TokenErr
 			// backendUserData, err := cache.GetBackendUserSession(backend_token, api, ctx.Context())
 			if tokenErr != nil {
-				var asTokenErr *serverErrors.TokenErr
+				var asTokenErr *server.TokenErr
 
 				if errors.As(tokenErr, &asTokenErr) {
 					if asTokenErr.Code == fiber.StatusUnauthorized {
 						absoluteUrl := utils.GetAbsoluteUrl(ctx)
 
-						return ctx.Redirect(routeParts[1]+"/login?redirectTo="+url.QueryEscape(absoluteUrl), fiber.StatusSeeOther)
+						return ctx.Redirect("/"+routeParts[1]+"/login?redirectTo="+url.QueryEscape(absoluteUrl), fiber.StatusSeeOther)
 					}
 
 					// Handle other token errors if needed
@@ -91,32 +96,64 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 				}
 			}
 
-			validationErr := auth.ValidateBackendUserSess(ctx, backendUserSess)
-			if validationErr != nil {
-				var sessionErr *serverErrors.SessionErr
-
-				if errors.As(validationErr, &sessionErr) {
-					if sessionErr.Type == serverErrors.SessionExpired {
-						return ctx.Status(fiber.StatusBadRequest).SendString("Session token has expired. Please log in again.")
-					}
-				}
-
-				return ctx.Status(fiber.StatusUnauthorized).SendString("Invalid session")
+			backendUser, tokenErr = GetAuthUser(ctx, api, backendUserSess)
+			if tokenErr != nil {
+				return tokenErr
 			}
 
-			if backendUserSess != nil {
-				var err error
-				backendUser, err = cache.GetBackendUserById(api, int(backendUserSess.UserId), ctx.Context())
-				if err != nil {
-					return ctx.Status(fiber.StatusInternalServerError).SendString("Error fetching user data")
-				}
-			}
+			// validationErr := auth.ValidateBackendUserSess(ctx, backendUserSess)
+			// if validationErr != nil {
+			// 	var sessionErr *serverErrors.SessionErr
+
+			// 	if errors.As(validationErr, &sessionErr) {
+			// 		if sessionErr.Type == serverErrors.SessionExpired {
+			// 			return ctx.Status(fiber.StatusBadRequest).SendString("Session token has expired. Please log in again.")
+			// 		}
+			// 	}
+
+			// 	return ctx.Status(fiber.StatusUnauthorized).SendString("Invalid session")
+			// }
+
+			// if backendUserSess != nil {
+			// 	var err error
+			// 	backendUser, err = cache.GetBackendUserById(api, int(backendUserSess.UserId), ctx.Context())
+			// 	if err != nil {
+			// 		return ctx.Status(fiber.StatusInternalServerError).SendString("Error fetching user data")
+			// 	}
+			// }
 
 			// Store backend user data in context for downstream handlers
-			ctx.Locals("backend_user", backendUser)
-			return ctx.Next()
+			// return ctx.Next()
 		}
 
+		ctx.Locals(constants.ApiKeyCtxKey, tokenStr)
+		ctx.Locals(constants.BackendUserCtxKey, backendUser)
 		return ctx.Next()
 	}
+}
+
+func GetAuthUser(ctx *fiber.Ctx, api *types.Api, backendUserSess *dbModels.BackendSession) (*dbModels.BackendUser, error) {
+	var backendUser *dbModels.BackendUser
+	validationErr := auth.ValidateBackendUserSess(ctx, backendUserSess)
+	if validationErr != nil {
+		var sessionErr *server.SessionErr
+
+		if errors.As(validationErr, &sessionErr) {
+			if sessionErr.Type == server.SessionExpired {
+				ctx.ClearCookie(constants.BackendCookieKey)
+				return nil, server.NewServerErr(fiber.StatusBadRequest, "Session token has expired. Please log in again.")
+			}
+		}
+
+		return nil, server.NewServerErr(fiber.StatusUnauthorized, "Invalid session")
+	}
+
+	if backendUserSess != nil {
+		var err error
+		backendUser, err = cache.GetBackendUserById(api, int(backendUserSess.UserId), ctx.Context())
+		if err != nil {
+			return nil, err
+		}
+	}
+	return backendUser, nil
 }

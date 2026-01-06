@@ -2,7 +2,10 @@ package middlewares
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"vuecom/gateway/internal/types"
+	"vuecom/gateway/internal/types/constants"
 	"vuecom/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
@@ -24,5 +27,20 @@ func ServeIndex(api *types.Api) fiber.Handler {
 		}
 
 		return ctx.SendStatus(fiber.StatusNotFound)
+	}
+}
+
+func ServeAssets() fiber.Handler {
+	return func(ctx *fiber.Ctx) error {
+		// Check if the path exists in the public folder
+		path := filepath.Join(constants.PublicFolder, ctx.Path())
+
+		_, err := os.ReadFile(path)
+
+		if err == nil {
+			return ctx.SendFile(path)
+		}
+
+		return ctx.Next()
 	}
 }

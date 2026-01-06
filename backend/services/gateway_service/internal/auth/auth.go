@@ -32,7 +32,7 @@ func ValidateBackendUserSess(ctx *fiber.Ctx, session *dbModels.BackendSession) e
 	_ = ipAddr
 
 	current_time := time.Now()
-	if current_time.Sub(created_at) > constants.BACKEND_SESSION_TIMEOUT {
+	if current_time.Sub(created_at) > constants.BackendSessionTimeout {
 		return serverErr.NewSessionErr(serverErr.SessionExpired, "Session has expired")
 	}
 	// CAUTION: This is a basic IP check.

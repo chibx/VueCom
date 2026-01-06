@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@iconify/vue": "^5.0.0",
-    "@playwright/test": "^1.55.0",
+    "@playwright/test": "^1.57.0",
     "@prettier/plugin-oxc": "^0.0.4",
     "@tailwindcss/vite": "^4.1.13",
     "@tsconfig/node22": "^22.0.2",

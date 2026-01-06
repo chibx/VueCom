@@ -102,3 +102,21 @@ func GetCustomerById(api *types.Api, id int, ctx context.Context) (*dbModels.Cus
 
 	return customer, nil
 }
+
+func TouchCustomerSession(api *types.Api, token string, ctx context.Context) {
+	rdb := api.Deps.Redis
+	logger := api.Deps.Logger
+
+	// ttl := rdb.TTL(ctx, token)
+	// if ttl.Err() != nil {
+	// 	logger.Error("failed to get backend user session ttl", zap.Error(ttl.Err()))
+	// 	return
+	// }
+	// ttlSeconds := int64(ttl.Val() / time.Second)
+	// logger.Info("backend user session ttl", zap.Int64("ttl", ttlSeconds))
+
+	_, err := rdb.Expire(ctx, constants.CUST_SESS+token, constants.BackendSessionTimeout).Result()
+	if err != nil {
+		logger.Error("failed to expire customer session", zap.Error(err))
+	}
+}

@@ -116,7 +116,7 @@ func TouchBackendSession(api *types.Api, token string, ctx context.Context) {
 	// ttlSeconds := int64(ttl.Val() / time.Second)
 	// logger.Info("backend user session ttl", zap.Int64("ttl", ttlSeconds))
 
-	_, err := rdb.Expire(ctx, token, constants.BACKEND_SESSION_TIMEOUT).Result()
+	_, err := rdb.Expire(ctx, constants.BU_SESS+token, constants.BackendSessionTimeout).Result()
 	if err != nil {
 		logger.Error("failed to expire backend user session", zap.Error(err))
 	}

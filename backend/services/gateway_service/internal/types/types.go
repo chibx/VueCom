@@ -5,6 +5,7 @@ import (
 	"vuecom/shared/models"
 
 	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/go-redis/redis_rate/v10"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
@@ -13,10 +14,11 @@ import (
 
 type Deps struct {
 	// DB    *gorm.DB
-	DB     *gorm_pg.GormPGDatabase
-	Redis  *redis.Client
-	Cld    *cloudinary.Cloudinary
-	Logger *zap.Logger
+	DB      *gorm_pg.GormPGDatabase
+	Redis   *redis.Client
+	Cld     *cloudinary.Cloudinary
+	Logger  *zap.Logger
+	Limiter *redis_rate.Limiter
 }
 
 type Config struct {

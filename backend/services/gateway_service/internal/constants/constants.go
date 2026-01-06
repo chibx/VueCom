@@ -43,7 +43,8 @@ var (
 	}
 )
 
-const BACKEND_SESSION_TIMEOUT = 30 * time.Minute
+const GlobalLimitKey = "rl_global:app"
+const BackendSessionTimeout = 30 * time.Minute
 const ApiKeyCtxKey = "api_key"
 const BackendUserCtxKey = "backend_user"
 const BackendCookieKey = "backend_session"

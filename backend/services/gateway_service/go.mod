@@ -7,6 +7,7 @@ require github.com/joho/godotenv v1.5.1
 require (
 	github.com/gabriel-vasile/mimetype v1.4.10
 	github.com/go-playground/validator/v10 v10.28.0
+	github.com/go-redis/redis_rate/v10 v10.0.1
 	github.com/goccy/go-json v0.10.5
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	go.uber.org/zap v1.27.1

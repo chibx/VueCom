@@ -43,7 +43,13 @@ var (
 	}
 )
 
+// Max allowed image size in bytes i.e 5MB
+const MAX_IMAGE_UPLOAD = 5 * 1024 * 1024
 const GlobalLimitKey = "rl_global:app"
+const AnonymousLimitKey = "rl_anonymous:" // With Ip then
+const CustomerLimitKey = "rl_customer:"
+const CustomerHeaderKey = "X-Customer-Id"
+const BackendLimitKey = "rl_backend:"
 const BackendSessionTimeout = 30 * time.Minute
 const ApiKeyCtxKey = "api_key"
 const BackendUserCtxKey = "backend_user"

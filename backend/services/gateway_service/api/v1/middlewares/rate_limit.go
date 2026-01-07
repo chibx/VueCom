@@ -3,6 +3,7 @@ package middlewares
 import (
 	"fmt"
 	"strconv"
+	"vuecom/gateway/api/v1/response"
 	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
 
@@ -11,28 +12,30 @@ import (
 )
 
 func GlobalRateLimit(api *types.Api) fiber.Handler {
-	return func(c *fiber.Ctx) error {
+	return func(ctx *fiber.Ctx) error {
 		limiter := api.Deps.Limiter
-		res, err := limiter.AllowN(c.UserContext(), constants.GlobalLimitKey, constants.GlobalLimit, 1)
+		res, err := limiter.AllowN(ctx.UserContext(), constants.GlobalLimitKey, constants.GlobalLimit, 1)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "Rate limiter error"})
+			return response.NewResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
 		}
 		if res.Allowed == 0 {
 			retryAfter := max(int(res.RetryAfter.Seconds()), 1)
-			c.Set("Retry-After", strconv.Itoa(retryAfter))
-			return c.Status(429).JSON(fiber.Map{"error": "Too many requests (global limit exceeded)"})
+			ctx.Set("Retry-After", strconv.Itoa(retryAfter))
+			return response.NewResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{"error": "Too many requests (global limit exceeded)"})
 		}
 
 		// Optional headers
-		c.Set("X-RateLimit-Global-Remaining", strconv.Itoa(res.Remaining))
-		return c.Next()
+		ctx.Set("X-RateLimit-Global-Limit", strconv.Itoa(constants.GlobalLimit.Rate))
+		ctx.Set("X-RateLimit-Global-Reset", strconv.Itoa(int(res.RetryAfter.Seconds())))
+		ctx.Set("X-RateLimit-Global-Remaining", strconv.Itoa(res.Remaining))
+		return ctx.Next()
 	}
 }
 
 func SubRateLimit(api *types.Api) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		authType, _ := c.Locals("auth_type").(string)
-		rlKey, _ := c.Locals("rl_key").(string)
+	return func(ctx *fiber.Ctx) error {
+		authType, _ := ctx.Locals("auth_type").(string)
+		rlKey, _ := ctx.Locals("rl_key").(string)
 
 		// Work on a better way to do this
 		var limit redis_rate.Limit
@@ -42,24 +45,25 @@ func SubRateLimit(api *types.Api) fiber.Handler {
 		case "admin":
 			limit = constants.BackendLimit
 		default:
-			return c.Next()
+			return ctx.Next()
 		}
 
-		res, err := api.Deps.Limiter.AllowN(c.Context(), rlKey, limit, 1)
+		res, err := api.Deps.Limiter.AllowN(ctx.Context(), rlKey, limit, 1)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "Rate limiter error"})
+			return response.NewResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
 		}
 		if res.Allowed == 0 {
 			retryAfter := max(int(res.RetryAfter.Seconds()), 1)
-			c.Set("Retry-After", strconv.Itoa(retryAfter))
-			return c.Status(429).JSON(fiber.Map{
+			ctx.Set("Retry-After", strconv.Itoa(retryAfter))
+			return response.NewResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
 				"error": fmt.Sprintf("Too many requests (%s limit exceeded)", authType),
 			})
 		}
 
 		// Optional per-client headers
-		c.Set("X-RateLimit-Remaining", strconv.Itoa(res.Remaining))
-		c.Set("X-RateLimit-Reset", strconv.Itoa(int(res.RetryAfter.Seconds())))
-		return c.Next()
+		ctx.Set("X-RateLimit-Limit", strconv.Itoa(limit.Rate))
+		ctx.Set("X-RateLimit-Remaining", strconv.Itoa(res.Remaining))
+		ctx.Set("X-RateLimit-Reset", strconv.Itoa(int(res.RetryAfter.Seconds())))
+		return ctx.Next()
 	}
 }

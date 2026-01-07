@@ -18,7 +18,11 @@ func NewResponse(ctx *fiber.Ctx, code int, message string, data ...any) error {
 		resp.Data = data[0]
 	}
 
-	return ctx.Status(code).JSON(resp)
+	if code != 0 {
+		ctx.Status(code)
+	}
+
+	return ctx.JSON(resp)
 }
 
 func FromFiberError(ctx *fiber.Ctx, err *fiber.Error, data ...any) error {

@@ -58,6 +58,7 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 
 			ctx.Locals(constants.ApiKeyCtxKey, tokenStr)
 		}
+		// else
 		if backendToken != "" {
 			backendUserSess, tokenErr = cache.GetBackendUserSession(backendToken, api, ctx.Context())
 			if tokenErr != nil {

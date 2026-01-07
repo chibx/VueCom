@@ -68,7 +68,7 @@ func ServeIndex(api *types.Api) fiber.Handler {
 		}
 
 		// prevent redirect on api route
-		if len(routeParts) == 0 || (len(routeParts) > 1 && routeParts[1] != "api") {
+		if len(routeParts) == 1 || (len(routeParts) > 1 && routeParts[1] != "api") {
 			if backendToken == "" {
 				logger.Info("Redirecting to login")
 				return ctx.Redirect("/login" + redirectTo)

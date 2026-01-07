@@ -18,6 +18,3 @@ const Page_404 = `
 </html>
 >
 `
-
-// Max allowed image size in bytes i.e 5MB
-const MAX_IMAGE_UPLOAD = 5 * 1024 * 1024

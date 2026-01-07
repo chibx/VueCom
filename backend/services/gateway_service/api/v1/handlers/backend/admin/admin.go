@@ -4,10 +4,10 @@ import (
 	"errors"
 	"mime/multipart"
 	"strings"
-	"vuecom/gateway/api/v1/handlers"
 	"vuecom/gateway/api/v1/request"
 	backendusers "vuecom/gateway/api/v1/request/backend_users"
 	"vuecom/gateway/api/v1/response"
+	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/utils"
 	"vuecom/shared/errors/server"
@@ -158,7 +158,7 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 		return response.NewResponse(ctx, fiber.StatusBadRequest, "Invalid form data")
 	}
 	if reqUserImage != nil {
-		if reqUserImage.Size > handlers.MAX_IMAGE_UPLOAD {
+		if reqUserImage.Size > constants.MAX_IMAGE_UPLOAD {
 			return response.NewResponse(ctx, fiber.StatusBadRequest, "uploaded image must not be more than 5MB in size")
 		}
 		fileIO, err := reqUserImage.Open()
@@ -219,7 +219,7 @@ func validateInitializeProps(form *multipart.Form) (appData *dbModels.AppData, f
 		return nil, nil, errors.New("`Admin Route` should have at least 8 characters and should be contain alphanumeric characters")
 	}
 
-	if logoFile.Size > handlers.MAX_IMAGE_UPLOAD {
+	if logoFile.Size > constants.MAX_IMAGE_UPLOAD {
 		return nil, nil, errors.New("uploaded logo must not be more than 5MB in size")
 	}
 	// fmt.Println(logoFile.Filename, logoFile.Header)

@@ -75,40 +75,6 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			ctx.Locals(constants.BackendUserCtxKey, backendUser)
 		}
 
-		// routeParts := utils.ExtractRouteParts(ctx.Path())
-
-		// // Validate the user if he is accessing the admin panel
-		// if len(routeParts) > 1 && routeParts[1] == api.AdminSlug {
-
-		// 	if len(routeParts) > 2 && routeParts[2] == "login" {
-		// 		// return ctx.Next() // Skip auth for login page
-		// 		return utils.ServeIndex(ctx)
-		// 	}
-
-		// 	if backendToken == "" {
-		// 		logger.Info("Redirecting to login", zap.String("route", routeParts[1]))
-		// 		return ctx.Redirect("/" + routeParts[1] + "/login")
-		// 	}
-
-		// 	if tokenErr != nil {
-		// 		var asTokenErr *server.ServerErr
-
-		// 		if errors.As(tokenErr, &asTokenErr) {
-		// 			if asTokenErr.Code == fiber.StatusUnauthorized {
-		// 				absoluteUrl := utils.GetAbsoluteUrl(ctx)
-
-		// 				return ctx.Redirect("/"+routeParts[1]+"/login?redirectTo="+url.QueryEscape(absoluteUrl), fiber.StatusSeeOther)
-		// 			}
-
-		// 			// Handle other token errors if needed
-		// 			return ctx.Status(asTokenErr.Code).SendString(asTokenErr.Message)
-		// 		}
-
-		// 		return ctx.Status(fiber.StatusInternalServerError).SendString("Something went wrong, please try again later")
-		// 	}
-
-		// }
-
 		return ctx.Next()
 	}
 }

@@ -55,6 +55,7 @@ func ServeIndex(api *types.Api) fiber.Handler {
 		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
 		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*dbModels.BackendUser)
 		var isLoginRoute = len(routeParts) == 2 && routeParts[1] == "login"
+		var redirectTo string = "?redirectTo=" + url.QueryEscape(absoluteUrl)
 		// Validate the user if he is accessing the admin panel
 		// if len(routeParts) > 1 && routeParts[1] == api.AdminSlug {
 
@@ -64,11 +65,6 @@ func ServeIndex(api *types.Api) fiber.Handler {
 			}
 			// return utils.ServeIndex(ctx)
 			return ctx.Next()
-		}
-
-		var redirectTo string
-		if isLoginRoute {
-			redirectTo = "?redirectTo=" + url.QueryEscape(absoluteUrl)
 		}
 
 		// prevent redirect on api route

@@ -56,7 +56,8 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			_ = tokenStr
 			_ = apiKeyData
 
-			ctx.Locals(constants.ApiKeyCtxKey, tokenStr)
+			// This should be the api key struct
+			ctx.Locals(constants.ApiKeyCtxKey, apiKeyData)
 		}
 		// else
 		if backendToken != "" {

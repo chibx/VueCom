@@ -1,90 +1,131 @@
 import { spawn } from "node:child_process";
-import { copyFileSync, cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
+import {
+    copyFileSync,
+    cpSync,
+    existsSync,
+    mkdirSync,
+    rmSync,
+} from "node:fs";
 import { platform } from "node:os";
 import { join } from "node:path";
-const OUTPUT_DIR = join(process.cwd(), "./.output");
-const BACKEND_DIR = join(process.cwd(), "./backend");
-const FRONTEND_DIR = join(process.cwd(), "./frontend");
-let prev = "f"; // Switch to preserve grouping
-const BINARY_NAME = `vuecom-server${platform() === "win32" ? ".exe" : ""}`;
-const backend = spawn("go", ["build", "-o", `./${BINARY_NAME}`], { cwd: BACKEND_DIR });
-const frontend = spawn("npm", ["run", "build"], { cwd: FRONTEND_DIR });
-backend.once("spawn", () => {
-    console.log("Backend Started Successfully");
-});
-backend.stderr.on("data", (err) => {
-    err = String(err);
-    console.error("\n", "--------------Error - Backend-------------------");
-    console.log(err.substring(0, err.length - 1), "\n");
-});
-backend.stdout.on("data", (d) => {
-    d = String(d);
-    if (prev !== "b") {
-        console.log("--------------Backend-------------------");
-    }
-    console.log(d.substring(0, d.length - 1));
-    prev = "b";
-});
-frontend.once("spawn", () => {
-    console.log("Frontend Started Successfully");
-});
-frontend.stdout.on("data", (data) => {
-    data = data + "";
-    if (prev !== "f") {
-        console.log("--------------Frontend-------------------");
-    }
-    console.log(data.substring(0, data.length - 1));
-    prev = "f";
-});
-frontend.stderr.on("data", (err) => {
-    err = String(err);
-    console.log("\n", "--------------Error - Frontend-------------------");
-    console.error(err.substring(0, err.length - 1), "\n");
-});
-/** Self Terminate */
-await Promise.all([
-    new Promise((resolve, reject) => {
-        backend.once("close", (code) => {
-            if (code !== 0) {
-                console.error(
-                    "--------Server Build Failed---------\nAborting all active operations!",
-                );
-                if (frontend.connected) {
-                    frontend.kill("SIGKILL");
-                }
-                reject();
-                return;
-            }
-            resolve();
-        });
-    }),
-    new Promise((resolve, reject) => {
-        frontend.once("close", (code) => {
-            if (code !== 0) {
-                console.error(
-                    "--------Client Build Failed---------\nAborting all active operations!",
-                );
-                if (backend.connected) {
-                    backend.kill("SIGKILL");
-                }
-                reject();
-                return;
-            }
-            resolve();
-        });
-    }),
-]).catch(() => {});
 
-if (existsSync(OUTPUT_DIR)) {
-    rmSync(OUTPUT_DIR, {
-        force: true,
-        recursive: true,
+const OUTPUT_DIR = join(process.cwd(), "./.output");
+const BACKEND_DIR = join(process.cwd(), "./backend/services/gateway_service");
+const FRONTEND_DIR = join(process.cwd(), "./frontend");
+
+const BINARY_NAME = `gateway${platform() === "win32" ? ".exe" : ""}`;
+
+let prev = null; 
+
+const colorEnv = { ...process.env, FORCE_COLOR: "3" }; // 3 = full 24-bit color
+
+const backend = spawn("make", ["build"], {
+    cwd: BACKEND_DIR,
+    env: colorEnv,
+    stdio: ["ignore", "pipe", "pipe"],
+});
+
+const frontend = spawn("npm", ["run", "build"], {
+    cwd: FRONTEND_DIR,
+    env: colorEnv,
+    stdio: ["ignore", "pipe", "pipe"],
+});
+
+// Reusable function to pipe and prefix output with grouping
+function pipeOutput(stream, sourceName, isError = false) {
+    stream.setEncoding("utf8");
+
+    let buffer = "";
+    stream.on("data", (chunk) => {
+        buffer += chunk;
+        const lines = buffer.split(/\r?\n/);
+        buffer = lines.pop();
+
+        for (const line of lines) {
+            if (line === "") continue;
+
+            if (prev !== sourceName) {
+                console.log(`--------------${sourceName}-------------------`);
+                prev = sourceName;
+            }
+
+            if (isError) {
+                console.error(line);
+            } else {
+                console.log(line);
+            }
+        }
+    });
+
+    // Flush any remaining buffered data on close
+    stream.on("end", () => {
+        if (buffer.trim() !== "") {
+            if (prev !== sourceName) {
+                console.log(`--------------${sourceName}-------------------`);
+                prev = sourceName;
+            }
+            if (isError) console.error(buffer.trim());
+            else console.log(buffer.trim());
+        }
     });
 }
-mkdirSync(OUTPUT_DIR);
-copyFileSync(join(BACKEND_DIR, `./${BINARY_NAME}`), join(OUTPUT_DIR, `./${BINARY_NAME}`));
-cpSync(join(FRONTEND_DIR, "./dist"), join(OUTPUT_DIR, "./dist"), { recursive: true });
-// await Promise.all([
-//     rm(join(BACKEND_DIR, `./${BINARY_NAME}`)),
-//     rm(join(FRONTEND_DIR, "./dist"), { recursive: true, force: true }),
-// ]);
+
+backend.once("spawn", () => console.log("Backend Build Started"));
+frontend.once("spawn", () => console.log("Frontend Build Started"));
+
+pipeOutput(backend.stdout, "Backend");
+pipeOutput(backend.stderr, "Backend", true);
+
+pipeOutput(frontend.stdout, "Frontend");
+pipeOutput(frontend.stderr, "Frontend", true);
+
+try {
+    await Promise.all([
+        new Promise((resolve, reject) => {
+            backend.on("close", (code) => {
+                if (code !== 0) {
+                    console.error("--------Server Build Failed---------");
+                    reject(new Error(`Go build exited with code ${code}`));
+                } else {
+                    console.log("---------Server Build Completed----------")
+                    resolve();
+                }
+            });
+        }),
+        new Promise((resolve, reject) => {
+            frontend.on("close", (code) => {
+                if (code !== 0) {
+                    console.error("--------Client Build Failed---------");
+                    reject(new Error(`npm build exited with code ${code}`));
+                } else {
+                    console.log("---------Client Build Completed----------")
+                    resolve();
+                }
+            });
+        }),
+    ]);
+
+    console.log("Both builds completed successfully!");
+
+    if (existsSync(OUTPUT_DIR)) {
+        rmSync(OUTPUT_DIR, { recursive: true, force: true });
+    }
+    mkdirSync(OUTPUT_DIR, { recursive: true });
+
+    const binarySrc = join(BACKEND_DIR, "bin", BINARY_NAME);
+    const binaryDest = join(OUTPUT_DIR, BINARY_NAME);
+    copyFileSync(binarySrc, binaryDest);
+
+    const frontendDistSrc = join(FRONTEND_DIR, "dist");
+    const frontendDistDest = join(OUTPUT_DIR, "dist");
+    cpSync(frontendDistSrc, frontendDistDest, { recursive: true });
+
+    console.log(`Build artifacts copied to ${OUTPUT_DIR}`);
+
+    // rmSync(binarySrc, { force: true });
+    // rmSync(frontendDistSrc, { recursive: true, force: true });
+
+} catch (err) {
+    console.error("\nBuild process aborted due to failure:", err);
+    process.exit(1);
+}

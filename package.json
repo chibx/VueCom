@@ -1,11 +1,12 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "node dev.js",
+    "dev": "node scripts/dev.js",
     "dev:frontend": "cd frontend && vite",
-    "dev:backend": "cd backend && gow run .",
-    "build": "node build.js",
-    "local": "cd .output && ./vuecom-server"
+    "dev:backend": "cd backend/services/gateway_service && air",
+    "build": "node scripts/build.js",
+    "local": "cd .output && ./gateway",
+    "start": "node scripts/start.js"
   },
   "devDependencies": {
     "@types/node": "^24.3.1"

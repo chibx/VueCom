@@ -20,10 +20,10 @@ backend.once("spawn", () => {
 let buffer = "";
 
 backend.stdout.setEncoding("utf8");
-backend.stdout.on("data", (chunk) => {
+backend.stdout.on("data", (chunk: string) => {
     buffer += chunk;
     const lines = buffer.split(/\r?\n/);
-    buffer = lines.pop();
+    buffer = lines.pop() || "";
 
     for (const line of lines) {
         if (line !== "") {
@@ -39,10 +39,10 @@ backend.stdout.on("end", () => {
 });
 
 backend.stderr.setEncoding("utf8");
-backend.stderr.on("data", (chunk) => {
+backend.stderr.on("data", (chunk: string) => {
     buffer += chunk;
     const lines = buffer.split(/\r?\n/);
-    buffer = lines.pop();
+    buffer = lines.pop() || "";
 
     for (const line of lines) {
         if (line !== "") {

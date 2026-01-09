@@ -2,7 +2,7 @@ import "dotenv/config";
 import { spawn } from "node:child_process";
 import { join } from "node:path";
 
-let prev = null;
+let prev: string | null = null;
 
 const backend = spawn("air", [], {
     cwd: join(process.cwd(), "./backend/services/gateway_service"),
@@ -16,11 +16,11 @@ const frontend = spawn("npm", ["run", "dev"], {
 });
 
 // Helper to process lines from a stream
-function pipeOutput(stream, sourceName, isError = false) {
+function pipeOutput(stream: NodeJS.ReadableStream, sourceName: string, isError = false) {
     stream.setEncoding("utf8");
-    stream.on("data", (data) => {
+    stream.on("data", (data: string) => {
         const lines = data.split(/\r?\n/);
-        lines.forEach((line) => {
+        lines.forEach((line: string) => {
             if (line === "") return; // Skip empty lines from split
 
             if (prev !== sourceName) {
@@ -48,7 +48,6 @@ frontend.once("spawn", () => {
 });
 pipeOutput(frontend.stdout, "Frontend");
 pipeOutput(frontend.stderr, "Frontend", true);
-
 
 backend.once("close", (code) => {
     console.log(`Backend exited with code ${code}`);

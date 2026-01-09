@@ -107,11 +107,11 @@ try {
     mkdirSync(OUTPUT_DIR, { recursive: true });
 
     const binarySrc = join(BACKEND_DIR, "bin", BINARY_NAME);
-    const binaryDest = join(OUTPUT_DIR, BINARY_NAME);
+    const binaryDest = join(OUTPUT_DIR, "gateway", BINARY_NAME);
     copyFileSync(binarySrc, binaryDest);
 
     const frontendDistSrc = join(FRONTEND_DIR, "dist");
-    const frontendDistDest = join(OUTPUT_DIR, "dist");
+    const frontendDistDest = join(OUTPUT_DIR, "gateway", "dist");
     cpSync(frontendDistSrc, frontendDistDest, { recursive: true });
 
     console.log(`Build artifacts copied to ${OUTPUT_DIR}`);

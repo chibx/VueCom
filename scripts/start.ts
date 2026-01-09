@@ -8,7 +8,7 @@ process.env.SERVER_MODE = "production";
 const BINARY_NAME = `./gateway${platform() === "win32" ? ".exe" : ""}`;
 
 const backend = spawn(BINARY_NAME, [], {
-    cwd: join(process.cwd(), "./.output"),
+    cwd: join(process.cwd(), "./.output/gateway"),
     env: { ...process.env, FORCE_COLOR: "3" },
     stdio: ["ignore", "pipe", "pipe"],
 });

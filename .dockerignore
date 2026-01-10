@@ -1,0 +1,11 @@
+backend/**/bin/
+node_modules
+.env
+pnpm-lock.yaml
+prometheus_data
+
+dist
+.output
+coverage
+.cache
+

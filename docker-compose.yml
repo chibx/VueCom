@@ -10,10 +10,7 @@ services:
     environment:
       - NODE_ENV=production
     command: ./gateway
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+    mem_limit: 256M
     restart: unless-stopped
     depends_on:
       - users-db
@@ -133,10 +130,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./deploy-config/redis/redis.conf:/etc/redis/redis.conf
-    deploy:
-      resources:
-        limits:
-          memory: 500M
+    mem_limit: 500M
     networks:
       - vuecom
 
@@ -151,10 +145,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=guest
     networks:
       - vuecom
-    deploy:
-      resources:
-        limits:
-          memory: 500M
+    mem_limit: 500M
 
   prometheus:
     image: prom/prometheus
@@ -165,10 +156,7 @@ services:
       - ./deploy-config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - vuecom
-    deploy:
-      resources:
-        limits:
-          memory: 300M
+    mem_limit: 300M
 
 networks:
   vuecom:

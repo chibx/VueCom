@@ -26,15 +26,18 @@ services:
       - vuecom
 
   vuecom-db:
-    image: postgres:18-alpine
+    image: postgres:17-alpine
     hostname: vuecom-db
     ports:
       - "5432"
+    shm_size: 128mb
+    restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres # This is just for local build
     volumes:
       - ./deploy-config/sql/:/docker-entrypoint-initdb.d/
+      - ./pgdata:/var/lib/postgresql/data
     networks:
       - vuecom
 

@@ -12,6 +12,8 @@ services:
     command: ./gateway
     mem_limit: 256M
     restart: unless-stopped
+    env_file:
+      - ./backend/services/gateway_service/.env
     depends_on:
       # - users-db
       # - orders-db
@@ -32,9 +34,8 @@ services:
       - "5432"
     shm_size: 128mb
     restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres # This is just for local build
+    env_file:
+      - ./backend/services/gateway_service/.env
     volumes:
       - ./deploy-config/sql/:/docker-entrypoint-initdb.d/
       - ./pgdata:/var/lib/postgresql/data

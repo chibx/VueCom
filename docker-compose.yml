@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: deploy-config/vuecom.DockerFile
     ports:
-      - "3000:2500"
+      - "3500:2500"
     # volumes:
     #   - .:/app
     environment:
@@ -31,9 +31,11 @@ services:
     image: postgres:17-alpine
     hostname: vuecom-db
     ports:
-      - "5432"
+      - "5433:5432"
     shm_size: 128mb
     restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres # for testing
     env_file:
       - ./backend/services/gateway_service/.env
     volumes:
@@ -144,7 +146,7 @@ services:
     image: redis:alpine
     hostname: redis
     ports:
-      - "6379"
+      - "6380"
     restart: unless-stopped
     volumes:
       - ./deploy-config/redis/redis.conf:/etc/redis/redis.conf
@@ -169,7 +171,7 @@ services:
     image: prom/prometheus
     hostname: prometheus
     ports:
-      - "9090:9090"
+      - "9092:9090"
     volumes:
       - ./deploy-config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:

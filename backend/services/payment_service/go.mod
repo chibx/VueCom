@@ -1,4 +1,4 @@
-module vuecom/inventory
+module vuecom/payment
 
 go 1.25.0
 
@@ -40,4 +40,4 @@ require (
 	vuecom/shared v1.0.0
 )
 
-replace vuecom/shared => ../shared
+replace vuecom/shared => ../../shared

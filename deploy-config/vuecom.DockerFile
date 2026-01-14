@@ -5,12 +5,17 @@ FROM node:24-alpine AS vue-builder
 RUN corepack enable
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+
 WORKDIR /app/frontend
+
 COPY ./frontend/pnpm-lock.yaml ./
 COPY ./frontend/package*.json ./
+
 RUN --mount=type=cache,target=/pnpm/store \
     pnpm fetch
+
 COPY ./frontend/package.json ./
+
 RUN --mount=type=cache,target=/pnpm/store \
     pnpm install --frozen-lockfile --prod --offline
 

@@ -38,23 +38,23 @@ func loadPostgresDSN() string {
 
 	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
 
-	host := getEnv("PG_HOST")
+	host := getEnv("GATE_PG_HOST")
 
-	user := getEnv("PG_USER")
+	user := getEnv("GATE_PG_USER")
 
-	passwd := getEnv("PG_PASSWD")
+	passwd := getEnv("GATE_PG_PASSWD")
 
-	dbName := getEnv("PG_DBNAME")
+	dbName := getEnv("GATE_PG_DBNAME")
 
-	port := getEnv("PG_PORT")
+	port := getEnv("GATE_PG_PORT")
 
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }
 
 func plugCloudinary(api *types.Api) {
-	cldKey := config.GetEnv("CLOUDINARY_KEY")
-	cldSecret := config.GetEnv("CLOUDINARY_SECRET")
-	cldName := config.GetEnv("CLOUDINARY_CLOUD_NAME")
+	cldKey := config.GetEnv("GATE_CLOUDINARY_KEY")
+	cldSecret := config.GetEnv("GATE_CLOUDINARY_SECRET")
+	cldName := config.GetEnv("GATE_CLOUDINARY_CLOUD_NAME")
 	cld, err := cloudinary.NewFromParams(cldName, cldKey, cldSecret)
 
 	if err != nil {
@@ -76,10 +76,10 @@ func plugDB(api *types.Api) {
 }
 
 func plugRedis(api *types.Api) {
-	redisUrl := getEnv("REDIS_URL")
+	redisUrl := getEnv("GATE_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
-		panic("REDIS_URL should be set!!!")
+		panic("GATE_REDIS_URL should be set!!!")
 	}
 
 	client := redis.NewClient(opts)

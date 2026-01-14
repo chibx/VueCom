@@ -28,11 +28,11 @@ func getEnv(env string, sub ...string) string {
 
 func loadPostgresDSN() string {
 	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
-	host := getEnv("PG_HOST")
-	user := getEnv("PG_USER")
-	passwd := getEnv("PG_PASSWD")
-	dbName := getEnv("PG_DBNAME")
-	port := getEnv("PG_PORT")
+	host := getEnv("CATALOG_PG_HOST")
+	user := getEnv("CATALOG_PG_USER")
+	passwd := getEnv("CATALOG_PG_PASSWD")
+	dbName := getEnv("CATALOG_PG_DBNAME")
+	port := getEnv("CATALOG_PG_PORT")
 
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }
@@ -61,10 +61,10 @@ func newCloudinary() *cloudinary.Cloudinary {
 }
 
 func newRedis() *redis.Client {
-	redisUrl := getEnv("REDIS_URL")
+	redisUrl := getEnv("CATALOG_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
-		panic("REDIS_URL should be set!!!")
+		panic("CATALOG_REDIS_URL should be set!!!")
 	}
 
 	client := redis.NewClient(opts)

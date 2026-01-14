@@ -6,7 +6,7 @@ import (
 	"time"
 	"vuecom/gateway/internal/constants"
 	serverErr "vuecom/shared/errors/server"
-	dbModels "vuecom/shared/models/db"
+	userModels "vuecom/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,7 +21,7 @@ func GenerateRefreshToken() (string, error) {
 	return hex.EncodeToString(bytes), nil
 }
 
-func ValidateBackendUserSess(ctx *fiber.Ctx, session *dbModels.BackendSession) error {
+func ValidateBackendUserSess(ctx *fiber.Ctx, session *userModels.BackendSession) error {
 	created_at := session.CreatedAt
 	ipAddr := session.IpAddr
 	// Handle user_agent validation later

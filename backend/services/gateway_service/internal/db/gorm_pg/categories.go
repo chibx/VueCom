@@ -3,7 +3,7 @@ package gorm_pg
 import (
 	"context"
 
-	dbModels "vuecom/shared/models/db"
+	catalogModels "vuecom/shared/models/db/catalog"
 
 	"gorm.io/gorm"
 )
@@ -12,6 +12,6 @@ type categoryRepository struct {
 	db *gorm.DB
 }
 
-func (c *categoryRepository) GetCategoryById(id int, ctx context.Context) (*dbModels.Category, error) {
+func (c *categoryRepository) GetCategoryById(id int, ctx context.Context) (*catalogModels.Category, error) {
 	return nil, errDbUnimplemented
 }

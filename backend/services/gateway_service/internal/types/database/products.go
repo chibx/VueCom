@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
-	dbModels "vuecom/shared/models/db"
+	productModels "vuecom/shared/models/db/catalog"
 )
 
 type ProductRepository interface {
-	CreateProduct(product *dbModels.Product, ctx context.Context) error
-	GetProductById(id int, ctx context.Context) (*dbModels.Product, error)
+	CreateProduct(product *productModels.Product, ctx context.Context) error
+	GetProductById(id int, ctx context.Context) (*productModels.Product, error)
 }

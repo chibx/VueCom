@@ -2,9 +2,9 @@ package database
 
 import (
 	"context"
-	dbModels "vuecom/shared/models/db"
+	catModels "vuecom/shared/models/db/catalog"
 )
 
 type CategoryRepository interface {
-	GetCategoryById(id int, ctx context.Context) (*dbModels.Category, error)
+	GetCategoryById(id int, ctx context.Context) (*catModels.Category, error)
 }

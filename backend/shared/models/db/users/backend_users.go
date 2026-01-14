@@ -2,7 +2,6 @@ package users
 
 import (
 	"time"
-	"vuecom/shared/models"
 )
 
 // Country represents a country in the system
@@ -28,16 +27,16 @@ func (State) TableName() string {
 	return "backend.states"
 }
 
-type AppData struct {
-	Name       string             `json:"app_name" gorm:"" redis:"name"`
-	AdminRoute string             `json:"-" gorm:"" redis:"admin_route"`
-	LogoUrl    string             `json:"app_logo" gorm:"" redis:"logo_url"`
-	Settings   models.AppSettings `json:"settings" gorm:"type:jsonb;default:\"{}\"" redis:"settings"`
-}
+// type AppData struct {
+// 	Name       string             `json:"app_name" gorm:"" redis:"name"`
+// 	AdminRoute string             `json:"-" gorm:"" redis:"admin_route"`
+// 	LogoUrl    string             `json:"app_logo" gorm:"" redis:"logo_url"`
+// 	Settings   models.AppSettings `json:"settings" gorm:"type:jsonb;default:\"{}\"" redis:"settings"`
+// }
 
-func (AppData) TableName() string {
-	return "backend.app_data"
-}
+// func (AppData) TableName() string {
+// 	return "backend.app_data"
+// }
 
 type ApiKey struct {
 	ID        uint      `gorm:"primarykey" redis:"id"`

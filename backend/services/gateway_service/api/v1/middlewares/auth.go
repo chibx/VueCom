@@ -8,14 +8,14 @@ import (
 	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
 	"vuecom/shared/errors/server"
-	dbModels "vuecom/shared/models/db"
+	userModels "vuecom/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
 
-func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *dbModels.BackendSession) (*dbModels.BackendUser, error) {
-	var backendUser *dbModels.BackendUser
+func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *userModels.BackendSession) (*userModels.BackendUser, error) {
+	var backendUser *userModels.BackendUser
 	validationErr := auth.ValidateBackendUserSess(ctx, backendUserSess)
 	if validationErr != nil {
 		var sessionErr *server.SessionErr
@@ -43,9 +43,9 @@ func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *dbM
 func AuthMiddleware(api *types.Api) fiber.Handler {
 	logger := api.Deps.Logger
 	return func(ctx *fiber.Ctx) error {
-		var backendUserSess *dbModels.BackendSession
-		var apiKeyData *dbModels.ApiKey
-		var backendUser *dbModels.BackendUser
+		var backendUserSess *userModels.BackendSession
+		var apiKeyData *userModels.ApiKey
+		var backendUser *userModels.BackendUser
 		var tokenErr error
 		var authHeader = ctx.Get("Authorization")
 		var tokenStr = strings.TrimPrefix(authHeader, "Bearer ")

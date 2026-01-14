@@ -3,7 +3,7 @@ package gorm_pg
 import (
 	"context"
 
-	dbModels "vuecom/shared/models/db"
+	orderModels "vuecom/shared/models/db/orders"
 
 	"gorm.io/gorm"
 )
@@ -12,8 +12,8 @@ type orderRepository struct {
 	db *gorm.DB
 }
 
-func (o *orderRepository) GetOrderById(id int, ctx context.Context) (*dbModels.Order, error) {
-	order := &dbModels.Order{}
+func (o *orderRepository) GetOrderById(id int, ctx context.Context) (*orderModels.Order, error) {
+	order := &orderModels.Order{}
 
 	err := o.db.WithContext(ctx).Where("id = ?", id).First(order).Error
 	if err != nil {
@@ -23,6 +23,6 @@ func (o *orderRepository) GetOrderById(id int, ctx context.Context) (*dbModels.O
 	return order, nil
 }
 
-func (o *orderRepository) CreateOrder(order *dbModels.Order, ctx context.Context) error {
+func (o *orderRepository) CreateOrder(order *orderModels.Order, ctx context.Context) error {
 	return o.db.WithContext(ctx).Create(order).Error
 }

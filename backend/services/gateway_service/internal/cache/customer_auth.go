@@ -8,19 +8,19 @@ import (
 	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
 	serverErrors "vuecom/shared/errors/server"
-	dbModels "vuecom/shared/models/db"
+	userModels "vuecom/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
-func GetCustomerSession(token string, api *types.Api, ctx context.Context) (*dbModels.CustomerSession, error) {
+func GetCustomerSession(token string, api *types.Api, ctx context.Context) (*userModels.CustomerSession, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
 	logger := api.Deps.Logger
 
-	cus_session := &dbModels.CustomerSession{}
+	cus_session := &userModels.CustomerSession{}
 
 	err := cache.HGetAll(ctx, constants.CUST_SESS+token).Scan(cus_session)
 
@@ -59,11 +59,11 @@ func GetCustomerSession(token string, api *types.Api, ctx context.Context) (*dbM
 	return cus_session, nil
 }
 
-func GetCustomerById(api *types.Api, id int, ctx context.Context) (*dbModels.Customer, error) {
+func GetCustomerById(api *types.Api, id int, ctx context.Context) (*userModels.Customer, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
 	logger := api.Deps.Logger
-	customer := &dbModels.Customer{}
+	customer := &userModels.Customer{}
 
 	// Try to get from cache first
 	err := cache.HGetAll(ctx, constants.CUST_KEY+strconv.Itoa(id)).Scan(customer)

@@ -11,7 +11,9 @@ import (
 	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/utils"
 	"vuecom/shared/errors/server"
-	dbModels "vuecom/shared/models/db"
+	appModels "vuecom/shared/models/db/appdata"
+
+	// userModels "vuecom/shared/models/db/users"
 
 	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
 	"github.com/cloudinary/cloudinary-go/v2/api/admin"
@@ -42,7 +44,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	db := api.Deps.DB
 	cld := api.Deps.Cld
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing application. Try again later")
-	var appData = new(dbModels.AppData)
+	var appData = new(appModels.AppData)
 	// cache
 	_data, err := db.AppData().GetAppData(ctx.Context())
 	if err != nil {
@@ -192,7 +194,7 @@ func RegisterOwner(ctx *fiber.Ctx, api *types.Api) error {
 	return response.NewResponse(ctx, fiber.StatusOK, "Owner registered successfully")
 }
 
-func validateInitializeProps(form *multipart.Form) (appData *dbModels.AppData, file *multipart.FileHeader, err error) {
+func validateInitializeProps(form *multipart.Form) (appData *appModels.AppData, file *multipart.FileHeader, err error) {
 	fields := form.Value
 	files := form.File
 	nameField := fields["name"]
@@ -237,7 +239,7 @@ func validateInitializeProps(form *multipart.Form) (appData *dbModels.AppData, f
 	if !isSupported {
 		return nil, nil, errors.New("uploaded logo must be either a jpeg, jpg or png image")
 	}
-	appData = &dbModels.AppData{
+	appData = &appModels.AppData{
 		Name:       name,
 		AdminRoute: adminRoute,
 	}

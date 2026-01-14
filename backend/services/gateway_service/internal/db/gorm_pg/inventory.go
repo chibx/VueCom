@@ -3,7 +3,7 @@ package gorm_pg
 import (
 	"context"
 
-	dbModels "vuecom/shared/models/db"
+	invModels "vuecom/shared/models/db/inventory"
 
 	"gorm.io/gorm"
 )
@@ -12,6 +12,6 @@ type inventoryRepository struct {
 	db *gorm.DB
 }
 
-func (i *inventoryRepository) GetInventoryById(id int, ctx context.Context) (*dbModels.Inventory, error) {
+func (i *inventoryRepository) GetInventoryById(id int, ctx context.Context) (*invModels.Inventory, error) {
 	return nil, errDbUnimplemented
 }

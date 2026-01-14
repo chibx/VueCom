@@ -2,9 +2,9 @@ package database
 
 import (
 	"context"
-	dbModels "vuecom/shared/models/db"
+	invModels "vuecom/shared/models/db/inventory"
 )
 
 type InventoryRepository interface {
-	GetInventoryById(id int, ctx context.Context) (*dbModels.Inventory, error)
+	GetInventoryById(id int, ctx context.Context) (*invModels.Inventory, error)
 }

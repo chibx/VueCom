@@ -9,7 +9,7 @@ import (
 	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/utils"
-	dbModels "vuecom/shared/models/db"
+	userModels "vuecom/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -53,7 +53,7 @@ func ServeIndex(api *types.Api) fiber.Handler {
 		absoluteUrl := utils.GetAbsoluteUrl(ctx)
 		routeParts := utils.ExtractRouteParts(ctx.Path())
 		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
-		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*dbModels.BackendUser)
+		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*userModels.BackendUser)
 		var isLoginRoute = len(routeParts) == 2 && routeParts[1] == "login"
 		var redirectTo = "?redirectTo=" + url.QueryEscape(absoluteUrl)
 		// Validate the user if he is accessing the admin panel

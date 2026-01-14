@@ -7,7 +7,7 @@ import (
 	"vuecom/gateway/api/v1/response"
 	"vuecom/gateway/internal/types"
 
-	dbModel "vuecom/shared/models/db"
+	"vuecom/shared/models/db/orders"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -15,7 +15,7 @@ import (
 
 func CreateOrder(ctx *fiber.Ctx, api *types.Api) error {
 	db := api.Deps.DB
-	order := dbModel.Order{}
+	order := orders.Order{}
 
 	err := ctx.BodyParser(&order)
 
@@ -63,7 +63,7 @@ func GetOrder(ctx *fiber.Ctx, api *types.Api) error {
 }
 
 func ListOrders(ctx *fiber.Ctx, api *types.Api) error {
-	return response.NewResponse(ctx, fiber.StatusOK, "", []dbModel.Order{})
+	return response.NewResponse(ctx, fiber.StatusOK, "", []orders.Order{})
 }
 
 func DeleteOrder(ctx *fiber.Ctx, api *types.Api) error {

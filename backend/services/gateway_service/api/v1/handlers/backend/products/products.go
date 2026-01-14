@@ -7,14 +7,14 @@ import (
 	"vuecom/gateway/api/v1/response"
 	"vuecom/gateway/internal/types"
 
-	dbModel "vuecom/shared/models/db"
+	catModels "vuecom/shared/models/db/catalog"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func CreateProduct(ctx *fiber.Ctx, api *types.Api) error {
 	db := api.Deps.DB
-	product := dbModel.Product{}
+	product := catModels.Product{}
 
 	err := ctx.BodyParser(&product)
 

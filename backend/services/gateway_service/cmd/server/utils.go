@@ -10,7 +10,7 @@ import (
 	"vuecom/gateway/config"
 	"vuecom/gateway/internal/db/gorm_pg"
 	"vuecom/gateway/internal/types"
-	dbModels "vuecom/shared/models/db"
+	appModels "vuecom/shared/models/db/appdata"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/go-redis/redis_rate/v10"
@@ -114,14 +114,14 @@ func setupLimiter(api *types.Api) {
 // 	}
 // }
 
-func appIfInitialized(api *types.Api) (*dbModels.AppData, error) {
+func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 	logger := api.Deps.Logger
 	appData, err := api.Deps.DB.AppData().GetAppData(context.Background())
 
 	if err != nil {
 		if errors.Is(err, types.ErrDbNil) {
 			logger.Info("No active app found in DB")
-			return &dbModels.AppData{}, err
+			return &appModels.AppData{}, err
 		}
 		logger.Error("Error occurerd while fetching app data", zap.Error(err))
 		return nil, err

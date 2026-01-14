@@ -8,7 +8,8 @@ import (
 	"vuecom/gateway/internal/types"
 	"vuecom/shared/errors/server"
 	appModels "vuecom/shared/models/db/appdata"
-	userModels "vuecom/shared/models/db/users"
+
+	// userModels "vuecom/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"

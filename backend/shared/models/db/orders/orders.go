@@ -16,19 +16,11 @@ type Order struct {
 	PaymentID         uint      `json:"payment_id" gorm:"index;not null" redis:"payment_id"`
 }
 
-func (Order) TableName() string {
-	return "catalog.orders"
-}
-
 type OrderReturn struct {
 	ID        uint      `gorm:"primarykey" redis:"id"`
 	CreatedAt time.Time `gorm:"" redis:"created_at"`
 	OrderID   uint      `json:"order_id" gorm:"index;not null" redis:"order_id"`
 	Reason    string    `json:"reason" gorm:"not null" redis:"reason"`
-}
-
-func (OrderReturn) TableName() string {
-	return "catalog.order_returns"
 }
 
 type OrderItem struct {
@@ -39,8 +31,4 @@ type OrderItem struct {
 	Name      string    `json:"name" gorm:"not null" redis:"name"`
 	Price     float64   `json:"price" gorm:"not null" redis:"price"`
 	Quantity  uint      `json:"quantity" gorm:"not null" redis:"quantity"`
-}
-
-func (OrderItem) TableName() string {
-	return "catalog.order_items"
 }

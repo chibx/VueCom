@@ -13,18 +13,10 @@ type Country struct {
 	States    []State   `gorm:"foreignKey:CountryID;"`
 }
 
-func (Country) TableName() string {
-	return "backend.countries"
-}
-
 type State struct {
 	ID        uint   `gorm:"primarykey" redis:"id"`
 	Name      string `gorm:"not null;unique;index" redis:"name"`
 	CountryID uint   `gorm:"index" redis:"country_id"`
-}
-
-func (State) TableName() string {
-	return "backend.states"
 }
 
 // type AppData struct {
@@ -83,10 +75,6 @@ type BackendUser struct {
 	Country         *Country                      `gorm:"foreignKey:CountryId;" redis:"-"`
 }
 
-func (BackendUser) TableName() string {
-	return "backend.backend_users"
-}
-
 type BackendSession struct {
 	UserId    uint         `gorm:"not null" redis:"user_id"`
 	Token     string       `gorm:"not null" redis:"-"` // redis key would be the token
@@ -94,10 +82,6 @@ type BackendSession struct {
 	IpAddr    string       `gorm:"column:ip_address" redis:"ip_address"`
 	UserAgent string       `gorm:"not null" redis:"user_agent"`
 	User      *BackendUser `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;" redis:"-"`
-}
-
-func (BackendSession) TableName() string {
-	return "backend.backend_sessions"
 }
 
 type BackendUserActivity struct {
@@ -108,10 +92,6 @@ type BackendUserActivity struct {
 	CreatedAt time.Time `gorm:"" redis:"created_at"`
 }
 
-func (BackendUserActivity) TableName() string {
-	return "backend.backend_user_activities"
-}
-
 type BackendPasswordResetRequest struct {
 	Id          uint      `gorm:"primarykey" redis:"id"`
 	UserId      uint      `gorm:"not null;index" redis:"user_id"`
@@ -119,8 +99,4 @@ type BackendPasswordResetRequest struct {
 	RequestedAt time.Time `gorm:"not null" redis:"requested_at"`
 	ExpiresAt   time.Time `gorm:"not null" redis:"expires_at"`
 	Used        bool      `gorm:"default:FALSE;not null" redis:"used"`
-}
-
-func (BackendPasswordResetRequest) TableName() string {
-	return "backend.backend_password_reset_requests"
 }

@@ -10,10 +10,6 @@ type CustomerOTP struct {
 	// Customer   *Customer `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-func (CustomerOTP) TableName() string {
-	return "customer.customer_otps"
-}
-
 type CustomerAddress struct {
 	ID            uint     `gorm:"primarykey" redis:"id"`
 	CustomerID    uint     `gorm:"not null;index" redis:"user_id"`
@@ -45,10 +41,6 @@ type Customer struct {
 	// Wishlist        []Product         `gorm:"many2many:customer.customer_wishlists;"`
 }
 
-func (Customer) TableName() string {
-	return "customer.customers"
-}
-
 type CustomerSession struct {
 	CustomerID uint      `gorm:"not null" redis:"user_id"`
 	Token      string    `gorm:"not null" redis:"-"` // redis key would be the token
@@ -56,10 +48,6 @@ type CustomerSession struct {
 	IpAddr     string    `gorm:"column:ip_address" redis:"ip_address"`
 	UserAgent  string    `gorm:"not null" redis:"user_agent"`
 	Customer   *Customer `gorm:"foreignKey:CustomerID;constraint:OnDelete:CASCADE;" redis:"-"`
-}
-
-func (CustomerSession) TableName() string {
-	return "customer.customer_sessions"
 }
 
 type CartItem struct {
@@ -70,17 +58,9 @@ type CartItem struct {
 	// Product    *Product  `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-func (CartItem) TableName() string {
-	return "customer.customer_carts"
-}
-
 type WishlistItem struct {
 	CustomerID uint      `gorm:"primaryKey;index"`
 	ProductID  uint      `gorm:"primaryKey;index"`
 	AddedAt    time.Time `gorm:""`
 	// Product    *Product  `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-}
-
-func (WishlistItem) TableName() string {
-	return "customer.customer_wishlists"
 }

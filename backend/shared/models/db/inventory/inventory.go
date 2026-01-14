@@ -19,10 +19,6 @@ type Inventory struct {
 	LastSoldAt      time.Time `json:"last_sold_at" gorm:"" redis:"last_sold_at"`
 }
 
-func (Inventory) TableName() string {
-	return "inventory.inventory"
-}
-
 type Warehouse struct {
 	ID        uint      `gorm:"primarykey" redis:"id"`
 	Code      string    `gorm:"not null;index;unique" redis:"code"`
@@ -40,10 +36,6 @@ type Warehouse struct {
 	// Country *Country `gorm:"foreignKey:CountryId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" redis:"-"`
 }
 
-func (Warehouse) TableName() string {
-	return "inventory.warehouses"
-}
-
 type StockMovement struct {
 	ID           uint      `gorm:"primarykey" redis:"id"`
 	UpdatedAt    time.Time `gorm:"" redis:"updated_at"`
@@ -56,8 +48,4 @@ type StockMovement struct {
 	Reference    string    `json:"reference" gorm:"not null" redis:"reference"`
 	Notes        string    `json:"notes" redis:"notes"`
 	CreatedBy    string    `json:"created_by" gorm:"not null" redis:"created_by"`
-}
-
-func (StockMovement) TableName() string {
-	return "inventory.stock_movements"
 }

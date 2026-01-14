@@ -14,10 +14,6 @@ type AppData struct {
 	Settings   AppSettings `json:"settings" gorm:"type:jsonb;default:\"{}\"" redis:"settings"`
 }
 
-func (AppData) TableName() string {
-	return "backend.app_data"
-}
-
 type AppSettings struct {
 	DefaultCurrency        string   `json:"default_currency" validate:"required"`
 	SupportedCurrencies    []string `json:"supported_currencies" validate:"required"`

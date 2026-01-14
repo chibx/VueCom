@@ -11,10 +11,6 @@ type Attribute struct {
 	Name      string    `gorm:"type:varchar(50);index;not null;unique" redis:"name"`
 }
 
-func (Attribute) TableName() string {
-	return "catalog.attributes"
-}
-
 // ID: 131 | Name: Size | Value: XL
 // ID: 138 | Name: Color | Value: Black
 // TODO: Add a unique constraint on (attribute_id, value)
@@ -27,10 +23,6 @@ type Category struct {
 	Attribute   *Attribute `gorm:"foreignKey:AttributeID"`
 }
 
-func (Category) TableName() string {
-	return "catalog.category"
-}
-
 /**
  * A set of grouped categories that a product should make use of i.e Electronics, Computing
  */
@@ -41,10 +33,6 @@ type Preset struct {
 	UpdatedAt  time.Time          `gorm:"" redis:"updated_at"`
 	Attributes []PresetAttributes `gorm:"foreignKey:PresetID"`
 	Products   []Product          `gorm:"foreignKey:PresetID"`
-}
-
-func (Preset) TableName() string {
-	return "catalog.presets"
 }
 
 /**
@@ -61,27 +49,15 @@ type PresetAttributes struct {
 	Category   *Category `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 }
 
-func (PresetAttributes) TableName() string {
-	return "catalog.preset_attributes"
-}
-
 type Tag struct {
 	ID   uint   `gorm:"primarykey" redis:"id"`
 	Name string `gorm:"not null;unique" redis:"name"`
-}
-
-func (Tag) TableName() string {
-	return "catalog.tags"
 }
 
 // TODO: Primary Key (ProductID, TagID)
 type ProductTags struct {
 	ProductID uint `gorm:"primaryKey;autoIncrement:false;"`
 	TagID     uint `gorm:"primaryKey;autoIncrement:false;"`
-}
-
-func (ProductTags) TableName() string {
-	return "catalog.product_tags"
 }
 
 type Product struct {
@@ -104,17 +80,9 @@ type Product struct {
 	Tags       []Tag      `gorm:"many2many:catalog.product_tags;" redis:"-"`
 }
 
-func (Product) TableName() string {
-	return "catalog.products"
-}
-
 type ProductCategoryValues struct {
 	ProductID  uint `gorm:"primaryKey;autoIncrement:false;"`
 	CategoryID uint `gorm:"primaryKey;autoIncrement:false;"`
-}
-
-func (ProductCategoryValues) TableName() string {
-	return "catalog.product_category_values"
 }
 
 type PromoCode struct {
@@ -138,10 +106,6 @@ type PromoCode struct {
 	Usages             []PromoCodeUsage `gorm:"foreignKey:CodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
-func (PromoCode) TableName() string {
-	return "catalog.promo_codes"
-}
-
 type PromoCodeUsage struct {
 	ID        uint       `gorm:"primarykey" redis:"id"`
 	CodeID    uint       `json:"code_id" gorm:"index;not null" redis:"code_id"`
@@ -149,8 +113,4 @@ type PromoCodeUsage struct {
 	OrderID   uint       `json:"order_id" gorm:"index;not null" redis:"order_id"`
 	UsedAt    time.Time  `json:"used_at" gorm:"" redis:"used_at"`
 	PromoCode *PromoCode `gorm:"foreignKey:CodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
-}
-
-func (PromoCodeUsage) TableName() string {
-	return "catalog.promo_code_usages"
 }

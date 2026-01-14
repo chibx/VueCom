@@ -5,7 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
+
+	// "strconv"
 	"time"
 	"vuecom/gateway/config"
 	"vuecom/gateway/internal/db/gorm_pg"
@@ -168,14 +169,14 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 	setupLimiter(v1_api)
 	plugCloudinary(v1_api)
 	// attachSentry(app)
-	logger := v1_api.Deps.Logger
-	// Migrate DB
-	now := time.Now()
-	err := v1_api.Deps.DB.Migrate()
-	if err != nil {
-		panic("Error while migration")
-	}
-	logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
+	// logger := v1_api.Deps.Logger
+	// // Migrate DB
+	// now := time.Now()
+	// err := v1_api.Deps.DB.Migrate()
+	// if err != nil {
+	// 	panic("Error while migration")
+	// }
+	// logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
 	// --------------------------
 
 	appData, _ := appIfInitialized(v1_api)

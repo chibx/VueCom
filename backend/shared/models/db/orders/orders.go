@@ -19,6 +19,7 @@ type Order struct {
 type OrderReturn struct {
 	ID        uint      `gorm:"primarykey" redis:"id"`
 	CreatedAt time.Time `gorm:"" redis:"created_at"`
+	UpdatedAt time.Time `gorm:"" redis:"updated_at"`
 	OrderID   uint      `json:"order_id" gorm:"index;not null" redis:"order_id"`
 	Reason    string    `json:"reason" gorm:"not null" redis:"reason"`
 }

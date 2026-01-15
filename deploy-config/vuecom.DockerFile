@@ -11,13 +11,11 @@ WORKDIR /app/frontend
 COPY ./frontend/pnpm-lock.yaml ./
 COPY ./frontend/package*.json ./
 
-RUN --mount=type=cache,target=/pnpm/store \
-    pnpm fetch
-
+# RUN --mount=type=cache,target=/pnpm/store \
+#     pnpm fetch
 COPY ./frontend/package.json ./
 
-RUN --mount=type=cache,target=/pnpm/store \
-    pnpm install --frozen-lockfile --prod --offline
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # RUN npm install    
 COPY ./frontend/ ./
@@ -45,6 +43,7 @@ COPY --from=go-builder /app/backend/services/gateway_service/bin/server ./
 COPY --from=vue-builder /app/frontend/dist ./dist
 
 # EXPOSE 2500
+
 
 CMD ["./server"]
 

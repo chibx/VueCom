@@ -6,7 +6,8 @@ CREATE TABLE app_data (
     admin_route VARCHAR(100) NOT NULL,
     app_logo TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    settings JSONB DEFAULT '{}'
 );
 
 CREATE TABLE countries (
@@ -38,7 +39,7 @@ CREATE TABLE backend_users (
     phone VARCHAR(20),
     role TEXT DEFAULT 'staff', -- Set to allow custom roles
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
     image TEXT,
     country_id INT,
     is_email_verified BOOLEAN DEFAULT FALSE, 

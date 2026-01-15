@@ -8,10 +8,10 @@ import (
 )
 
 type AppData struct {
-	Name       string      `json:"app_name" gorm:"" redis:"name"`
+	Name       string      `json:"app_name" gorm:"column:app_name;not null" redis:"name"`
 	AdminRoute string      `json:"-" gorm:"" redis:"admin_route"`
-	LogoUrl    string      `json:"app_logo" gorm:"" redis:"logo_url"`
-	Settings   AppSettings `json:"settings" gorm:"type:jsonb;default:\"{}\"" redis:"settings"`
+	LogoUrl    string      `json:"app_logo" gorm:"column:app_logo;" redis:"logo_url"`
+	Settings   AppSettings `json:"settings" gorm:"column:settings;type:jsonb;default:\"{}\"" redis:"settings"`
 }
 
 type AppSettings struct {

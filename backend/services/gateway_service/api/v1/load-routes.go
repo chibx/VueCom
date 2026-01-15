@@ -18,6 +18,9 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 	backend.LoadRoutes(app, api)
 	customer.LoadRoutes(app, api)
 
+	app.Get("/health", func(ctx *fiber.Ctx) error {
+		return ctx.Status(200).SendString("OK")
+	})
 	app.Static("*", "./"+constants.PublicFolder)
 	app.Get("/*", func(ctx *fiber.Ctx) error {
 		return ctx.SendFile("./" + constants.PublicFolder + "/index.html")

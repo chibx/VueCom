@@ -1,5 +1,5 @@
 -- Orders Database
-\c orders;
+\c vuecom_orders;
 CREATE TABLE orders (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -10,20 +10,24 @@ CREATE TABLE orders (
     -- status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
     STATUS VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP billing_address_id INTEGER NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    billing_address_id INTEGER NOT NULL,
     shipping_address_id INTEGER NOT NULL,
-    payment_id INTEGER NOT NULL,
-    INDEX idx_user (user_id),
-    INDEX idx_status (STATUS),
-    INDEX idx_created_at (created_at) INDEX idx_updated_at (updated_at)
+    payment_id INTEGER NOT NULL
 );
+
+CREATE INDEX idx_user ON orders(user_id);
+CREATE INDEX idx_status ON orders(STATUS);
+CREATE INDEX idx_created_at ON orders(created_at);
+CREATE INDEX idx_updated_at ON orders(updated_at);
 
 CREATE TABLE order_returns (
     id SERIAL PRIMARY KEY,
     order_id INTEGER NOT NULL,
     reason VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    -- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
 CREATE TABLE order_items (
@@ -36,5 +40,6 @@ CREATE TABLE order_items (
     price DECIMAL(12, 2) NOT NULL,
     quantity INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );

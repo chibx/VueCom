@@ -1,5 +1,48 @@
 -- Catalog Database
-\c catalog;
+\c vuecom_catalog;
+
+CREATE TABLE attributes (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    -- e.g., 'Size', 'Color', 'Warranty Type'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_attributes_name ON attributes (name);
+
+-- For fast lookups by name
+-- Attribute Options
+CREATE TABLE category (
+    id SERIAL PRIMARY KEY,
+    attribute_id INTEGER NOT NULL REFERENCES attributes(id) ON DELETE CASCADE,
+    value TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (attribute_id, value) -- Prevent duplicate values per attribute
+);
+
+CREATE INDEX idx_category_value ON category (value);
+
+CREATE INDEX idx_category_attribute_id ON category (attribute_id);
+
+CREATE TABLE presets (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    -- e.g., 'Clothing Preset'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE preset_attributes (
+    preset_id INTEGER NOT NULL REFERENCES presets(id) ON DELETE CASCADE,
+    attribute_id INTEGER NOT NULL REFERENCES attributes(id) ON DELETE CASCADE,
+    PRIMARY KEY (preset_id, attribute_id)
+);
+
+CREATE INDEX idx_preset_attributes_preset_id ON preset_attributes (preset_id);
+
+CREATE INDEX idx_preset_attributes_attribute_id ON preset_attributes (attribute_id);
+
 -- Products (Metadata ONLY)
 CREATE TABLE products (
     id BIGSERIAL PRIMARY KEY,
@@ -23,38 +66,49 @@ CREATE TABLE products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     parent_id INT NULL,
     image_url VARCHAR(255),
-    preset_id INTEGER REFERENCES presets(id) ON DELETE
-    SET
-        NULL,
-        -- Optional
-        FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE
-    SET
-        NULL,
-        FOREIGN KEY (parent_id) REFERENCES products(id) ON DELETE
-    SET
-        NULL,
-        INDEX idx_sku (sku),
-        INDEX idx_slug (slug),
-        INDEX idx_category (category_id),
-        INDEX idx_brand (brand_id),
-        INDEX idx_active (is_active),
-        INDEX ft_search (name, short_description, search_keywords)
+    preset_id INTEGER REFERENCES presets(id) ON DELETE SET NULL,
+    -- Optional
+    FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE SET NULL,
+    FOREIGN KEY (parent_id) REFERENCES products(id) ON DELETE SET NULL
 );
+
+CREATE INDEX idx_sku ON products (sku);
+CREATE INDEX idx_slug ON products (slug);
+CREATE INDEX idx_category ON products (category_id);
+CREATE INDEX idx_active ON products (is_active);
+CREATE INDEX ft_search ON products (name, short_description, search_keywords);
+
+-- I sense a bug here
+CREATE TABLE product_category_values (
+    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    category_id INTEGER NOT NULL REFERENCES category(id) ON DELETE CASCADE,
+    PRIMARY KEY (product_id, category_id)
+);
+
+CREATE INDEX idx_product_category_values_product_id ON product_category_values (product_id);
+
+CREATE INDEX idx_product_category_values_category_id ON product_category_values (category_id);
+
+CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL
+    -- e.g., 'Men's Shirts'
+);
+
+CREATE TABLE product_tags (
+    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (product_id, tag_id)
+);
+
+CREATE INDEX idx_product_tags_tag_id ON product_tags (tag_id);
 
 -- Main Coupons Table
 CREATE TABLE promo_codes (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     code VARCHAR(50) UNIQUE NOT NULL,
-    TYPE TEXT NOT NULL CHECK (
-        TYPE IN (
-            'percentage',
-            'fixed_amount',
-            'fixed_product',
-            'bogo',
-            'free_shipping'
-        )
-    ),
+    TYPE TEXT NOT NULL CHECK (TYPE IN ('percentage', 'fixed_amount', 'fixed_product', 'bogo', 'free_shipping')),
     -- Or use ENUM if preferred: CREATE TYPE coupon_type AS ENUM (...);
     discount_value DECIMAL(10, 2) NOT NULL,
     min_cart_value DECIMAL(10, 2) DEFAULT 0.00,
@@ -89,8 +143,8 @@ CREATE TABLE promo_codes (
 CREATE TABLE promo_code_usages (
     id SERIAL PRIMARY KEY,
     code_id INTEGER NOT NULL REFERENCES promo_codes(id) ON DELETE CASCADE,
-    user_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
-    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    user_id INTEGER,
+    order_id INTEGER,
     used_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -1,5 +1,5 @@
 -- Users Database
-\c users;
+\c vuecom_users;
 
 CREATE TABLE app_data (
     app_name VARCHAR(100) NOT NULL,
@@ -36,11 +36,13 @@ CREATE TABLE backend_users (
     first_name VARCHAR(50),
     last_name VARCHAR(50),
     phone VARCHAR(20),
-    role TEXT DEFAULT 'staff' -- Set to allow custom roles
+    role TEXT DEFAULT 'staff', -- Set to allow custom roles
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP image TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    image TEXT,
     country_id INT,
-    is_email_verified BOOLEAN DEFAULT FALSE FOREIGN KEY (country_id) REFERENCES countries(id)
+    is_email_verified BOOLEAN DEFAULT FALSE, 
+    FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
 CREATE TABLE backend_sessions (
@@ -67,9 +69,7 @@ CREATE TABLE backend_user_activities (
     -- e.g., "Login", "Password Change"
     activity TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE
-    SET
-        NULL
+    FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE api_keys (

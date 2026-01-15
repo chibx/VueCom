@@ -1,5 +1,5 @@
 -- Users Database
-\c users;
+\c vuecom_users;
 CREATE TABLE customers (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(255) NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE customers (
     image_url TEXT,
     user_name VARCHAR(50) UNIQUE,
     password_hash TEXT,
-    FOREIGN KEY (country) REFERENCES backend.countries(id)
+    FOREIGN KEY (country) REFERENCES countries(id)
 );
 
 CREATE TABLE customer_sessions (
@@ -26,7 +26,7 @@ CREATE TABLE customer_sessions (
     user_agent TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES customers(id) ON DELETE CASCADE
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );
 
 CREATE TABLE customer_otps (

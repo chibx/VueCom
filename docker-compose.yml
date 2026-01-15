@@ -9,7 +9,6 @@ services:
     #   - .:/app
     environment:
       - NODE_ENV=production
-    command: ./gateway
     mem_limit: 256M
     restart: unless-stopped
     env_file:

@@ -1,0 +1,191 @@
+services:
+  vuecom:
+    build:
+      context: .
+      dockerfile: deploy-config/vuecom.Dockerfile
+    ports:
+      - "3500:2500"
+    # volumes:
+    #   - .:/app
+    environment:
+      - NODE_ENV=production
+    mem_limit: 256M
+    restart: unless-stopped
+    env_file:
+      - ./backend/services/gateway_service/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f http://localhost:2500/health"]
+      interval: 1m30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      # - users-db
+      # - orders-db
+      # - products-db
+      # - payments-db
+      # - notifications-db
+      # - analytics-db
+      # - inventory-db
+      - vuecom-db
+      - redis
+      - rabbitmq
+    networks:
+      - vuecom
+
+  vuecom-db:
+    image: postgres:17-alpine
+    hostname: vuecom-db
+    ports:
+      - "5433:5432"
+    shm_size: 128mb
+    restart: always
+    environment:
+      - GATE_PG_PORT=5433
+    # - POSTGRES_PASSWORD=postgres # for testing
+    # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
+    env_file:
+      - ./backend/services/gateway_service/.env
+    volumes:
+      - ./deploy-config/sql/:/docker-entrypoint-initdb.d/
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - vuecom
+
+  # users-db:
+  #   image: postgres:18-alpine
+  #   hostname: users-db
+  #   ports:
+  #     - "5432"
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=users
+  #   volumes:
+  #     - ./deploy-config/sql/users.sql:/docker-entrypoint-initdb.d/users.sql
+  #   networks:
+  #     - vuecom
+
+  # orders-db:
+  #   image: postgres:18-alpine
+  #   hostname: orders-db
+  #   ports:
+  #     - "5432"
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=orders
+  #   volumes:
+  #     - ./deploy-config/sql/orders.sql:/docker-entrypoint-initdb.d/orders.sql
+  #   networks:
+  #     - vuecom
+
+  # products-db:
+  #   image: postgres:18-alpine
+  #   hostname: products-db
+  #   ports:
+  #     - "5432"
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=products
+  #   volumes:
+  #     - ./deploy-config/sql/products.sql:/docker-entrypoint-initdb.d/products.sql
+  #   networks:
+  #     - vuecom
+
+  # payments-db:
+  #   image: postgres:18-alpine
+  #   hostname: payments-db
+  #   ports:
+  #     - "5432"
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=payments
+  #   volumes:
+  #     - ./deploy-config/sql/payments.sql:/docker-entrypoint-initdb.d/payments.sql
+  #   networks:
+  #     - vuecom
+
+  # notifications-db:
+  #   image: postgres:18-alpine
+  #   hostname: notifications-db
+  #   ports:
+  #     - "5432"
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=notifications
+  #   volumes:
+  #     - ./deploy-config/sql/notifications.sql:/docker-entrypoint-initdb.d/notifications.sql
+  #   networks:
+  #     - vuecom
+
+  # analytics-db:
+  #   image: postgres:18-alpine
+  #   hostname: analytics-db
+  #   ports:
+  #     - "5432"
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=analytics
+  #   volumes:
+  #     - ./deploy-config/sql/analytics.sql:/docker-entrypoint-initdb.d/analytics.sql
+  #   networks:
+  #     - vuecom
+
+  # inventory-db:
+  #   image: postgres:18-alpine
+  #   hostname: inventory-db
+  #   ports:
+  #     - "5432"
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=inventory
+  #   volumes:
+  #     - ./deploy-config/sql/inventory.sql:/docker-entrypoint-initdb.d/inventory.sql
+  #   networks:
+  #     - vuecom
+
+  redis:
+    image: redis:alpine
+    hostname: redis
+    ports:
+      - "6380"
+    restart: unless-stopped
+    volumes:
+      - ./deploy-config/redis/redis.conf:/etc/redis/redis.conf
+    mem_limit: 500M
+    networks:
+      - vuecom
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    hostname: rabbitmq
+    ports:
+      - "5672"
+      - "15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - vuecom
+    mem_limit: 500M
+
+  prometheus:
+    image: prom/prometheus
+    hostname: prometheus
+    ports:
+      - "9092:9090"
+    volumes:
+      - ./deploy-config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - vuecom
+    mem_limit: 300M
+
+networks:
+  vuecom:
+    driver: bridge

@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
+
+	// "strconv"
 	"time"
 	"vuecom/gateway/config"
 	"vuecom/gateway/internal/db/gorm_pg"
 	"vuecom/gateway/internal/types"
-	dbModels "vuecom/shared/models/db"
+	appModels "vuecom/shared/models/db/appdata"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/go-redis/redis_rate/v10"
@@ -37,23 +38,23 @@ func loadPostgresDSN() string {
 
 	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
 
-	host := getEnv("PG_HOST")
+	host := getEnv("GATE_PG_HOST")
 
-	user := getEnv("PG_USER")
+	user := getEnv("GATE_PG_USER")
 
-	passwd := getEnv("PG_PASSWD")
+	passwd := getEnv("GATE_PG_PASSWD")
 
-	dbName := getEnv("PG_DBNAME")
+	dbName := getEnv("GATE_PG_DBNAME")
 
-	port := getEnv("PG_PORT")
+	port := getEnv("GATE_PG_PORT")
 
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }
 
 func plugCloudinary(api *types.Api) {
-	cldKey := config.GetEnv("CLOUDINARY_KEY")
-	cldSecret := config.GetEnv("CLOUDINARY_SECRET")
-	cldName := config.GetEnv("CLOUDINARY_CLOUD_NAME")
+	cldKey := config.GetEnv("GATE_CLOUDINARY_KEY")
+	cldSecret := config.GetEnv("GATE_CLOUDINARY_SECRET")
+	cldName := config.GetEnv("GATE_CLOUDINARY_CLOUD_NAME")
 	cld, err := cloudinary.NewFromParams(cldName, cldKey, cldSecret)
 
 	if err != nil {
@@ -75,10 +76,10 @@ func plugDB(api *types.Api) {
 }
 
 func plugRedis(api *types.Api) {
-	redisUrl := getEnv("REDIS_URL")
+	redisUrl := getEnv("GATE_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
-		panic("REDIS_URL should be set!!!")
+		panic("GATE_REDIS_URL should be set!!!")
 	}
 
 	client := redis.NewClient(opts)
@@ -114,14 +115,14 @@ func setupLimiter(api *types.Api) {
 // 	}
 // }
 
-func appIfInitialized(api *types.Api) (*dbModels.AppData, error) {
+func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 	logger := api.Deps.Logger
 	appData, err := api.Deps.DB.AppData().GetAppData(context.Background())
 
 	if err != nil {
 		if errors.Is(err, types.ErrDbNil) {
 			logger.Info("No active app found in DB")
-			return &dbModels.AppData{}, err
+			return &appModels.AppData{}, err
 		}
 		logger.Error("Error occurerd while fetching app data", zap.Error(err))
 		return nil, err
@@ -168,14 +169,14 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 	setupLimiter(v1_api)
 	plugCloudinary(v1_api)
 	// attachSentry(app)
-	logger := v1_api.Deps.Logger
-	// Migrate DB
-	now := time.Now()
-	err := v1_api.Deps.DB.Migrate()
-	if err != nil {
-		panic("Error while migration")
-	}
-	logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
+	// logger := v1_api.Deps.Logger
+	// // Migrate DB
+	// now := time.Now()
+	// err := v1_api.Deps.DB.Migrate()
+	// if err != nil {
+	// 	panic("Error while migration")
+	// }
+	// logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
 	// --------------------------
 
 	appData, _ := appIfInitialized(v1_api)

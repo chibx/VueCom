@@ -8,7 +8,7 @@ import (
 	"vuecom/gateway/internal/types"
 	"vuecom/gateway/internal/validation"
 	"vuecom/shared/errors/server"
-	dbModels "vuecom/shared/models/db"
+	userModels "vuecom/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -48,7 +48,7 @@ func (req *CreateBackendUserRequest) Validate() error {
 	return validation.Validator.Struct(req)
 }
 
-func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context.Context) (*dbModels.BackendUser, error) {
+func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context.Context) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
 	logger := api.Deps.Logger
 
@@ -103,7 +103,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 	// TODO: Implement
 	// TODO: Implement image upload
 
-	user := &dbModels.BackendUser{
+	user := &userModels.BackendUser{
 		FullName:        hashedFullname,
 		UserName:        &hashedUsername,
 		Email:           hashedEmail,

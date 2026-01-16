@@ -1,14 +1,18 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "node dev.js",
+    "dev": "tsx scripts/dev.ts",
     "dev:frontend": "cd frontend && vite",
-    "dev:backend": "cd backend && gow run .",
-    "build": "node build.js",
-    "local": "cd .output && ./vuecom-server"
+    "dev:backend": "cd backend/services/gateway_service && air",
+    "install:server": "tsx scripts/install-server-deps.ts",
+    "install:frontend": "cd frontend && pnpm install",
+    "build": "tsx scripts/build.ts",
+    "local": "cd .output/gateway && ./gateway",
+    "start": "tsx scripts/start.ts"
   },
   "devDependencies": {
-    "@types/node": "^24.3.1"
+    "@types/node": "^24.3.1",
+    "tsx": "^4.21.0"
   },
   "dependencies": {
     "dotenv": "^17.2.2"

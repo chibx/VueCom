@@ -40,4 +40,4 @@ require (
 	vuecom/shared v1.0.0
 )
 
-replace vuecom/shared => ../shared
+replace vuecom/shared => ../../shared

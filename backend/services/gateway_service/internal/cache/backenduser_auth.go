@@ -8,19 +8,19 @@ import (
 	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
 	serverErrors "vuecom/shared/errors/server"
-	dbModels "vuecom/shared/models/db"
+	userModels "vuecom/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
-func GetBackendUserSession(token string, api *types.Api, ctx context.Context) (*dbModels.BackendSession, error) {
+func GetBackendUserSession(token string, api *types.Api, ctx context.Context) (*userModels.BackendSession, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
 	logger := api.Deps.Logger
 
-	var backend_session *dbModels.BackendSession
+	var backend_session *userModels.BackendSession
 
 	err := cache.HGetAll(ctx, constants.BU_SESS+token).Scan(&backend_session)
 
@@ -60,11 +60,11 @@ func GetBackendUserSession(token string, api *types.Api, ctx context.Context) (*
 	return backend_session, nil
 }
 
-func GetBackendUserById(api *types.Api, id int, ctx context.Context) (*dbModels.BackendUser, error) {
+func GetBackendUserById(api *types.Api, id int, ctx context.Context) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
 	logger := api.Deps.Logger
-	backendUser := &dbModels.BackendUser{}
+	backendUser := &userModels.BackendUser{}
 
 	// Try to get from cache first
 	err := cache.HGetAll(ctx, constants.BU_KEY+strconv.Itoa(id)).Scan(backendUser)
@@ -116,7 +116,7 @@ func TouchBackendSession(api *types.Api, token string, ctx context.Context) {
 	// ttlSeconds := int64(ttl.Val() / time.Second)
 	// logger.Info("backend user session ttl", zap.Int64("ttl", ttlSeconds))
 
-	_, err := rdb.Expire(ctx, token, constants.BACKEND_SESSION_TIMEOUT).Result()
+	_, err := rdb.Expire(ctx, constants.BU_SESS+token, constants.BackendSessionTimeout).Result()
 	if err != nil {
 		logger.Error("failed to expire backend user session", zap.Error(err))
 	}

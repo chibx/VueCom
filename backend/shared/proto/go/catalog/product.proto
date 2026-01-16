@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package catalog;
+
+// option go_package = ".";
+option go_package = "vuecom/shared/proto/go/catalog";
+
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  string category_id = 5;
+}
+
+message GetProductRequest {
+  string id = 1;
+}
+
+message GetProductResponse {
+  Product product = 1;
+}

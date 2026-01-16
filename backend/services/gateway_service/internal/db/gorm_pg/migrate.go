@@ -7,6 +7,7 @@ import (
 )
 
 func migrate(db *gorm.DB) error {
+	return nil
 	var err error
 	// I would add this to a docker init script for PostgreSQL
 	err = db.Exec(`CREATE SCHEMA IF NOT EXISTS backend;

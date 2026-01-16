@@ -1,0 +1,3 @@
+protoc --go_out=paths=source_relative:./ --go-grpc_out=paths=source_relative:./ *.proto
+
+I dont plan to use protobufs or microservices for now, i will stick to modular monolith approach

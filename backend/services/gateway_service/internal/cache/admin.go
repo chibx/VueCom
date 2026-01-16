@@ -7,7 +7,9 @@ import (
 	"vuecom/gateway/internal/cache/keys"
 	"vuecom/gateway/internal/types"
 	"vuecom/shared/errors/server"
-	dbModels "vuecom/shared/models/db"
+	appModels "vuecom/shared/models/db/appdata"
+
+	// userModels "vuecom/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
@@ -15,11 +17,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAppData(ctx context.Context, api *types.Api) (*dbModels.AppData, error) {
+func GetAppData(ctx context.Context, api *types.Api) (*appModels.AppData, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
 	logger := api.Deps.Logger
-	appData := new(dbModels.AppData)
+	appData := new(appModels.AppData)
 
 	err := cache.Get(ctx, keys.APP_DATA_KEY).Scan(&appData)
 	if err != nil {

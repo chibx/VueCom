@@ -1,0 +1,25 @@
+syntax = "proto3";
+package catalog;
+
+import "category.proto";
+import "product.proto";
+
+// option go_package = ".";
+option go_package = "vuecom/shared/proto/go/catalog";
+
+service CatalogService {
+  // Add your service methods here
+  rpc AddProduct(AddProductRequest) returns (AddProductResponse);
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse);
+  rpc GetCategory(GetCategoryRequest) returns (GetCategoryResponse);
+}
+
+message AddProductRequest {
+  string name = 1;
+  string description = 2;
+  double price = 3;
+}
+
+message AddProductResponse {
+  string id = 1;
+}

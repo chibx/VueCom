@@ -24,7 +24,7 @@ CREATE TABLE catalog.products (
     image_url VARCHAR(255),
     preset_id INTEGER REFERENCES catalog.presets(id) ON DELETE SET NULL,  -- Optional
 
-    FOREIGN KEY (category_id) REFERENCES catalog.categories(id) ON DELETE SET NULL,
+    FOREIGN KEY (category_id) REFERENCES catalog.category(id) ON DELETE SET NULL,
     FOREIGN KEY (parent_id) REFERENCES catalog.products(id) ON DELETE SET NULL,
 
     INDEX idx_sku (sku),

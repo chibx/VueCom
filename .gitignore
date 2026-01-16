@@ -17,7 +17,7 @@ coverage
 *.local
 vuecom-server*
 .env*
-!.env.example
+!.env.*.example
 .data
 .nuxt
 .nitro

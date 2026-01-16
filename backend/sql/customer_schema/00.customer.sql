@@ -27,7 +27,7 @@ CREATE TABLE customer.customer_sessions (
     user_agent TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES customer.customers(id) ON DELETE CASCADE
+    FOREIGN KEY (customer_id) REFERENCES customer.customers(id) ON DELETE CASCADE
 );
 
 CREATE TABLE customer.customer_otps (

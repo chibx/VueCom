@@ -8,14 +8,14 @@ import (
 	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
 	"vuecom/shared/errors/server"
-	dbModels "vuecom/shared/models/db"
+	userModels "vuecom/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
 
-func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *dbModels.BackendSession) (*dbModels.BackendUser, error) {
-	var backendUser *dbModels.BackendUser
+func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *userModels.BackendSession) (*userModels.BackendUser, error) {
+	var backendUser *userModels.BackendUser
 	validationErr := auth.ValidateBackendUserSess(ctx, backendUserSess)
 	if validationErr != nil {
 		var sessionErr *server.SessionErr
@@ -43,9 +43,9 @@ func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *dbM
 func AuthMiddleware(api *types.Api) fiber.Handler {
 	logger := api.Deps.Logger
 	return func(ctx *fiber.Ctx) error {
-		var backendUserSess *dbModels.BackendSession
-		var apiKeyData *dbModels.ApiKey
-		var backendUser *dbModels.BackendUser
+		var backendUserSess *userModels.BackendSession
+		var apiKeyData *userModels.ApiKey
+		var backendUser *userModels.BackendUser
 		var tokenErr error
 		var authHeader = ctx.Get("Authorization")
 		var tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
@@ -56,8 +56,10 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			_ = tokenStr
 			_ = apiKeyData
 
-			ctx.Locals(constants.ApiKeyCtxKey, tokenStr)
+			// This should be the api key struct
+			ctx.Locals(constants.ApiKeyCtxKey, apiKeyData)
 		}
+		// else
 		if backendToken != "" {
 			backendUserSess, tokenErr = cache.GetBackendUserSession(backendToken, api, ctx.Context())
 			if tokenErr != nil {
@@ -72,40 +74,6 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 
 			ctx.Locals(constants.BackendUserCtxKey, backendUser)
 		}
-
-		// routeParts := utils.ExtractRouteParts(ctx.Path())
-
-		// // Validate the user if he is accessing the admin panel
-		// if len(routeParts) > 1 && routeParts[1] == api.AdminSlug {
-
-		// 	if len(routeParts) > 2 && routeParts[2] == "login" {
-		// 		// return ctx.Next() // Skip auth for login page
-		// 		return utils.ServeIndex(ctx)
-		// 	}
-
-		// 	if backendToken == "" {
-		// 		logger.Info("Redirecting to login", zap.String("route", routeParts[1]))
-		// 		return ctx.Redirect("/" + routeParts[1] + "/login")
-		// 	}
-
-		// 	if tokenErr != nil {
-		// 		var asTokenErr *server.ServerErr
-
-		// 		if errors.As(tokenErr, &asTokenErr) {
-		// 			if asTokenErr.Code == fiber.StatusUnauthorized {
-		// 				absoluteUrl := utils.GetAbsoluteUrl(ctx)
-
-		// 				return ctx.Redirect("/"+routeParts[1]+"/login?redirectTo="+url.QueryEscape(absoluteUrl), fiber.StatusSeeOther)
-		// 			}
-
-		// 			// Handle other token errors if needed
-		// 			return ctx.Status(asTokenErr.Code).SendString(asTokenErr.Message)
-		// 		}
-
-		// 		return ctx.Status(fiber.StatusInternalServerError).SendString("Something went wrong, please try again later")
-		// 	}
-
-		// }
 
 		return ctx.Next()
 	}

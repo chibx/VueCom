@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"vuecom/gateway/internal/constants"
 	"vuecom/gateway/internal/types"
-	dbModels "vuecom/shared/models/db"
+	userModels "vuecom/shared/models/db/users"
 )
 
 func GenerateSessionToken() (string, error) {
@@ -26,7 +26,7 @@ func GenerateCustomerSessionToken() (string, error) {
 	return constants.CUST_KEY + string(bytes), nil
 }
 
-func DeleteBackendSession(ctx context.Context, api *types.Api, session *dbModels.BackendSession) error {
+func DeleteBackendSession(ctx context.Context, api *types.Api, session *userModels.BackendSession) error {
 	// Delete the session from the database and cache
 	db := api.Deps.DB
 	cache := api.Deps.Redis
@@ -43,7 +43,7 @@ func DeleteBackendSession(ctx context.Context, api *types.Api, session *dbModels
 	return nil
 }
 
-func DeleteCustomerSession(ctx context.Context, api *types.Api, session *dbModels.CustomerSession) error {
+func DeleteCustomerSession(ctx context.Context, api *types.Api, session *userModels.CustomerSession) error {
 	// Delete the session from the database and cache
 	db := api.Deps.DB
 	cache := api.Deps.Redis

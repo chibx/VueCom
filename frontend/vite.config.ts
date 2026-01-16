@@ -10,23 +10,25 @@ const { GO_PORT, GO_HOST } = process.env
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    // vueDevTools(),
-    tailwindcss(),
-    Components({
-      resolvers: [PrimeVueResolver({ prefix: 'Prime', importIcons: false, importStyle: false })],
-      directoryAsNamespace: true,
-    }),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    plugins: [
+        vue(),
+        // vueDevTools(),
+        tailwindcss(),
+        Components({
+            resolvers: [
+                PrimeVueResolver({ prefix: 'Prime', importIcons: false, importStyle: false }),
+            ],
+            directoryAsNamespace: true,
+        }),
+    ],
+    resolve: {
+        alias: {
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+        },
     },
-  },
-  server: {
-    proxy: {
-      '/api': `http://${GO_HOST}:${GO_PORT}`,
+    server: {
+        proxy: {
+            '/api': `http://${GO_HOST}:${GO_PORT}/api`,
+        },
     },
-  },
 })

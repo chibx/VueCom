@@ -36,7 +36,7 @@ services:
     restart: always
     environment:
       # - POSTGRES_PASSWORD=postgres # for testing
-      - POSTGRES_PASSWORD=${GATE_PG_PASSWD} # for testing
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
     env_file:
       - ./backend/services/gateway_service/.env
     volumes:

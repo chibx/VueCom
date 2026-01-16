@@ -28,11 +28,22 @@ FROM golang:1.25-alpine AS go-builder
 
 WORKDIR /app/backend
 
-COPY ./backend ./
-# RUN cd services/gateway_service && go mod download
+COPY ./backend/services/analytics_service/go* ./services/analytics_service/
+COPY ./backend/services/inventory_service/go* ./services/inventory_service/
+COPY ./backend/services/payment_service/go* ./services/payment_service/
+COPY ./backend/services/catalog_service/go* ./services/catalog_service/
+COPY ./backend/services/gateway_service/go* ./services/gateway_service/
 
-# COPY ./backend/services/gateway_service/ ./
-RUN cd services/gateway_service && ls && go mod download && CGO_ENABLED=0 GOOS=linux go build -o ./bin/server ./cmd/server
+
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    cd services/gateway_service && go mod download
+COPY ./backend ./
+
+
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \ 
+    cd services/gateway_service && CGO_ENABLED=0 GOOS=linux go build -o ./bin/server ./cmd/server
 
 FROM gcr.io/distroless/static-debian12:nonroot
 
@@ -42,8 +53,9 @@ COPY --from=go-builder /app/backend/services/gateway_service/bin/server ./
 
 COPY --from=vue-builder /app/frontend/dist ./dist
 
-# EXPOSE 2500
+USER nonroot:nonroot
 
+# EXPOSE 2500
 
 CMD ["./server"]
 

@@ -2,7 +2,6 @@ backend/**/bin/
 node_modules
 **/node_modules
 .env
-pnpm-lock.yaml
 prometheus_data
 
 dist
@@ -11,3 +10,13 @@ dist
 coverage
 .cache
 
+
+.git
+.github
+.gitignore
+README.md
+vuecom.Dockerfile
+docker-compose.yml
+*.md
+.idea
+.vscode

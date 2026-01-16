@@ -2,7 +2,7 @@ services:
   vuecom:
     build:
       context: .
-      dockerfile: deploy-config/vuecom.DockerFile
+      dockerfile: deploy-config/vuecom.Dockerfile
     ports:
       - "3500:2500"
     # volumes:
@@ -34,9 +34,9 @@ services:
       - "5433:5432"
     shm_size: 128mb
     restart: always
-    environment:
-      # - POSTGRES_PASSWORD=postgres # for testing
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
+    # environment:
+    # - POSTGRES_PASSWORD=postgres # for testing
+    # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
     env_file:
       - ./backend/services/gateway_service/.env
     volumes:

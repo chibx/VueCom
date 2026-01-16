@@ -34,6 +34,8 @@ COPY ./backend/services/payment_service/go* ./services/payment_service/
 COPY ./backend/services/catalog_service/go* ./services/catalog_service/
 COPY ./backend/services/gateway_service/go* ./services/gateway_service/
 
+COPY ./backend/shared ./shared
+
 
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \

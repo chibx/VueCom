@@ -16,6 +16,8 @@ const props = defineProps<{
 
 // Use weakmap to store reference to each datapoint for Tooltip
 const wm = new WeakMap()
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function template(d: any, i: number, elements: (HTMLElement | SVGElement)[]) {
   const valueFormatter = props.valueFormatter ?? ((tick: number) => `${tick}`)
   if (props.index in d) {
@@ -42,7 +44,7 @@ function template(d: any, i: number, elements: (HTMLElement | SVGElement)[]) {
       return wm.get(data)
     }
     else {
-      const style = getComputedStyle(elements[i])
+      const style = getComputedStyle(elements[i]!)
       const omittedData = [{ name: data.name, value: valueFormatter(data[props.index]), color: style.fill }]
       const componentDiv = document.createElement("div")
       const TooltipComponent = props.customTooltip ?? ChartTooltip
@@ -55,9 +57,7 @@ function template(d: any, i: number, elements: (HTMLElement | SVGElement)[]) {
 </script>
 
 <template>
-  <VisTooltip
-    :horizontal-shift="20" :vertical-shift="20" :triggers="{
-      [selector]: template,
-    }"
-  />
+  <VisTooltip :horizontal-shift="20" :vertical-shift="20" :triggers="{
+    [selector]: template,
+  }" />
 </template>

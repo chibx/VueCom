@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 
 	// "strconv"
 	"time"
@@ -199,17 +198,17 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 	// attachSentry(app)
 
 	// ---------------------------
-	appEnv := os.Getenv("APP_ENVIRONMENT")
-	if appEnv != "production" {
-		logger := v1_api.Deps.Logger
-		// Migrate DB
-		now := time.Now()
-		err := v1_api.Deps.DB.Migrate()
-		if err != nil {
-			panic("Error while migration")
-		}
-		logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
-	}
+	// appEnv := os.Getenv("APP_ENVIRONMENT")
+	// if appEnv != "production" {
+	// 	logger := v1_api.Deps.Logger
+	// 	// Migrate DB
+	// 	now := time.Now()
+	// 	err := v1_api.Deps.DB.Migrate()
+	// 	if err != nil {
+	// 		panic("Error while migration")
+	// 	}
+	// 	logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
+	// }
 	// --------------------------
 
 	appData, _ := appIfInitialized(v1_api)

@@ -65,10 +65,12 @@ func plugCloudinary(api *types.Api) {
 }
 
 func plugDB(api *types.Api) {
+	logger := api.Deps.Logger
 	dsn := loadPostgresDSN()
 	db, err := gorm.Open(postgres.Open(dsn))
 
 	if err != nil {
+		logger.Error("failed to initialize db conn", zap.Error(err))
 		panic(err)
 	}
 
@@ -76,15 +78,18 @@ func plugDB(api *types.Api) {
 }
 
 func plugRedis(api *types.Api) {
+	logger := api.Deps.Logger
 	redisUrl := getEnv("GATE_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
+		logger.Error("failed to parse redis url", zap.Error(err))
 		panic("GATE_REDIS_URL should be set!!!")
 	}
 
 	client := redis.NewClient(opts)
 	cmd := client.Ping(context.Background())
 	if cmd.Err() != nil {
+		logger.Error("failed to connect to redis", zap.Error(cmd.Err()))
 		panic("Could not connect to Redis!!!")
 	}
 	api.Deps.Redis = client

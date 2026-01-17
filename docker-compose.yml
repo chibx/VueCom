@@ -8,12 +8,8 @@ services:
     # volumes:
     #   - .:/app
     environment:
-      - GATE_PG_HOST=vuecom-db
-      - CATALOG_PG_HOST=vuecom-db
-      - ORDER_PG_HOST=vuecom-db
-      - PAYMENT_PG_HOST=vuecom-db
-      - INVENTORY_PG_HOST=vuecom-db
-      - NOTIF_PG_HOST=vuecom-db
+      - APP_PG_HOST=vuecom-db
+      - APP_PG_USER=vuecom
     mem_limit: 256M
     restart: unless-stopped
     env_file:
@@ -46,6 +42,11 @@ services:
     volumes:
       - ./deploy-config/sql/:/docker-entrypoint-initdb.d/
       - ./pgdata:/var/lib/postgresql/
+    # healthcheck:
+    #   test: ["CMD-SHELL", "pg_isready -U myuser -d mydb"]
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 5
     networks:
       - vuecom
 

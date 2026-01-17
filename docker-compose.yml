@@ -34,16 +34,17 @@ services:
       - vuecom
 
   vuecom-db:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     hostname: vuecom-db
     ports:
       - "5433:5432"
     shm_size: 128mb
     restart: always
     environment:
+      - POSTGRES_PORT=5432
       - GATE_PG_PORT=5433
-    # - POSTGRES_PASSWORD=postgres # for testing
-    # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
+      # - POSTGRES_PASSWORD=postgres # for testing
+      # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
     env_file:
       - ./backend/services/gateway_service/.env
     volumes:
@@ -158,7 +159,9 @@ services:
     restart: unless-stopped
     volumes:
       - ./deploy-config/redis/redis.conf:/etc/redis/redis.conf
+      - ./deploy-config/redis/secrets.conf:/etc/redis/secrets.conf
     mem_limit: 500M
+    command: ["redis-server", "--port", "6380", "/etc/redis/redis.conf"]
     networks:
       - vuecom
 
@@ -166,8 +169,8 @@ services:
     image: rabbitmq:3.13-management-alpine
     hostname: rabbitmq
     ports:
-      - "5672"
-      - "15672"
+      - "5673:5672"
+      - "15673:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest

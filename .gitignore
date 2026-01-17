@@ -18,6 +18,7 @@ coverage
 vuecom-server*
 .env*
 !.env.*.example
+secrets.conf
 .data
 .nuxt
 .nitro

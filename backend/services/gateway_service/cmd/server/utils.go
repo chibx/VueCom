@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	// "strconv"
 	"time"
@@ -38,23 +39,23 @@ func loadPostgresDSN() string {
 
 	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
 
-	host := getEnv("GATE_PG_HOST")
+	host := getEnv("APP_PG_HOST")
 
-	user := getEnv("GATE_PG_USER")
+	user := getEnv("APP_PG_USER")
 
-	passwd := getEnv("GATE_PG_PASSWD")
+	passwd := getEnv("APP_PG_PASSWORD")
 
 	dbName := getEnv("GATE_PG_DBNAME")
 
-	port := getEnv("GATE_PG_PORT")
+	port := getEnv("APP_PG_PORT")
 
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }
 
 func plugCloudinary(api *types.Api) {
-	cldKey := config.GetEnv("GATE_CLOUDINARY_KEY")
-	cldSecret := config.GetEnv("GATE_CLOUDINARY_SECRET")
-	cldName := config.GetEnv("GATE_CLOUDINARY_CLOUD_NAME")
+	cldKey := config.GetEnv("CLOUDINARY_KEY")
+	cldSecret := config.GetEnv("CLOUDINARY_SECRET")
+	cldName := config.GetEnv("CLOUDINARY_CLOUD_NAME")
 	cld, err := cloudinary.NewFromParams(cldName, cldKey, cldSecret)
 
 	if err != nil {
@@ -67,32 +68,54 @@ func plugCloudinary(api *types.Api) {
 func plugDB(api *types.Api) {
 	logger := api.Deps.Logger
 	dsn := loadPostgresDSN()
-	db, err := gorm.Open(postgres.Open(dsn))
+	var db *gorm.DB
+	var err error
+	// if err != nil {
+	// 	logger.Error("failed to initialize db conn", zap.Error(err))
+	// 	panic(err)
+	// }
 
-	if err != nil {
-		logger.Error("failed to initialize db conn", zap.Error(err))
-		panic(err)
+	for range 5 {
+		db, err = gorm.Open(postgres.Open(dsn))
+
+		if err != nil {
+			logger.Info("Could not open postgres connection", zap.Error(err))
+		} else {
+			api.Deps.DB = gorm_pg.NewGormPGDatabase(db)
+			return
+		}
+
+		logger.Info("Backing off for 2 seconds...")
+		time.Sleep(2 * time.Second)
 	}
 
-	api.Deps.DB = gorm_pg.NewGormPGDatabase(db)
+	logger.Panic("Could not connect to database after multiple retries")
 }
 
 func plugRedis(api *types.Api) {
 	logger := api.Deps.Logger
-	redisUrl := getEnv("GATE_REDIS_URL")
+	redisUrl := getEnv("APP_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
 		logger.Error("failed to parse redis url", zap.Error(err))
-		panic("GATE_REDIS_URL should be set!!!")
+		panic("APP_REDIS_URL should be set!!!")
 	}
 
 	client := redis.NewClient(opts)
-	cmd := client.Ping(context.Background())
-	if cmd.Err() != nil {
-		logger.Error("failed to connect to redis", zap.Error(cmd.Err()))
-		panic("Could not connect to Redis!!!")
+
+	for range 5 {
+		cmd := client.Ping(context.Background())
+		err = cmd.Err()
+		if err != nil {
+			logger.Error("failed to connect to redis", zap.Error(err))
+		} else {
+			api.Deps.Redis = client
+			return
+		}
+
+		logger.Info("Backing off for 2 seconds...")
+		time.Sleep(2 * time.Second)
 	}
-	api.Deps.Redis = client
 }
 
 func setupLimiter(api *types.Api) {
@@ -174,14 +197,19 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 	setupLimiter(v1_api)
 	plugCloudinary(v1_api)
 	// attachSentry(app)
-	// logger := v1_api.Deps.Logger
-	// // Migrate DB
-	// now := time.Now()
-	// err := v1_api.Deps.DB.Migrate()
-	// if err != nil {
-	// 	panic("Error while migration")
-	// }
-	// logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
+
+	// ---------------------------
+	appEnv := os.Getenv("APP_ENVIRONMENT")
+	if appEnv != "production" {
+		logger := v1_api.Deps.Logger
+		// Migrate DB
+		now := time.Now()
+		err := v1_api.Deps.DB.Migrate()
+		if err != nil {
+			panic("Error while migration")
+		}
+		logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
+	}
 	// --------------------------
 
 	appData, _ := appIfInitialized(v1_api)

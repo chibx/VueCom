@@ -4,19 +4,15 @@ import (
 	"gorm.io/gorm"
 
 	model "vuecom/shared/models/db"
+	appdata "vuecom/shared/models/db/appdata"
+	catalog "vuecom/shared/models/db/catalog"
+	inventory "vuecom/shared/models/db/inventory"
+	orders "vuecom/shared/models/db/orders"
+	users "vuecom/shared/models/db/users"
 )
 
 func migrate(db *gorm.DB) error {
-	return nil
 	var err error
-	// I would add this to a docker init script for PostgreSQL
-	err = db.Exec(`CREATE SCHEMA IF NOT EXISTS backend;
-	CREATE SCHEMA IF NOT EXISTS customer;
-	CREATE SCHEMA IF NOT EXISTS catalog;
-	CREATE SCHEMA IF NOT EXISTS inventory;`).Error
-	if err != nil {
-		return err
-	}
 
 	err = db.SetupJoinTable(&model.Product{}, "Categories", &model.ProductCategoryValues{})
 	if err != nil {
@@ -29,40 +25,40 @@ func migrate(db *gorm.DB) error {
 
 	return db.AutoMigrate(
 		// Important Tables
-		model.AppData{},
-		model.Country{},
-		model.State{},
+		appdata.AppData{},
+		users.Country{},
+		users.State{},
 		// Backend
-		model.BackendUser{},
-		model.ApiKey{},
-		model.BackendOTP{},
-		model.BackendSession{},
-		model.BackendUserActivity{},
-		model.BackendPasswordResetRequest{},
-		// Catalog
-		model.Product{},
-		model.Attribute{},
-		model.Category{},
-		model.Preset{},
-		model.PresetAttributes{},
-		model.ProductCategoryValues{},
-		model.Tag{},
-		model.ProductTags{},
-		model.PromoCode{},
-		model.PromoCodeUsage{},
-		model.Order{},
-		model.OrderItem{},
-		model.OrderReturn{},
+		users.BackendUser{},
+		users.ApiKey{},
+		users.BackendOTP{},
+		users.BackendSession{},
+		users.BackendUserActivity{},
+		users.BackendPasswordResetRequest{},
 		// Customer
-		model.Customer{},
-		model.CustomerOTP{},
-		model.CustomerSession{},
-		model.CartItem{},
-		model.WishlistItem{},
-
+		users.Customer{},
+		users.CustomerOTP{},
+		users.CustomerSession{},
+		users.CartItem{},
+		users.WishlistItem{},
+		// Catalog
+		catalog.Product{},
+		catalog.Attribute{},
+		catalog.Category{},
+		catalog.Preset{},
+		catalog.PresetAttributes{},
+		catalog.ProductCategoryValues{},
+		catalog.Tag{},
+		catalog.ProductTags{},
+		catalog.PromoCode{},
+		catalog.PromoCodeUsage{},
+		// Orders
+		orders.Order{},
+		orders.OrderItem{},
+		orders.OrderReturn{},
 		// Inventory
-		model.Inventory{},
-		model.Warehouse{},
-		model.StockMovement{},
+		inventory.Inventory{},
+		inventory.Warehouse{},
+		inventory.StockMovement{},
 	)
 }

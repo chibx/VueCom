@@ -15,6 +15,14 @@ import (
 	"gorm.io/gorm"
 )
 
+var Logger = newLogger()
+
+var (
+	Repo  = db.NewCatalogDB(newDB())
+	Redis = newRedis()
+	Cld   = newCloudinary()
+)
+
 func getEnv(env string, sub ...string) string {
 	val := os.Getenv(env)
 	if val == "" {
@@ -28,23 +36,39 @@ func getEnv(env string, sub ...string) string {
 
 func loadPostgresDSN() string {
 	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
-	host := getEnv("CATALOG_PG_HOST")
-	user := getEnv("CATALOG_PG_USER")
-	passwd := getEnv("CATALOG_PG_PASSWD")
+	host := getEnv("APP_PG_HOST")
+	user := getEnv("APP_PG_USER")
+	passwd := getEnv("APP_PG_PASSWORD")
 	dbName := getEnv("CATALOG_PG_DBNAME")
-	port := getEnv("CATALOG_PG_PORT")
+	port := getEnv("APP_PG_PORT")
 
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }
 
 func newDB() *gorm.DB {
 	dsn := loadPostgresDSN()
-	db, err := gorm.Open(postgres.Open(dsn))
+	var db *gorm.DB
+	var err error
+	// if err != nil {
+	// 	logger.Error("failed to initialize db conn", zap.Error(err))
+	// 	panic(err)
+	// }
 
-	if err != nil {
-		panic(err)
+	for range 5 {
+		db, err = gorm.Open(postgres.Open(dsn))
+
+		if err != nil {
+			Logger.Error("failed to initialize db conn for catalog service", zap.Error(err))
+		} else {
+			return db
+		}
+
+		Logger.Info("Backing off for 2 seconds...")
+		time.Sleep(2 * time.Second)
 	}
-	return db
+
+	Logger.Panic("Could not connect to database after multiple retries")
+	return nil
 }
 
 func newCloudinary() *cloudinary.Cloudinary {
@@ -54,26 +78,38 @@ func newCloudinary() *cloudinary.Cloudinary {
 	cld, err := cloudinary.NewFromParams(cldName, cldKey, cldSecret)
 
 	if err != nil {
-		panic("Error setting up Cloudinary!!!")
+		Logger.Error("failed to initialize cloudinary for catalog service", zap.Error(err))
+		Logger.Panic("Error setting up Cloudinary!!!")
 	}
 
 	return cld
 }
 
 func newRedis() *redis.Client {
-	redisUrl := getEnv("CATALOG_REDIS_URL")
+	redisUrl := getEnv("APP_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
-		panic("CATALOG_REDIS_URL should be set!!!")
+		Logger.Error("failed to parse redis url for catalog service", zap.Error(err))
+		Logger.Panic("APP_REDIS_URL should be set!!!")
 	}
 
 	client := redis.NewClient(opts)
-	cmd := client.Ping(context.Background())
-	if cmd.Err() != nil {
-		panic("Could not connect to Redis!!!")
+
+	for range 5 {
+		cmd := client.Ping(context.Background())
+		err = cmd.Err()
+		if err != nil {
+			Logger.Error("failed to connect to redis for catalog service", zap.Error(err))
+		} else {
+			return client
+		}
+
+		Logger.Info("Backing off for 2 seconds...")
+		time.Sleep(2 * time.Second)
 	}
 
-	return client
+	Logger.Panic("Could not connect to Redis after multiple retries")
+	return nil
 }
 
 func newLogger() *zap.Logger {
@@ -92,10 +128,3 @@ func newLogger() *zap.Logger {
 
 	return logger
 }
-
-var (
-	Repo   = db.NewCatalogDB(newDB())
-	Logger = newLogger()
-	Redis  = newRedis()
-	Cld    = newCloudinary()
-)

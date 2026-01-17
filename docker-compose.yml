@@ -8,7 +8,12 @@ services:
     # volumes:
     #   - .:/app
     environment:
-      - NODE_ENV=production
+      - GATE_PG_HOST="vuecom-db"
+      - CATALOG_PG_HOST="vuecom-db"
+      - ORDER_PG_HOST="vuecom-db"
+      - PAYMENT_PG_HOST="vuecom-db"
+      - INVENTORY_PG_HOST="vuecom-db"
+      - NOTIF_PG_HOST="vuecom-db"
     mem_limit: 256M
     restart: unless-stopped
     env_file:
@@ -20,13 +25,6 @@ services:
       retries: 5
       start_period: 20s
     depends_on:
-      # - users-db
-      # - orders-db
-      # - products-db
-      # - payments-db
-      # - notifications-db
-      # - analytics-db
-      # - inventory-db
       - vuecom-db
       - redis
       - rabbitmq
@@ -42,114 +40,15 @@ services:
     restart: always
     environment:
       - POSTGRES_PORT=5432
-      - GATE_PG_PORT=5433
       # - POSTGRES_PASSWORD=postgres # for testing
       # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
     env_file:
       - ./backend/services/gateway_service/.env
     volumes:
       - ./deploy-config/sql/:/docker-entrypoint-initdb.d/
-      - ./pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/
     networks:
       - vuecom
-
-  # users-db:
-  #   image: postgres:18-alpine
-  #   hostname: users-db
-  #   ports:
-  #     - "5432"
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=users
-  #   volumes:
-  #     - ./deploy-config/sql/users.sql:/docker-entrypoint-initdb.d/users.sql
-  #   networks:
-  #     - vuecom
-
-  # orders-db:
-  #   image: postgres:18-alpine
-  #   hostname: orders-db
-  #   ports:
-  #     - "5432"
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=orders
-  #   volumes:
-  #     - ./deploy-config/sql/orders.sql:/docker-entrypoint-initdb.d/orders.sql
-  #   networks:
-  #     - vuecom
-
-  # products-db:
-  #   image: postgres:18-alpine
-  #   hostname: products-db
-  #   ports:
-  #     - "5432"
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=products
-  #   volumes:
-  #     - ./deploy-config/sql/products.sql:/docker-entrypoint-initdb.d/products.sql
-  #   networks:
-  #     - vuecom
-
-  # payments-db:
-  #   image: postgres:18-alpine
-  #   hostname: payments-db
-  #   ports:
-  #     - "5432"
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=payments
-  #   volumes:
-  #     - ./deploy-config/sql/payments.sql:/docker-entrypoint-initdb.d/payments.sql
-  #   networks:
-  #     - vuecom
-
-  # notifications-db:
-  #   image: postgres:18-alpine
-  #   hostname: notifications-db
-  #   ports:
-  #     - "5432"
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=notifications
-  #   volumes:
-  #     - ./deploy-config/sql/notifications.sql:/docker-entrypoint-initdb.d/notifications.sql
-  #   networks:
-  #     - vuecom
-
-  # analytics-db:
-  #   image: postgres:18-alpine
-  #   hostname: analytics-db
-  #   ports:
-  #     - "5432"
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=analytics
-  #   volumes:
-  #     - ./deploy-config/sql/analytics.sql:/docker-entrypoint-initdb.d/analytics.sql
-  #   networks:
-  #     - vuecom
-
-  # inventory-db:
-  #   image: postgres:18-alpine
-  #   hostname: inventory-db
-  #   ports:
-  #     - "5432"
-  #   environment:
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #     - POSTGRES_DB=inventory
-  #   volumes:
-  #     - ./deploy-config/sql/inventory.sql:/docker-entrypoint-initdb.d/inventory.sql
-  #   networks:
-  #     - vuecom
 
   redis:
     image: redis:alpine
@@ -181,6 +80,7 @@ services:
   prometheus:
     image: prom/prometheus
     hostname: prometheus
+    restart: unless-stopped
     ports:
       - "9092:9090"
     volumes:

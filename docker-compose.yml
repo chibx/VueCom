@@ -60,7 +60,7 @@ services:
       - ./deploy-config/redis/redis.conf:/etc/redis/redis.conf
       - ./deploy-config/redis/secrets.conf:/etc/redis/secrets.conf
     mem_limit: 500M
-    command: ["redis-server", "--port", "6380", "/etc/redis/redis.conf"]
+    command: ["redis-server", "/etc/redis/redis.conf"]
     networks:
       - vuecom
 

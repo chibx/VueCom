@@ -27,6 +27,8 @@ A deployable set of packages that help developer set up any e-commerce applicati
 - **Golang >= v1.22.1**
 - **PostgreSQL**
 - **Redis**
+- **RabbitMQ**
+- **Prometheus**
 
 ### Authors
 
@@ -38,10 +40,23 @@ A deployable set of packages that help developer set up any e-commerce applicati
 ### Tech Stack
 
 **Frontend:** Vue 3, Pinia, Shadcn-Vue
-**Backend:** Fiber (Golang), PostgreSQL, Redis
+**Backend:** Fiber (Golang), PostgreSQL, Redis, RabbitMQ
+
+
+### Prerequisites
+
+- You create a password for the user **`vuecom`** in the PostgreSQL database.
+- For the Redis instance, you'll neeed to add a connection password in a newly created file, not going to be committed to the repository, in the `./deploy-config/redis/secrets.conf` file using the format in the [`secrets.conf.example`](./deploy-config/redis/secrets.conf.example) file.
+- For as many actively used/initialized service, you set up the respective environment variables `./backend/services/gateway_service/.env` file as stated in the [.env.example](./backend/services/gateway_service/.env.example) file.
 
 
 ### Run Locally
+
+*This is if you have the necessary dependencies installed and set up already.*
+
+> [!WARNING]
+> The backend development section requires that you have Docker and Docker Compose installed and set up with images of PostgreSQL, Redis, RabbitMQ, and Prometheus (optional).
+
 
 **Clone the project**
 

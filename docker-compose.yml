@@ -8,12 +8,12 @@ services:
     # volumes:
     #   - .:/app
     environment:
-      - GATE_PG_HOST="vuecom-db"
-      - CATALOG_PG_HOST="vuecom-db"
-      - ORDER_PG_HOST="vuecom-db"
-      - PAYMENT_PG_HOST="vuecom-db"
-      - INVENTORY_PG_HOST="vuecom-db"
-      - NOTIF_PG_HOST="vuecom-db"
+      - GATE_PG_HOST=vuecom-db
+      - CATALOG_PG_HOST=vuecom-db
+      - ORDER_PG_HOST=vuecom-db
+      - PAYMENT_PG_HOST=vuecom-db
+      - INVENTORY_PG_HOST=vuecom-db
+      - NOTIF_PG_HOST=vuecom-db
     mem_limit: 256M
     restart: unless-stopped
     env_file:
@@ -38,10 +38,9 @@ services:
       - "5433:5432"
     shm_size: 128mb
     restart: always
-    environment:
-      - POSTGRES_PORT=5432
-      # - POSTGRES_PASSWORD=postgres # for testing
-      # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
+    # environment:
+    # - POSTGRES_PASSWORD=postgres # for testing
+    # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
     env_file:
       - ./backend/services/gateway_service/.env
     volumes:

@@ -45,9 +45,14 @@ A deployable set of packages that help developer set up any e-commerce applicati
 
 ### Prerequisites
 
-- You create a password for the user **`vuecom`** in the PostgreSQL database.
+- You create a password for the user **`vuecom`** in the PostgreSQL database by assigning it to the `APP_PG_PASSWORD` environment variable in the `./backend/services/gateway_service/.env` file.
 - For the Redis instance, you'll neeed to add a connection password in a newly created file, not going to be committed to the repository, in the `./deploy-config/redis/secrets.conf` file using the format in the [`secrets.conf.example`](./deploy-config/redis/secrets.conf.example) file.
 - For as many actively used/initialized service, you set up the respective environment variables `./backend/services/gateway_service/.env` file as stated in the [.env.example](./backend/services/gateway_service/.env.example) file.
+
+**Note:** You can spin up the necessary services i.e PostgreSQL, Redis, RabbitMQ, by running the following command in the project root:
+```bash
+  docker-compose up service1 service2 ... serviceN
+``` 
 
 
 ### Run Locally

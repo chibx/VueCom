@@ -1,7 +1,7 @@
 
 # VueCom
 
-A deployable set of packages that help developer set up any e-commerce application.
+A prebuilt deployable server binary that helps developers start up any e-commerce application. It provides you with easy to work with UI and logic
 
 > [!WARNING]
 > This project is currently in development.

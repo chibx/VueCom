@@ -4,10 +4,9 @@ services:
       context: .
       dockerfile: deploy-config/vuecom.Dockerfile
     ports:
-      - "3500:2500"
-    # volumes:
-    #   - .:/app
+      - 3500:2500
     environment:
+      - GO_HOST=vuecom
       - APP_PG_HOST=vuecom-db
       - APP_PG_USER=vuecom
       - APP_PG_PORT=5432
@@ -35,19 +34,11 @@ services:
       - "5433:5432"
     shm_size: 128mb
     restart: always
-    # environment:
-    # - POSTGRES_PASSWORD=postgres # for testing
-    # - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # for testing
     env_file:
       - ./backend/services/gateway_service/.env
     volumes:
       - ./deploy-config/sql/:/docker-entrypoint-initdb.d/
       - ./pgdata:/var/lib/postgresql/
-    # healthcheck:
-    #   test: ["CMD-SHELL", "pg_isready -U myuser -d mydb"]
-    #   interval: 5s
-    #   timeout: 5s
-    #   retries: 5
     networks:
       - vuecom
 

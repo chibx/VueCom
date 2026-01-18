@@ -13,14 +13,15 @@ import (
 // Potentially Long Function | Just stack all the routes in here
 func LoadRoutes(app fiber.Router, api *types.Api) {
 	// app.Use(middlewares.AuthMiddleware(api), middlewares.ServeIndex(api), middlewares.ServeAssets())
+	app.Get("/api/health", func(ctx *fiber.Ctx) error {
+		return ctx.Status(200).SendString("OK")
+	})
+
 	app.Use(middlewares.AuthMiddleware(api), middlewares.ServeIndex(api))
 
 	backend.LoadRoutes(app, api)
 	customer.LoadRoutes(app, api)
 
-	app.Get("/health", func(ctx *fiber.Ctx) error {
-		return ctx.Status(200).SendString("OK")
-	})
 	app.Static("*", "./"+constants.PublicFolder)
 	app.Get("/*", func(ctx *fiber.Ctx) error {
 		return ctx.SendFile("./" + constants.PublicFolder + "/index.html")

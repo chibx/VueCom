@@ -10,6 +10,7 @@ services:
     environment:
       - APP_PG_HOST=vuecom-db
       - APP_PG_USER=vuecom
+      - APP_PG_PORT=5432
     mem_limit: 256M
     restart: unless-stopped
     env_file:
@@ -19,7 +20,7 @@ services:
       interval: 1m30s
       timeout: 5s
       retries: 5
-      start_period: 20s
+      start_period: 30s
     depends_on:
       - vuecom-db
       - redis

@@ -40,6 +40,7 @@ A prebuilt deployable server binary that helps developers start up any e-commerc
 ### Tech Stack
 
 **Frontend:** Vue 3, Pinia, Shadcn-Vue
+
 **Backend:** Fiber (Golang), PostgreSQL, Redis, RabbitMQ
 
 

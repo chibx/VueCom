@@ -84,11 +84,11 @@ A deployable set of packages that help developer set up any e-commerce applicati
 **Install dependencies (Backend)**
 
 ```bash
-  pnpm run install:server
+  pnpm install:server
 ```
 
 **Start the development server (client & server)**
 
 ```bash
-  pnpm run dev
+  pnpm dev
 ```

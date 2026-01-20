@@ -2,8 +2,6 @@
   "type": "module",
   "scripts": {
     "dev": "tsx scripts/dev.ts",
-    "dev:frontend": "cd frontend && vite",
-    "dev:backend": "cd backend/services/gateway_service && air",
     "install:server": "tsx scripts/install-server-deps.ts",
     "install:frontend": "cd frontend && pnpm install",
     "build": "tsx scripts/build.ts",

@@ -4,8 +4,8 @@ package v1
 // 	"errors"
 // 	"mime/multipart"
 // 	"strings"
-// 	"vuecom/shared/models"
-// 	dbModels "vuecom/shared/models/db"
+// 	"github.com/chibx/vuecom/backend/shared/models"
+// 	dbModels "github.com/chibx/vuecom/backend/shared/models/db"
 
 // 	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
 // 	"github.com/cloudinary/cloudinary-go/v2/api/admin"

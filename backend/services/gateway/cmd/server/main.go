@@ -3,23 +3,18 @@ package main
 import (
 	"fmt"
 
-	// "sync"
-	v1 "vuecom/gateway/api/v1"
-	"vuecom/gateway/config"
-	"vuecom/gateway/internal/types"
+	v1 "github.com/chibx/vuecom/backend/services/gateway/api/v1"
+	"github.com/chibx/vuecom/backend/services/gateway/config"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/zap"
-	// "go.uber.org/zap"
 )
 
 func main() {
-
-	// logger.Info()
-	// --------------------------------------------------------
 	config := config.GetConfig()
 	v1_api := &types.Api{Config: config, Deps: &types.Deps{}}
 
@@ -31,10 +26,6 @@ func main() {
 	})
 
 	app.Use(helmet.New())
-	// TODO: Add a rate limiter middleware
-	// app.Get("/", func(ctx *fiber.Ctx) error {
-	// 	return ctx.SendStatus(fiber.StatusNotFound)
-	// })
 
 	initServer(app, v1_api)
 	logger := v1_api.Deps.Logger

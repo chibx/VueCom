@@ -3,7 +3,7 @@ syntax = "proto3";
 package catalog;
 
 // option go_package = ".";
-option go_package = "vuecom/shared/proto/go/catalog";
+option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
 
 message Product {
   string id = 1;

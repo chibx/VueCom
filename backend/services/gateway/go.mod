@@ -1,4 +1,4 @@
-module vuecom/gateway
+module github.com/chibx/vuecom/backend/services/gateway
 
 go 1.25.0
 
@@ -11,6 +11,8 @@ require (
 	github.com/goccy/go-json v0.10.5
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	go.uber.org/zap v1.27.1
+	// vuecom/shared v1.0.0
+	github.com/chibx/vuecom/backend/shared v1.0.0
 )
 
 require (
@@ -40,7 +42,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/redis/go-redis/v9 v9.17.0
+	github.com/redis/go-redis/v9 v9.17.2
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.57.0 // indirect
@@ -51,7 +53,6 @@ require (
 	golang.org/x/text v0.33.0 // indirect
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.1
-	vuecom/shared v1.0.0
 )
 
-replace vuecom/shared => ../../shared
+// replace vuecom/shared => ../../shared

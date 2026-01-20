@@ -3,7 +3,7 @@ package gorm_pg
 import (
 	"context"
 
-	catalogModels "vuecom/shared/models/db/catalog"
+	catalogModels "github.com/chibx/vuecom/backend/shared/models/db/catalog"
 
 	"gorm.io/gorm"
 )

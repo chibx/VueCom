@@ -1,4 +1,4 @@
-module vuecom/notification
+module github.com/chibx/vuecom/backend/services/notification
 
 go 1.25.0
 
@@ -37,7 +37,8 @@ require (
 	golang.org/x/text v0.33.0 // indirect
 	gorm.io/driver/postgres v1.6.0 // indirect
 	gorm.io/gorm v1.31.1 // indirect
-	vuecom/shared v1.0.0
+	// vuecom/shared v1.0.0
+	github.com/chibx/vuecom/backend/shared v1.0.0
 )
 
-replace vuecom/shared => ../../shared
+// replace vuecom/shared => ../../shared

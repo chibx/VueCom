@@ -2,8 +2,9 @@ package admin
 
 import (
 	"errors"
-	"vuecom/gateway/api/v1/response"
-	"vuecom/gateway/internal/types"
+
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"

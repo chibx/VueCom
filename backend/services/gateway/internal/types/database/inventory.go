@@ -2,7 +2,8 @@ package database
 
 import (
 	"context"
-	invModels "vuecom/shared/models/db/inventory"
+
+	invModels "github.com/chibx/vuecom/backend/shared/models/db/inventory"
 )
 
 type InventoryRepository interface {

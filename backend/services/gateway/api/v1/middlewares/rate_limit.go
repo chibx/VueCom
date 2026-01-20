@@ -2,9 +2,10 @@ package middlewares
 
 import (
 	"strconv"
-	"vuecom/gateway/api/v1/response"
-	"vuecom/gateway/internal/constants"
-	"vuecom/gateway/internal/types"
+
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"

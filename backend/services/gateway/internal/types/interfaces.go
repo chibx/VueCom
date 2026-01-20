@@ -2,7 +2,8 @@ package types
 
 import (
 	"errors"
-	"vuecom/gateway/internal/types/database"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types/database"
 )
 
 type DatabaseErr error

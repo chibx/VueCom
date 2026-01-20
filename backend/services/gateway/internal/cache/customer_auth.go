@@ -5,10 +5,12 @@ import (
 	"errors"
 	"strconv"
 	"time"
-	"vuecom/gateway/internal/constants"
-	"vuecom/gateway/internal/types"
-	serverErrors "vuecom/shared/errors/server"
-	userModels "vuecom/shared/models/db/users"
+
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
+	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"

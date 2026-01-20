@@ -3,12 +3,12 @@ package gorm_pg
 import (
 	"gorm.io/gorm"
 
-	model "vuecom/shared/models/db"
-	appdata "vuecom/shared/models/db/appdata"
-	catalog "vuecom/shared/models/db/catalog"
-	inventory "vuecom/shared/models/db/inventory"
-	orders "vuecom/shared/models/db/orders"
-	users "vuecom/shared/models/db/users"
+	model "github.com/chibx/vuecom/backend/shared/models/db"
+	appdata "github.com/chibx/vuecom/backend/shared/models/db/appdata"
+	catalog "github.com/chibx/vuecom/backend/shared/models/db/catalog"
+	inventory "github.com/chibx/vuecom/backend/shared/models/db/inventory"
+	orders "github.com/chibx/vuecom/backend/shared/models/db/orders"
+	users "github.com/chibx/vuecom/backend/shared/models/db/users"
 )
 
 func migrate(db *gorm.DB) error {

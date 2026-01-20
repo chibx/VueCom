@@ -2,7 +2,8 @@ package database
 
 import (
 	"context"
-	userModels "vuecom/shared/models/db/users"
+
+	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 )
 
 type BackendUserRepository interface {

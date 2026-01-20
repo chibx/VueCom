@@ -2,7 +2,8 @@ package database
 
 import (
 	"context"
-	appModels "vuecom/shared/models/db/appdata"
+
+	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
 )
 
 type AppDataRepository interface {

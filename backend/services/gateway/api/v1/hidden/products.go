@@ -1,9 +1,9 @@
 package v1
 
 // import (
-// 	"vuecom/shared/models"
+// 	"github.com/chibx/vuecom/backend/shared/models"
 
-// 	dbModel "vuecom/shared/models/db"
+// 	dbModel "github.com/chibx/vuecom/backend/shared/models/db"
 
 // 	"github.com/gofiber/fiber/v2"
 // 	"gorm.io/gorm"

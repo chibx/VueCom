@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"vuecom/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/gofiber/fiber/v2"
 )

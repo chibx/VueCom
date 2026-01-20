@@ -2,7 +2,8 @@ package database
 
 import (
 	"context"
-	orderModels "vuecom/shared/models/db/orders"
+
+	orderModels "github.com/chibx/vuecom/backend/shared/models/db/orders"
 )
 
 type OrderRepository interface {

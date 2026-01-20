@@ -6,10 +6,12 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-	"vuecom/gateway/internal/constants"
-	"vuecom/gateway/internal/types"
-	"vuecom/gateway/internal/utils"
-	userModels "vuecom/shared/models/db/users"
+
+	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -3,11 +3,12 @@ package products
 import (
 	"errors"
 	"strconv"
-	"vuecom/gateway/api/v1/request"
-	"vuecom/gateway/api/v1/response"
-	"vuecom/gateway/internal/types"
 
-	catModels "vuecom/shared/models/db/catalog"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+
+	catModels "github.com/chibx/vuecom/backend/shared/models/db/catalog"
 
 	"github.com/gofiber/fiber/v2"
 )

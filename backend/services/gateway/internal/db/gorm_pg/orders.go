@@ -3,7 +3,7 @@ package gorm_pg
 import (
 	"context"
 
-	orderModels "vuecom/shared/models/db/orders"
+	orderModels "github.com/chibx/vuecom/backend/shared/models/db/orders"
 
 	"gorm.io/gorm"
 )

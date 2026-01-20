@@ -8,10 +8,12 @@ import (
 
 	// "strconv"
 	"time"
-	"vuecom/gateway/config"
-	"vuecom/gateway/internal/db/gorm_pg"
-	"vuecom/gateway/internal/types"
-	appModels "vuecom/shared/models/db/appdata"
+
+	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
+
+	"github.com/chibx/vuecom/backend/services/gateway/config"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/db/gorm_pg"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/go-redis/redis_rate/v10"

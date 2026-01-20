@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-	"vuecom/gateway/internal/auth"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"

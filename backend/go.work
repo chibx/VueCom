@@ -1,0 +1,14 @@
+go 1.25.0
+
+use (
+	./services/analytics
+	./services/catalog
+	./services/gateway
+	./services/inventory
+	./services/notification
+	./services/orders
+	./services/payment
+	./shared
+)
+
+replace github.com/chibx/vuecom/backend/shared v1.0.0 => ./shared

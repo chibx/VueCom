@@ -4,9 +4,11 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"time"
-	"vuecom/gateway/internal/constants"
-	serverErr "vuecom/shared/errors/server"
-	userModels "vuecom/shared/models/db/users"
+
+	serverErr "github.com/chibx/vuecom/backend/shared/errors/server"
+	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 
 	"github.com/gofiber/fiber/v2"
 )

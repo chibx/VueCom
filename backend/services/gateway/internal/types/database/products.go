@@ -2,7 +2,8 @@ package database
 
 import (
 	"context"
-	productModels "vuecom/shared/models/db/catalog"
+
+	productModels "github.com/chibx/vuecom/backend/shared/models/db/catalog"
 )
 
 type ProductRepository interface {

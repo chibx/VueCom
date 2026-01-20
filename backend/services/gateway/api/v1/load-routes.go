@@ -1,11 +1,11 @@
 package v1
 
 import (
-	"vuecom/gateway/api/v1/handlers/backend"
-	"vuecom/gateway/api/v1/handlers/customer"
-	"vuecom/gateway/api/v1/middlewares"
-	"vuecom/gateway/internal/constants"
-	"vuecom/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/backend"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/customer"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/middlewares"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/gofiber/fiber/v2"
 )

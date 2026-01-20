@@ -3,7 +3,7 @@ package gorm_pg
 import (
 	"context"
 
-	invModels "vuecom/shared/models/db/inventory"
+	invModels "github.com/chibx/vuecom/backend/shared/models/db/inventory"
 
 	"gorm.io/gorm"
 )

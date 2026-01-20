@@ -1,14 +1,14 @@
 package backend
 
 import (
-	"vuecom/gateway/api/v1/middlewares"
-	"vuecom/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/middlewares"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/gofiber/fiber/v2"
 
-	adminHandler "vuecom/gateway/api/v1/handlers/backend/admin"
-	orderHandler "vuecom/gateway/api/v1/handlers/backend/orders"
-	productHandler "vuecom/gateway/api/v1/handlers/backend/products"
+	adminHandler "github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/backend/admin"
+	orderHandler "github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/backend/orders"
+	productHandler "github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/backend/products"
 )
 
 func LoadRoutes(app fiber.Router, api *types.Api) {

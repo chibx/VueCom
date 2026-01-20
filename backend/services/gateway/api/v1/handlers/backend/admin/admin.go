@@ -4,16 +4,18 @@ import (
 	"errors"
 	"mime/multipart"
 	"strings"
-	"vuecom/gateway/api/v1/request"
-	backendusers "vuecom/gateway/api/v1/request/backend_users"
-	"vuecom/gateway/api/v1/response"
-	"vuecom/gateway/internal/constants"
-	"vuecom/gateway/internal/types"
-	"vuecom/gateway/internal/utils"
-	"vuecom/shared/errors/server"
-	appModels "vuecom/shared/models/db/appdata"
 
-	// userModels "vuecom/shared/models/db/users"
+	"github.com/chibx/vuecom/backend/shared/errors/server"
+	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
+
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
+	backendusers "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/backend_users"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
+
+	// userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
 	"github.com/cloudinary/cloudinary-go/v2/api/admin"

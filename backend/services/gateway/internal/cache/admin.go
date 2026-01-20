@@ -4,12 +4,14 @@ import (
 	"context"
 	"errors"
 	"time"
-	"vuecom/gateway/internal/cache/keys"
-	"vuecom/gateway/internal/types"
-	"vuecom/shared/errors/server"
-	appModels "vuecom/shared/models/db/appdata"
 
-	// userModels "vuecom/shared/models/db/users"
+	"github.com/chibx/vuecom/backend/shared/errors/server"
+	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/cache/keys"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+
+	// userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"

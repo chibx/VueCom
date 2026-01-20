@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"slices"
 	"strings"
-	"vuecom/gateway/internal/types"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	// "github.com/cloudinary/cloudinary-go/v2"
 	// "github.com/redis/go-redis/v9"

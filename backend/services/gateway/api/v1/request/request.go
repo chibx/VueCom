@@ -2,7 +2,8 @@ package request
 
 import (
 	"path"
-	"vuecom/gateway/internal/types"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 )
 
 const CUSTOMER_KEY = "customer"

@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"vuecom/gateway/internal/auth"
-	"vuecom/gateway/internal/types"
-	"vuecom/gateway/internal/validation"
-	"vuecom/shared/errors/server"
-	userModels "vuecom/shared/models/db/users"
+
+	"github.com/chibx/vuecom/backend/shared/errors/server"
+	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/validation"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"

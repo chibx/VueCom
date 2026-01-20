@@ -6,7 +6,8 @@ import (
 	"os"
 	"slices"
 	"strings"
-	"vuecom/gateway/api/v1/request"
+
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/gofiber/fiber/v2"

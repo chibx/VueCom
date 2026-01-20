@@ -2,8 +2,9 @@ package gorm_pg
 
 import (
 	"context"
-	appModels "vuecom/shared/models/db/appdata"
-	userModels "vuecom/shared/models/db/users"
+
+	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
+	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"gorm.io/gorm"
 )

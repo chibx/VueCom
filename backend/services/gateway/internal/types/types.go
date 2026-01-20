@@ -1,8 +1,9 @@
 package types
 
 import (
-	"vuecom/gateway/internal/db/gorm_pg"
-	"vuecom/shared/models"
+	"github.com/chibx/vuecom/backend/shared/models"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/db/gorm_pg"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/go-redis/redis_rate/v10"

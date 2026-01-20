@@ -3,9 +3,11 @@ package auth
 import (
 	"context"
 	"crypto/rand"
-	"vuecom/gateway/internal/constants"
-	"vuecom/gateway/internal/types"
-	userModels "vuecom/shared/models/db/users"
+
+	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 )
 
 func GenerateSessionToken() (string, error) {

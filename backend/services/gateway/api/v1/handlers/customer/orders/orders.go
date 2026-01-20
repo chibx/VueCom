@@ -3,11 +3,12 @@ package orders
 import (
 	"errors"
 	"strconv"
-	"vuecom/gateway/api/v1/request"
-	"vuecom/gateway/api/v1/response"
-	"vuecom/gateway/internal/types"
 
-	"vuecom/shared/models/db/orders"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+
+	"github.com/chibx/vuecom/backend/shared/models/db/orders"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"

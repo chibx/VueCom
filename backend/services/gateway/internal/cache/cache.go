@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"vuecom/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 )
 
 func GetProduct(api types.Api, id int) {

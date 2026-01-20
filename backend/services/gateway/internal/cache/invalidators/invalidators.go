@@ -2,7 +2,8 @@ package invalidators
 
 import (
 	"context"
-	"vuecom/gateway/internal/types"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"go.uber.org/zap"
 )

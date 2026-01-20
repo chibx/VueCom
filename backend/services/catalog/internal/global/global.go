@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"vuecom/catalog/internal/db"
+
+	"github.com/chibx/vuecom/backend/services/catalog/internal/db"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/redis/go-redis/v9"

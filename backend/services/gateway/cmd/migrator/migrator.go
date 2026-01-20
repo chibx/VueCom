@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"vuecom/gateway/internal/db/gorm_pg"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/db/gorm_pg"
 
 	_ "github.com/joho/godotenv/autoload"
 

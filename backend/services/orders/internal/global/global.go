@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"os"
 	"time"
-	"vuecom/catalog/internal/db"
+
+	"github.com/chibx/vuecom/backend/services/orders/internal/db"
 
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"

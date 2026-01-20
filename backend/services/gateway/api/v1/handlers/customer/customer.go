@@ -1,13 +1,13 @@
 package customer
 
 import (
-	"vuecom/gateway/api/v1/middlewares"
-	"vuecom/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/middlewares"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/gofiber/fiber/v2"
 
-	orderHandler "vuecom/gateway/api/v1/handlers/customer/orders"
-	productHandler "vuecom/gateway/api/v1/handlers/customer/products"
+	orderHandler "github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/customer/orders"
+	productHandler "github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/customer/products"
 )
 
 func LoadRoutes(app fiber.Router, api *types.Api) {

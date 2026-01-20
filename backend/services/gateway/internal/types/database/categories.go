@@ -2,7 +2,8 @@ package database
 
 import (
 	"context"
-	catModels "vuecom/shared/models/db/catalog"
+
+	catModels "github.com/chibx/vuecom/backend/shared/models/db/catalog"
 )
 
 type CategoryRepository interface {

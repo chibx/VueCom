@@ -1,6 +1,6 @@
 package config
 
-import "vuecom/gateway/internal/types"
+import "github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 // type Config struct {
 // 	Host string

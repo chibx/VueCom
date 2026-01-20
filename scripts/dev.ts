@@ -5,7 +5,7 @@ import { join } from "node:path";
 let prev: string | null = null;
 
 const backend = spawn("air", [], {
-    cwd: join(process.cwd(), "./backend/services/gateway_service"),
+    cwd: join(process.cwd(), "./backend/services/gateway"),
     env: { ...process.env, FORCE_COLOR: "1" },
     stdio: ["ignore", "pipe", "pipe"],
 });

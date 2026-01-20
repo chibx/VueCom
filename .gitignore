@@ -46,6 +46,7 @@ playwright-report/
 
 # binaries
 gateway
+!gateway/
 backend/**/bin/
 
 # Miscellaneous

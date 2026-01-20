@@ -11,8 +11,8 @@ require (
 	github.com/goccy/go-json v0.10.5
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	go.uber.org/zap v1.27.1
-	// vuecom/shared v1.0.0
-	github.com/chibx/vuecom/backend/shared v1.0.0
+	// vuecom/shared v0.0.1
+	github.com/chibx/vuecom/backend/shared v0.0.1
 )
 
 require (

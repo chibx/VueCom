@@ -11,4 +11,13 @@ use (
 	./shared
 )
 
-replace github.com/chibx/vuecom/backend/shared v1.0.0 => ./shared
+replace (
+	github.com/chibx/vuecom/backend/services/analytics v1.0.0 => ./services/analytics
+	github.com/chibx/vuecom/backend/services/catalog v1.0.0 => ./services/catalog
+	github.com/chibx/vuecom/backend/services/gateway v1.0.0 => ./services/gateway
+	github.com/chibx/vuecom/backend/services/inventory v1.0.0 => ./services/inventory
+	github.com/chibx/vuecom/backend/services/notification v1.0.0 => ./services/notification
+	github.com/chibx/vuecom/backend/services/orders v1.0.0 => ./services/orders
+	github.com/chibx/vuecom/backend/services/payment v1.0.0 => ./services/payment
+	github.com/chibx/vuecom/backend/shared v1.0.0 => ./shared
+)

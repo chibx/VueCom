@@ -1,8 +1,8 @@
 package db
 
 import (
+	"github.com/chibx/vuecom/backend/shared/models"
 	"time"
-	"vuecom/shared/models"
 )
 
 // Country represents a country in the system

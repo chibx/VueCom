@@ -6,7 +6,7 @@ defineProps<{
   data: {
     name: string
     color: string
-    value: any
+    value: unknown
   }[]
 }>()
 </script>
@@ -23,12 +23,8 @@ defineProps<{
         <div class="flex items-center">
           <span class="w-2.5 h-2.5 mr-2">
             <svg width="100%" height="100%" viewBox="0 0 30 30">
-              <path
-                d=" M 15 15 m -14, 0 a 14,14 0 1,1 28,0 a 14,14 0 1,1 -28,0"
-                :stroke="item.color"
-                :fill="item.color"
-                stroke-width="1"
-              />
+              <path d=" M 15 15 m -14, 0 a 14,14 0 1,1 28,0 a 14,14 0 1,1 -28,0" :stroke="item.color" :fill="item.color"
+                stroke-width="1" />
             </svg>
           </span>
           <span>{{ item.name }}</span>

@@ -2,7 +2,6 @@
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
-import { PrimeVueResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 
@@ -15,9 +14,6 @@ export default defineConfig({
         // vueDevTools(),
         tailwindcss(),
         Components({
-            resolvers: [
-                PrimeVueResolver({ prefix: 'Prime', importIcons: false, importStyle: false }),
-            ],
             directoryAsNamespace: true,
         }),
     ],

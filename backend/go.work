@@ -1,0 +1,23 @@
+go 1.25.0
+
+use (
+	./services/analytics
+	./services/catalog
+	./services/gateway
+	./services/inventory
+	./services/notification
+	./services/orders
+	./services/payment
+	./shared
+)
+
+replace (
+	github.com/chibx/vuecom/backend/services/analytics v0.0.1 => ./services/analytics
+	github.com/chibx/vuecom/backend/services/catalog v0.0.1 => ./services/catalog
+	github.com/chibx/vuecom/backend/services/gateway v0.0.1 => ./services/gateway
+	github.com/chibx/vuecom/backend/services/inventory v0.0.1 => ./services/inventory
+	github.com/chibx/vuecom/backend/services/notification v0.0.1 => ./services/notification
+	github.com/chibx/vuecom/backend/services/orders v0.0.1 => ./services/orders
+	github.com/chibx/vuecom/backend/services/payment v0.0.1 => ./services/payment
+	github.com/chibx/vuecom/backend/shared v0.0.1 => ./shared
+)

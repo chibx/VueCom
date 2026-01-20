@@ -4,7 +4,7 @@ import { platform } from "node:os";
 import { join } from "node:path";
 
 const OUTPUT_DIR = join(process.cwd(), "./.output");
-const BACKEND_DIR = join(process.cwd(), "./backend/services/gateway_service");
+const BACKEND_DIR = join(process.cwd(), "./backend/services/gateway");
 const FRONTEND_DIR = join(process.cwd(), "./frontend");
 
 const BINARY_NAME = `gateway${platform() === "win32" ? ".exe" : ""}`;

@@ -18,6 +18,7 @@ coverage
 vuecom-server*
 .env*
 !.env.*.example
+secrets.conf
 .data
 .nuxt
 .nitro
@@ -45,6 +46,7 @@ playwright-report/
 
 # binaries
 gateway
+!gateway/
 backend/**/bin/
 
 # Miscellaneous

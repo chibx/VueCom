@@ -32,7 +32,7 @@ onMounted(() => {
 
 function onLegendItemClick(d: BulletLegendItemInterface, i: number) {
   emits("legendItemClick", d, i)
-  const isBulletActive = !props.items[i].inactive
+  const isBulletActive = !props.items[i]!.inactive
   const isFilterApplied = props.items.some(i => i.inactive)
   if (isFilterApplied && isBulletActive) {
     // reset filter
@@ -47,14 +47,9 @@ function onLegendItemClick(d: BulletLegendItemInterface, i: number) {
 </script>
 
 <template>
-  <div
-    ref="elRef" class="w-max" :style="{
-      '--vis-legend-bullet-size': '16px',
-    }"
-  >
-    <VisBulletLegend
-      :items="items"
-      :on-legend-item-click="onLegendItemClick"
-    />
+  <div ref="elRef" class="w-max" :style="{
+    '--vis-legend-bullet-size': '16px',
+  }">
+    <VisBulletLegend :items="items" :on-legend-item-click="onLegendItemClick" />
   </div>
 </template>

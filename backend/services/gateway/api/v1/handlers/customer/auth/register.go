@@ -8,12 +8,8 @@ import (
 
 func RegisterRoutes(app fiber.Router, api *types.Api) {
 	auth := app.Group("/auth")
-	auth.Post("/register")
-	auth.Post("/login")
-	auth.Post("/refresh")
+	auth.Post("/register", Register(api))
+	auth.Post("/login", Login(api))
+	// auth.Post("/refresh")
 
-	backendAuth := auth.Group("/backend")
-	backendAuth.Post("/register")
-	backendAuth.Post("/login")
-	backendAuth.Post("/refresh")
 }

@@ -17,12 +17,12 @@ func GlobalRateLimit(api *types.Api) fiber.Handler {
 		res, err := api.Deps.Limiter.Allow(ctx.UserContext(), constants.GlobalLimitKey, constants.GlobalLimit)
 		if err != nil {
 			logger.Error("failed to allow global rate limit", zap.Error(err))
-			return response.NewResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
+			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
 		}
 		if res.Allowed == 0 {
 			retryAfter := max(int(res.RetryAfter.Seconds()), 1)
 			ctx.Set("Retry-After", strconv.Itoa(retryAfter))
-			return response.NewResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{"error": "Too many requests (global limit exceeded)"})
+			return response.WriteResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{"error": "Too many requests (global limit exceeded)"})
 		}
 
 		// Optional headers
@@ -45,12 +45,12 @@ func BackendRateLimit(api *types.Api) fiber.Handler {
 		res, err := api.Deps.Limiter.Allow(ctx.Context(), rlKey, limit)
 		if err != nil {
 			logger.Error("failed to allow backend rate limit", zap.Error(err))
-			return response.NewResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
+			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
 		}
 		if res.Allowed == 0 {
 			retryAfter := max(int(res.RetryAfter.Seconds()), 1)
 			ctx.Set("Retry-After", strconv.Itoa(retryAfter))
-			return response.NewResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
+			return response.WriteResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
 				"error": "Too many requests (backend limit exceeded)",
 			})
 		}
@@ -80,12 +80,12 @@ func CustomerRateLimit(api *types.Api) fiber.Handler {
 		res, err := api.Deps.Limiter.Allow(ctx.Context(), rlKey, limit)
 		if err != nil {
 			logger.Error("failed to allow customer rate limit", zap.Error(err))
-			return response.NewResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
+			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
 		}
 		if res.Allowed == 0 {
 			retryAfter := max(int(res.RetryAfter.Seconds()), 1)
 			ctx.Set("Retry-After", strconv.Itoa(retryAfter))
-			return response.NewResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
+			return response.WriteResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
 				"error": "Too many requests (customer limit exceeded)",
 			})
 		}

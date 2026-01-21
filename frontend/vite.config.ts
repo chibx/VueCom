@@ -5,7 +5,8 @@ import { fileURLToPath, URL } from 'node:url'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 
-const { GO_PORT, GO_HOST } = process.env
+const GO_HOST = 'localhost'
+const GO_PORT = 2500
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -26,7 +27,10 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '/api': `http://${GO_HOST}:${GO_PORT}/api`,
+            '/api': {
+                target: `http://${GO_HOST}:${GO_PORT}/`,
+                changeOrigin: true,
+            },
         },
     },
 })

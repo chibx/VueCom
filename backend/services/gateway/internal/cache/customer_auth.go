@@ -33,7 +33,7 @@ func GetCustomerSession(token string, api *types.Api, ctx context.Context) (*use
 		}
 
 		logger.Info("customer session not found in cache, fetching from db")
-		cus_session, err = db.Customers().GetSessionByToken(token, ctx)
+		cus_session, err = db.Customers().GetSessionByToken(ctx, token)
 		if err != nil {
 			if errors.Is(err, types.ErrDbNil) {
 				logger.Error("customer session not found in db", zap.Error(err))
@@ -76,7 +76,7 @@ func GetCustomerById(api *types.Api, id int, ctx context.Context) (*userModels.C
 		}
 
 		logger.Info("customer not found in cache, fetching from db")
-		customer, err = db.Customers().GetUserById(id, ctx)
+		customer, err = db.Customers().GetUserById(ctx, id)
 
 		if err != nil {
 			if errors.Is(err, types.ErrDbNil) {

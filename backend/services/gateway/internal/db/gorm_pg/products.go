@@ -12,11 +12,11 @@ type productRepository struct {
 	db *gorm.DB
 }
 
-func (p *productRepository) CreateProduct(product *catModels.Product, ctx context.Context) error {
+func (p *productRepository) CreateProduct(ctx context.Context, product *catModels.Product) error {
 	return p.db.WithContext(ctx).Create(product).Error
 }
 
-func (p *productRepository) GetProductById(id int, ctx context.Context) (*catModels.Product, error) {
+func (p *productRepository) GetProductById(ctx context.Context, id int) (*catModels.Product, error) {
 	product := &catModels.Product{}
 
 	err := p.db.WithContext(ctx).Where("id = ?", id).First(product).Error

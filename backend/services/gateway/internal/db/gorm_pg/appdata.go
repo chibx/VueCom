@@ -13,7 +13,7 @@ type appdataRepository struct {
 	db *gorm.DB
 }
 
-func (ar *appdataRepository) CreateAppData(appData *appModels.AppData, ctx context.Context) error {
+func (ar *appdataRepository) CreateAppData(ctx context.Context, appData *appModels.AppData) error {
 	return ar.db.WithContext(ctx).Create(appData).Error
 }
 

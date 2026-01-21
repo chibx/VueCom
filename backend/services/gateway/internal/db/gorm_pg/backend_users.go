@@ -13,7 +13,7 @@ type backendUserRepository struct {
 	db *gorm.DB
 }
 
-func (br *backendUserRepository) CreateUser(user *userModels.BackendUser, ctx context.Context) error {
+func (br *backendUserRepository) CreateUser(ctx context.Context, user *userModels.BackendUser) error {
 	return br.db.WithContext(ctx).Create(user).Error
 }
 
@@ -28,7 +28,9 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.Back
 	return admin, nil
 }
 
-func (br *backendUserRepository) GetUserById(id int, ctx context.Context) (*userModels.BackendUser, error) {
+func GetUserByUsername(context context.Context, username string)
+
+func (br *backendUserRepository) GetUserById(ctx context.Context, id int) (*userModels.BackendUser, error) {
 	backendUser := &userModels.BackendUser{}
 	err := br.db.WithContext(ctx).First(backendUser, "id = ?", id).Error
 	if err != nil {
@@ -38,11 +40,11 @@ func (br *backendUserRepository) GetUserById(id int, ctx context.Context) (*user
 	return backendUser, nil
 }
 
-func (br *backendUserRepository) GetUserByApiKey(apiKey string, ctx context.Context) (*userModels.BackendUser, error) {
+func (br *backendUserRepository) GetUserByApiKey(ctx context.Context, apiKey string) (*userModels.BackendUser, error) {
 	return nil, errDbUnimplemented
 }
 
-func (br *backendUserRepository) GetSessionByToken(token string, ctx context.Context) (*userModels.BackendSession, error) {
+func (br *backendUserRepository) GetSessionByToken(ctx context.Context, token string) (*userModels.BackendSession, error) {
 	sessionData := &userModels.BackendSession{}
 
 	err := br.db.WithContext(ctx).First(sessionData, "token = ?", token).Error
@@ -53,7 +55,7 @@ func (br *backendUserRepository) GetSessionByToken(token string, ctx context.Con
 	return sessionData, nil
 }
 
-func (br *backendUserRepository) GetSessions(userId int, ctx context.Context) ([]userModels.BackendSession, error) {
+func (br *backendUserRepository) GetSessions(ctx context.Context, userId int) ([]userModels.BackendSession, error) {
 	var sessions []userModels.BackendSession
 
 	err := br.db.WithContext(ctx).Find(&sessions, "user_id = ?", userId).Error
@@ -64,7 +66,7 @@ func (br *backendUserRepository) GetSessions(userId int, ctx context.Context) ([
 	return sessions, nil
 }
 
-func (br *backendUserRepository) CreateSession(session *userModels.BackendSession, ctx context.Context) error {
+func (br *backendUserRepository) CreateSession(ctx context.Context, session *userModels.BackendSession) error {
 	err := br.db.WithContext(ctx).Create(session).Error
 	if err != nil {
 		return err

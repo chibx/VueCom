@@ -33,7 +33,7 @@ func GetBackendUserSession(token string, api *types.Api, ctx context.Context) (*
 		}
 
 		logger.Info("backend user session not found in cache, fetching from db")
-		backend_session, err = db.BackendUsers().GetSessionByToken(token, ctx)
+		backend_session, err = db.BackendUsers().GetSessionByToken(ctx, token)
 
 		if err != nil {
 			if errors.Is(err, types.ErrDbNil) {
@@ -77,7 +77,7 @@ func GetBackendUserById(api *types.Api, id int, ctx context.Context) (*userModel
 		}
 
 		logger.Info("backend user not found in cache, fetching from db")
-		backendUser, err = db.BackendUsers().GetUserById(id, ctx)
+		backendUser, err = db.BackendUsers().GetUserById(ctx, id)
 
 		if err != nil {
 			if errors.Is(err, types.ErrDbNil) {

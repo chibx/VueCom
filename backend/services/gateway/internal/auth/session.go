@@ -54,7 +54,7 @@ func DeleteCustomerSession(ctx context.Context, api *types.Api, session *userMod
 	}
 
 	// err := db.Model(customerSession).Where("token = ?", token).Delete(customerSession).Error
-	err := db.Customers().DeleteSession(session, ctx)
+	err := db.Customers().DeleteSession(ctx, session)
 	if err != nil {
 		return err
 	}

@@ -46,7 +46,7 @@ services:
         image: redis:alpine
         hostname: redis
         ports:
-            - "6380"
+            - "6380:6379"
         restart: unless-stopped
         volumes:
             - ./deploy-config/redis/redis.conf:/etc/redis/redis.conf

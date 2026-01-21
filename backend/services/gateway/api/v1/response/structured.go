@@ -8,7 +8,32 @@ type structuredResponse struct {
 	Data    any    `json:"data,omitempty"`
 }
 
-func NewResponse(ctx *fiber.Ctx, code int, message string, data ...any) error {
+func NewResponse(code int, message string, data ...any) *structuredResponse {
+	var resp = &structuredResponse{
+		Code:    code,
+		Message: message,
+	}
+
+	if len(data) > 0 {
+		resp.Data = data[0]
+	}
+
+	return resp
+}
+
+func From(ctx *fiber.Ctx, structured *structuredResponse) error {
+	if structured == nil {
+		return nil
+	}
+
+	if structured.Code != 0 {
+		ctx.Status(structured.Code)
+	}
+
+	return ctx.JSON(structured)
+}
+
+func WriteResponse(ctx *fiber.Ctx, code int, message string, data ...any) error {
 	var resp = structuredResponse{
 		Code:    code,
 		Message: message,

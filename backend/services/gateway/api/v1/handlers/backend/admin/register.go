@@ -25,11 +25,11 @@ func RegisterRoutes(app fiber.Router, api *types.Api) {
 		if err != nil {
 			logger.Error("Error checking for existing users", zap.Error(err))
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return response.NewResponse(ctx, fiber.StatusBadRequest, "Owner does not exist")
+				return response.WriteResponse(ctx, fiber.StatusBadRequest, "Owner does not exist")
 			}
-			return response.NewResponse(ctx, fiber.StatusInternalServerError, "An Error occurred, please try again")
+			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "An Error occurred, please try again")
 		}
-		return response.NewResponse(ctx, fiber.StatusOK, "", fiber.Map{
+		return response.WriteResponse(ctx, fiber.StatusOK, "", fiber.Map{
 			"exists": exists,
 		})
 	})

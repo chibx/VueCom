@@ -1,86 +1,86 @@
 services:
-  vuecom:
-    build:
-      context: .
-      dockerfile: deploy-config/vuecom.Dockerfile
-    ports:
-      - 3500:2500
-    environment:
-      - GO_HOST=vuecom
-      - APP_PG_HOST=vuecom-db
-      - APP_PG_USER=vuecom
-      - APP_PG_PORT=5432
-    mem_limit: 256M
-    restart: unless-stopped
-    env_file:
-      - ./backend/services/gateway_service/.env
-    healthcheck:
-      test: ["CMD", "curl", "-f http://localhost:2500/health"]
-      interval: 1m30s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    depends_on:
-      - vuecom-db
-      - redis
-      - rabbitmq
-    networks:
-      - vuecom
+    vuecom:
+        build:
+            context: .
+            dockerfile: deploy-config/vuecom.Dockerfile
+        ports:
+            - 3500:2500
+        environment:
+            - GO_HOST=vuecom
+            - APP_PG_HOST=vuecom-db
+            - APP_PG_USER=vuecom
+            - APP_PG_PORT=5432
+        mem_limit: 256M
+        restart: unless-stopped
+        env_file:
+            - ./backend/services/gateway/.env
+        healthcheck:
+            test: ["CMD", "curl", "-f http://localhost:2500/health"]
+            interval: 1m30s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+        depends_on:
+            - vuecom-db
+            - redis
+            - rabbitmq
+        networks:
+            - vuecom
 
-  vuecom-db:
-    image: postgres:18-alpine
-    hostname: vuecom-db
-    ports:
-      - "5433:5432"
-    shm_size: 128mb
-    restart: always
-    env_file:
-      - ./backend/services/gateway_service/.env
-    volumes:
-      - ./deploy-config/sql/:/docker-entrypoint-initdb.d/
-      - ./pgdata:/var/lib/postgresql/
-    networks:
-      - vuecom
+    vuecom-db:
+        image: postgres:18-alpine
+        hostname: vuecom-db
+        ports:
+            - "5433:5432"
+        shm_size: 128mb
+        restart: always
+        env_file:
+            - ./backend/services/gateway/.env
+        volumes:
+            - ./deploy-config/sql/:/docker-entrypoint-initdb.d/
+            - ./pgdata:/var/lib/postgresql/
+        networks:
+            - vuecom
 
-  redis:
-    image: redis:alpine
-    hostname: redis
-    ports:
-      - "6380"
-    restart: unless-stopped
-    volumes:
-      - ./deploy-config/redis/redis.conf:/etc/redis/redis.conf
-      - ./deploy-config/redis/secrets.conf:/etc/redis/secrets.conf
-    mem_limit: 500M
-    command: ["redis-server", "/etc/redis/redis.conf"]
-    networks:
-      - vuecom
+    redis:
+        image: redis:alpine
+        hostname: redis
+        ports:
+            - "6380"
+        restart: unless-stopped
+        volumes:
+            - ./deploy-config/redis/redis.conf:/etc/redis/redis.conf
+            - ./deploy-config/redis/secrets.conf:/etc/redis/secrets.conf
+        mem_limit: 500M
+        command: ["redis-server", "/etc/redis/redis.conf"]
+        networks:
+            - vuecom
 
-  rabbitmq:
-    image: rabbitmq:3.13-management-alpine
-    hostname: rabbitmq
-    ports:
-      - "5673:5672"
-      - "15673:15672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-    networks:
-      - vuecom
-    mem_limit: 500M
+    rabbitmq:
+        image: rabbitmq:3.13-management-alpine
+        hostname: rabbitmq
+        ports:
+            - "5673:5672"
+            - "15673:15672"
+        environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest
+        networks:
+            - vuecom
+        mem_limit: 500M
 
-  prometheus:
-    image: prom/prometheus
-    hostname: prometheus
-    restart: unless-stopped
-    ports:
-      - "9092:9090"
-    volumes:
-      - ./deploy-config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    networks:
-      - vuecom
-    mem_limit: 300M
+    prometheus:
+        image: prom/prometheus
+        hostname: prometheus
+        restart: unless-stopped
+        ports:
+            - "9092:9090"
+        volumes:
+            - ./deploy-config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+        networks:
+            - vuecom
+        mem_limit: 300M
 
 networks:
-  vuecom:
-    driver: bridge
+    vuecom:
+        driver: bridge

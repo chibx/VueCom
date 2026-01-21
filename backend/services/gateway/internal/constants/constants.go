@@ -9,10 +9,10 @@ import (
 
 // Simple way of doing this, a better way would be to use a manifest from a bundler
 var PublicAssets = []string{
-	"styles.css",
 	"assets",
 	"favicon.ico",
 	"robots.txt",
+	"logo.webp",
 }
 
 var PublicFolder = func() string {
@@ -44,7 +44,9 @@ var (
 )
 
 // Max allowed image size in bytes i.e 5MB
-const MAX_IMAGE_UPLOAD = 5 * 1024 * 1024
+const MaxPasswordLimit = 30
+const MaxUsernameLimit = 30
+const MaxImageUpload = 5 * 1024 * 1024
 const GlobalLimitKey = "rl_global:app"
 const AnonymousLimitKey = "rl_anonymous:" // With Ip then
 const CustomerLimitKey = "rl_customer:"

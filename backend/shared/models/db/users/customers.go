@@ -42,12 +42,12 @@ type Customer struct {
 }
 
 type CustomerSession struct {
-	CustomerID uint      `gorm:"not null" redis:"user_id"`
-	Token      string    `gorm:"not null" redis:"-"` // redis key would be the token
-	ExpiredAt  time.Time `gorm:"not null" redis:"expired_at"`
-	IpAddr     string    `gorm:"column:ip_address" redis:"ip_address"`
-	UserAgent  string    `gorm:"not null" redis:"user_agent"`
-	Customer   *Customer `gorm:"foreignKey:CustomerID;constraint:OnDelete:CASCADE;" redis:"-"`
+	UserID    uint      `gorm:"not null" redis:"user_id"`
+	Token     string    `gorm:"not null" redis:"-"` // redis key would be the token
+	ExpiredAt time.Time `gorm:"not null" redis:"expired_at"`
+	IpAddr    string    `gorm:"column:ip_address" redis:"ip_address"`
+	UserAgent string    `gorm:"not null" redis:"user_agent"`
+	Customer  *Customer `gorm:"foreignKey:CustomerID;constraint:OnDelete:CASCADE;" redis:"-"`
 }
 
 type CartItem struct {

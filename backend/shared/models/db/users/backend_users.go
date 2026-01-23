@@ -54,7 +54,7 @@ type BackendUser struct {
 	PhoneNumber     *string                       `gorm:"type:varchar(20)" validate:"" redis:"phone_number"`
 	Image           *string                       `gorm:"column:image_url" redis:"image_url"`
 	CountryId       *uint                         `gorm:"index" redis:"country"`
-	IsEmailVerified bool                          `gorm:"default:FALSE;not null" redis:"-"`
+	IsEmailVerified bool                          `gorm:"default:FALSE;not null" redis:"is_email_verified"`
 	Role            string                        `gorm:"type:varchar(50)" redis:"role"`
 	PasswordHash    string                        `gorm:"not null" redis:"-"`
 	CreatedBy       *uint                         `gorm:"index" redis:"created_by"`

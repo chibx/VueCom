@@ -6,11 +6,10 @@ import (
 
 // Country represents a country in the system
 type Country struct {
-	ID        uint      `gorm:"primarykey" redis:"id"`
-	Name      string    `gorm:"not null;unique;index" redis:"name"`
-	Code      string    `gorm:"not null;unique;index;type:varchar(5)" redis:"code"`
-	CreatedAt time.Time `gorm:"" redis:"created_at"`
-	States    []State   `gorm:"foreignKey:CountryID;"`
+	ID     uint    `gorm:"primarykey" redis:"id"`
+	Name   string  `gorm:"not null;unique;index" redis:"name"`
+	Code   string  `gorm:"not null;unique;index;type:varchar(5)" redis:"code"`
+	States []State `gorm:"foreignKey:CountryID;"`
 }
 
 type State struct {
@@ -38,18 +37,11 @@ type ApiKey struct {
 	CreatedAt time.Time `gorm:"" redis:"created_at"`
 }
 
-func (ApiKey) TableName() string {
-	return "backend.api_keys"
-}
-
 type BackendOTP struct {
-	Code       string    `gorm:"not null"`
-	ExpiryDate time.Time `gorm:"not null"`
-	UserId     uint      `gorm:"not null"`
-}
-
-func (BackendOTP) TableName() string {
-	return "backend.backend_otps"
+	UserId     uint         `gorm:"not null"`
+	Code       string       `gorm:"not null"`
+	ExpiryDate time.Time    `gorm:"not null"`
+	User       *BackendUser `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 }
 
 type BackendUser struct {
@@ -70,9 +62,9 @@ type BackendUser struct {
 	ByApiKey        bool                          `gorm:"-:all" redis:"by_api_key"` // Track if the user is acting through an API key
 	Activity        []BackendUserActivity         `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" redis:"-"`
 	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
-	OTP             []BackendOTP                  `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	PassResetReqs   []BackendPasswordResetRequest `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	Country         *Country                      `gorm:"foreignKey:CountryId;" redis:"-"`
+	// OTP             []BackendOTP                  `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 }
 
 type BackendSession struct {
@@ -93,7 +85,7 @@ type BackendUserActivity struct {
 }
 
 type BackendPasswordResetRequest struct {
-	Id          uint      `gorm:"primarykey" redis:"id"`
+	ID          uint      `gorm:"primarykey" redis:"id"`
 	UserId      uint      `gorm:"not null;index" redis:"user_id"`
 	ResetToken  string    `gorm:"not null;unique" redis:"-"` // the key would be the token
 	RequestedAt time.Time `gorm:"not null" redis:"requested_at"`

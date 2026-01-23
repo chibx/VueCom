@@ -2,8 +2,8 @@
 \c vuecom_users;
 
 CREATE TABLE app_data (
-    app_name VARCHAR(100) NOT NULL,
-    admin_route VARCHAR(100) NOT NULL,
+    app_name TEXT NOT NULL,
+    admin_route TEXT NOT NULL,
     app_logo TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -12,10 +12,9 @@ CREATE TABLE app_data (
 
 CREATE TABLE countries (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    code VARCHAR(5) NOT NULL UNIQUE,
+    name TEXT NOT NULL,
     -- e.g., 'US', 'NG'
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    code TEXT NOT NULL UNIQUE,
 );
 
 CREATE INDEX IF NOT EXISTS idx_countries_code ON countries (code);
@@ -23,7 +22,7 @@ CREATE INDEX IF NOT EXISTS idx_countries_code ON countries (code);
 CREATE TABLE states (
     id SERIAL PRIMARY KEY,
     country_id INT NOT NULL,
-    name VARCHAR(100) NOT NULL,
+    name TEXT NOT NULL,
     FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE CASCADE
 );
 
@@ -34,9 +33,8 @@ CREATE TABLE backend_users (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    phone VARCHAR(20),
+    full_name TEXT NOT NULL,
+    phone_number VARCHAR(20),
     role TEXT DEFAULT 'staff', -- Set to allow custom roles
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
@@ -46,10 +44,14 @@ CREATE TABLE backend_users (
     FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
+CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (email);
+CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (username);
+CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
+
 CREATE TABLE backend_sessions (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
-    token VARCHAR(255) NOT NULL UNIQUE,
+    token TEXT NOT NULL,
     ip_address VARCHAR(45),
     user_agent TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -57,24 +59,32 @@ CREATE TABLE backend_sessions (
     FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE
 );
 
+CREATE INDEX IF NOT EXISTS backend_sessions_userid_idx ON backend_sessions (user_id);
+CREATE INDEX IF NOT EXISTS backend_sessions_expires_at_idx ON backend_sessions (expires_at);
+
 CREATE TABLE backend_otps (
     user_id INT NOT NULL,
     code VARCHAR(10) NOT NULL,
     expiry_date TIMESTAMP NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE,
+    UNIQUE (code, expiry_date)
 );
+
+CREATE INDEX IF NOT EXISTS backend_otps_expiry_idx ON backend_otps (expiry_date);
 
 CREATE TABLE backend_user_activities (
     user_id INT NOT NULL,
-    log_title VARCHAR(100) NOT NULL,
     -- e.g., "Login", "Password Change"
+    log_title TEXT NOT NULL,
     activity TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE SET NULL
 );
 
+CREATE INDEX IF NOT EXISTS backend_user_activities_idx ON backend_otps (user_id);
+CREATE INDEX IF NOT EXISTS backend_user_activities_title_idx ON backend_otps hash (log_title);
+
 CREATE TABLE api_keys (
-    id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     key_prefix VARCHAR(16) NOT NULL UNIQUE,
     key_hash BYTEA NOT NULL,
@@ -82,6 +92,7 @@ CREATE TABLE api_keys (
     FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE
 );
 
+CREATE INDEX IF NOT EXISTS api_keys_userid_idx ON api_keys (user_id);
 CREATE INDEX IF NOT EXISTS api_keys_prefix_idx ON api_keys (key_prefix);
 
 CREATE TABLE password_reset_requests (
@@ -93,3 +104,6 @@ CREATE TABLE password_reset_requests (
     used BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS password_reset_requests_token_idx ON password_reset_requests USING hash(reset_token);
+CREATE INDEX IF NOT EXISTS password_reset_requests_used_idx ON password_reset_requests (used);

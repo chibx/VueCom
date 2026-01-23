@@ -60,7 +60,7 @@ func (c *customerRepository) CreateSession(ctx context.Context, session *userMod
 }
 
 func (c *customerRepository) DeleteSession(ctx context.Context, session *userModels.CustomerSession) error {
-	err := c.db.WithContext(ctx).Where("customer_id = ? AND token = ?", session.CustomerID, session.Token).Delete(session).Error
+	err := c.db.WithContext(ctx).Where("customer_id = ? AND token = ?", session.UserID, session.Token).Delete(session).Error
 	if err != nil {
 		return err
 	}

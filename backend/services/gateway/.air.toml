@@ -6,10 +6,10 @@ tmp_dir = "bin"
 
 [build]
 args_bin = []
-bin = "./bin/gateway"
-cmd = "go build -o ./bin/gateway ./cmd/server"
+bin = "./bin/server"
+cmd = "go build -o ./bin/server ./cmd/server"
 delay = 1000
-entrypoint = ["./bin/gateway"]
+entrypoint = ["./bin/server"]
 exclude_dir = ["dist", "assets", "bin", "vendor", "testdata"]
 exclude_file = []
 exclude_regex = ["_test.go"]

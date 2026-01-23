@@ -56,7 +56,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 
 	if _data != nil {
 		api.IsAppInit = true
-		api.AppName = _data.Name
+		api.AppName = _data.AppName
 		api.AdminSlug = _data.AdminRoute // Just store the values if the IsAppInit guard does not do anything
 		return response.WriteResponse(ctx, fiber.StatusBadRequest, "An active app was found!!")
 	}
@@ -71,7 +71,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 		return response.WriteResponse(ctx, fiber.StatusBadRequest, err.Error())
 	}
 	_, err = cld.Admin.CreateFolder(ctx.Context(), admin.CreateFolderParams{
-		Folder: appData.Name,
+		Folder: appData.AppName,
 	})
 
 	if err != nil {
@@ -86,10 +86,10 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	}
 
 	upploadRes, err := cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
-		Folder:      appData.Name,
+		Folder:      appData.AppName,
 		Overwrite:   cldApi.Bool(true),
-		DisplayName: appData.Name + "_logo",
-		PublicID:    appData.Name + "_logo",
+		DisplayName: appData.AppName + "_logo",
+		PublicID:    appData.AppName + "_logo",
 	})
 
 	if err != nil {
@@ -107,7 +107,7 @@ func InitializeApp(ctx *fiber.Ctx, api *types.Api) error {
 	}
 
 	api.IsAppInit = true
-	api.AppName = appData.Name
+	api.AppName = appData.AppName
 	api.AdminSlug = appData.AdminRoute
 
 	return response.WriteResponse(ctx, fiber.StatusOK, "App initialized successfully")
@@ -242,7 +242,7 @@ func validateInitializeProps(form *multipart.Form) (appData *appModels.AppData, 
 		return nil, nil, errors.New("uploaded logo must be either a jpeg, jpg or png image")
 	}
 	appData = &appModels.AppData{
-		Name:       name,
+		AppName:    name,
 		AdminRoute: adminRoute,
 	}
 

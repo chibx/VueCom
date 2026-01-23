@@ -157,7 +157,7 @@ func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 		return nil, err
 	}
 
-	logger.Info("App data fetched successfully from DB", zap.String("name", appData.Name))
+	logger.Info("App data fetched successfully from DB", zap.String("name", appData.AppName))
 	return appData, nil
 }
 
@@ -217,10 +217,10 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 	v1_api.HasAdmin, _ = checkIfOwnerExists(v1_api)
 
 	if appData != nil {
-		v1_api.IsAppInit = appData.Name != ""
+		v1_api.IsAppInit = appData.AppName != ""
 
-		if len(appData.Name) > 0 {
-			v1_api.AppName = appData.Name
+		if len(appData.AppName) > 0 {
+			v1_api.AppName = appData.AppName
 		} /* else {
 			logger.Warn("App Name not found in DB, using default 'Vuecom_test'")
 			v1_api.AppName = "Vuecom_test"

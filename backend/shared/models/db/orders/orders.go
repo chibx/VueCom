@@ -18,18 +18,15 @@ type Order struct {
 
 type OrderReturn struct {
 	ID        uint      `gorm:"primarykey" redis:"id"`
-	CreatedAt time.Time `gorm:"" redis:"created_at"`
-	UpdatedAt time.Time `gorm:"" redis:"updated_at"`
 	OrderID   uint      `json:"order_id" gorm:"index;not null" redis:"order_id"`
 	Reason    string    `json:"reason" gorm:"not null" redis:"reason"`
+	CreatedAt time.Time `gorm:"" redis:"created_at"`
 }
 
 type OrderItem struct {
-	ID        uint      `gorm:"primarykey" redis:"id"`
-	CreatedAt time.Time `gorm:"" redis:"created_at"`
-	UpdatedAt time.Time `gorm:"" redis:"updated_at"`
-	OrderID   uint      `json:"order_id" gorm:"index;not null" redis:"order_id"`
-	Name      string    `json:"name" gorm:"not null" redis:"name"`
-	Price     float64   `json:"price" gorm:"not null" redis:"price"`
-	Quantity  uint      `json:"quantity" gorm:"not null" redis:"quantity"`
+	ID       uint    `gorm:"primarykey" redis:"id"`
+	OrderID  uint    `json:"order_id" gorm:"index;not null" redis:"order_id"`
+	Name     string  `json:"name" gorm:"not null" redis:"name"`
+	Price    float64 `json:"price" gorm:"not null" redis:"price"`
+	Quantity uint    `json:"quantity" gorm:"not null" redis:"quantity"`
 }

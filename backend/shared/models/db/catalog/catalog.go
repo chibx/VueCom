@@ -4,6 +4,15 @@ import (
 	"time"
 )
 
+// CREATE TYPE promo_code_type AS ENUM ('percentage', 'fixed_amount', 'free_shipping')
+type PromoCodeType string
+
+const (
+	PromoCodePercent  PromoCodeType = "percentage"
+	PromoCodeFixed    PromoCodeType = "fixed_amount"
+	PromoCodeShipping PromoCodeType = "free_shipping"
+)
+
 type Attribute struct {
 	ID        uint      `gorm:"primarykey" redis:"id"`
 	CreatedAt time.Time `redis:"created_at"`
@@ -20,7 +29,7 @@ type Category struct {
 	UpdatedAt   time.Time  `redis:"updated_at"`
 	AttributeID uint       `json:"attributeId" gorm:"index;not null"`
 	Value       string     `json:"value" gorm:"index;type:varchar(50);not null"`
-	Attribute   *Attribute `gorm:"foreignKey:AttributeID"`
+	Attribute   *Attribute `json:"-" gorm:"foreignKey:AttributeID"`
 }
 
 /**
@@ -31,8 +40,8 @@ type Preset struct {
 	Name       string             `gorm:"index;type:varchar(50);not null;unique" redis:"name"`
 	CreatedAt  time.Time          `gorm:"" redis:"created_at"`
 	UpdatedAt  time.Time          `gorm:"" redis:"updated_at"`
-	Attributes []PresetAttributes `gorm:"foreignKey:PresetID"`
-	Products   []Product          `gorm:"foreignKey:PresetID"`
+	Attributes []PresetAttributes `json:"-" gorm:"foreignKey:PresetID" redis:"-"`
+	Products   []Product          `json:"-" gorm:"foreignKey:PresetID" redis:"-"`
 }
 
 /**
@@ -45,8 +54,8 @@ type Preset struct {
 type PresetAttributes struct {
 	PresetID   uint      `gorm:"primaryKey;index"`
 	CategoryID uint      `gorm:"primaryKey;index"`
-	Preset     *Preset   `gorm:"foreignKey:PresetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
-	Category   *Category `gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
+	Preset     *Preset   `json:"-" gorm:"foreignKey:PresetID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
+	Category   *Category `json:"-" gorm:"foreignKey:CategoryID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 }
 
 type Tag struct {
@@ -61,23 +70,31 @@ type ProductTags struct {
 }
 
 type Product struct {
-	ID          uint      `gorm:"primarykey" redis:"id"`
-	UpdatedAt   time.Time `gorm:"" redis:"updated_at"`
-	CreatedAt   time.Time `gorm:"" redis:"created_at"`
-	Name        string    `json:"name" gorm:"not null;index;type:text" redis:"name"`
-	SKU         string    `json:"sku" gorm:"not null;index" redis:"sku"`
-	Price       float64   `json:"price" gorm:"not null;type:numeric(15, 2)" redis:"price"`
-	DscPercent  float64   `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
-	DscPeriod   time.Time `json:"dsc_period" gorm:""`
-	Enabled     bool      `json:"enabled" gorm:"default:TRUE;not null"`
-	Description string    `json:"description"`
-	Url         string    `json:"url"`
-	ImageUrl    *string   `gorm:"column:image_url"`
-	PresetID    *uint     `gorm:"index"`
-	Preset      *Preset   `gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;" redis:"-"`
-	// Categories  []Category `gorm:"many2many:catalog.product_category_values;foreignkey:ID;joinforeignKey:ProductId;References:ID;joinReferences:CategoryId;"`
-	Categories []Category `gorm:"many2many:catalog.product_category_values;" redis:"-"`
-	Tags       []Tag      `gorm:"many2many:catalog.product_tags;" redis:"-"`
+	ID               uint       `gorm:"primarykey" redis:"id"`
+	UpdatedAt        time.Time  `gorm:"" redis:"updated_at"`
+	CreatedAt        time.Time  `gorm:"" redis:"created_at"`
+	Name             string     `json:"name" gorm:"not null;index;type:text" redis:"name"`
+	SKU              string     `json:"sku" gorm:"not null;index" redis:"sku"`
+	BasePrice        float64    `json:"base_price" gorm:"not null;type:numeric(15, 2)" redis:"price"`
+	SalePrice        float64    `json:"sale_price" gorm:"not null;type:numeric(15, 2)" redis:"price"`
+	DiscountPeriod   *time.Time `json:"discount_period" gorm:""`
+	Enabled          bool       `json:"enabled" gorm:"default:TRUE;not null"`
+	ShortDescription string     `json:"short_description"`
+	FullDescription  string     `json:"full_description"`
+	Slug             string     `json:"slug" redis:"slug"`
+	Weight           *float64   `json:"weight" redis:"weight"`
+	ImageUrl         *string    `json:"image_url,omitempty" gorm:"" redis:"image_url"`
+	MetaTitle        *string    `json:"meta_title,omitempty" redis:"meta_title"`
+	MetaDescription  *string    `json:"meta_description,omitempty" redis:"meta_title"`
+	SearchKeywords   *string    `json:"search_keywords" gorm:"column:search_keywords;" redis:"search_keywords"`
+	ParentID         *uint      `json:"parent_id" redis:"parent_id"`
+	PresetID         *uint      `json:"preset_id" gorm:"index" redis:"preset_id"`
+	Parent           *Product   `json:"-" gorm:"foreignKey:ParentID"`
+	Preset           *Preset    `json:"-" gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;" redis:"-"`
+	Categories       []Category `json:"-" gorm:"many2many:product_category_values;" redis:"-"`
+	Tags             []Tag      `json:"-" gorm:"many2many:product_tags;" redis:"-"`
+	// DscPercent  float64   `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
+	// Categories  []Category `gorm:"many2many:product_category_values;foreignkey:ID;joinforeignKey:ProductId;References:ID;joinReferences:CategoryId;"`
 }
 
 type ProductCategoryValues struct {
@@ -86,31 +103,31 @@ type ProductCategoryValues struct {
 }
 
 type PromoCode struct {
-	ID                 uint             `gorm:"primarykey" redis:"id"`
-	UpdatedAt          time.Time        `gorm:"" redis:"updated_at"`
-	CreatedAt          time.Time        `gorm:"" redis:"created_at"`
+	ID                 uint             `json:"id" gorm:"primarykey" redis:"id"`
 	Name               string           `json:"name" gorm:"not null;index;type:text" redis:"name"`
 	Code               string           `json:"code" gorm:"not null;index;unique" redis:"code"`
-	Type               string           `json:"type" gorm:"not null" redis:"type"`
+	Type               PromoCodeType    `json:"type" gorm:"not null" redis:"type"`
 	Discount           float64          `json:"discount" gorm:"not null" redis:"discount"`
 	MinCartValue       float64          `json:"min_cart_value" gorm:"not null" redis:"min_cart_value"`
-	ExpiryDate         time.Time        `json:"expiry_date" gorm:"" redis:"expiry_date"`
 	StartDate          time.Time        `json:"start_date" gorm:"" redis:"start_date"`
+	ExpiryDate         *time.Time       `json:"expiry_date,omitempty" gorm:"" redis:"expiry_date"`
 	UsageLimit         int              `json:"usage_limit" gorm:"not null" redis:"usage_limit"`
 	UsageLimitPerUser  int              `json:"usage_limit_per_user" gorm:"not null" redis:"usage_limit_per_user"`
-	ProductIDs         []uint           `json:"product_ids" gorm:"type:jsonb" redis:"product_ids"`
-	CategoryIDs        []uint           `json:"category_ids" gorm:"type:jsonb" redis:"category_ids"`
-	ExcludeProductIDs  []uint           `json:"exclude_product_ids" gorm:"type:jsonb" redis:"exclude_product_ids"`
-	ExcludeCategoryIDs []uint           `json:"exclude_category_ids" gorm:"type:jsonb" redis:"exclude_category_ids"`
+	ProductIDs         []uint           `json:"product_ids" gorm:"type:integer[]" redis:"product_ids"`
+	CategoryIDs        []uint           `json:"category_ids" gorm:"type:integer[]" redis:"category_ids"`
+	ExcludeProductIDs  []uint           `json:"exclude_product_ids" gorm:"type:integer[]" redis:"exclude_product_ids"`
+	ExcludeCategoryIDs []uint           `json:"exclude_category_ids" gorm:"type:integer[]" redis:"exclude_category_ids"`
 	IsActive           bool             `json:"is_active" gorm:"default:TRUE;not null" redis:"is_active"`
-	Usages             []PromoCodeUsage `gorm:"foreignKey:CodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UpdatedAt          time.Time        `json:"updated_at" gorm:"" redis:"updated_at"`
+	CreatedAt          time.Time        `json:"created_at" gorm:"" redis:"created_at"`
+	Usages             []PromoCodeUsage `json:"-" gorm:"foreignKey:CodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type PromoCodeUsage struct {
-	ID        uint       `gorm:"primarykey" redis:"id"`
-	CodeID    uint       `json:"code_id" gorm:"index;not null" redis:"code_id"`
-	UserID    uint       `json:"user_id" gorm:"index;not null" redis:"user_id"`
-	OrderID   uint       `json:"order_id" gorm:"index;not null" redis:"order_id"`
-	UsedAt    time.Time  `json:"used_at" gorm:"" redis:"used_at"`
-	PromoCode *PromoCode `gorm:"foreignKey:CodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
+	ID         uint       `gorm:"primarykey" redis:"id"`
+	CodeID     uint       `json:"code_id" gorm:"index;not null" redis:"code_id"`
+	CustomerID uint       `json:"customer_id" gorm:"index;not null" redis:"customer_id"`
+	OrderID    uint       `json:"order_id" gorm:"index;not null" redis:"order_id"`
+	UsedAt     time.Time  `json:"used_at" gorm:"index;not null" redis:"used_at"`
+	PromoCode  *PromoCode `gorm:"foreignKey:CodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 }

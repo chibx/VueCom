@@ -48,7 +48,7 @@ type BackendUser struct {
 	ID              uint                          `gorm:"primarykey" redis:"id"`
 	CreatedAt       time.Time                     `gorm:"" redis:"created_at"`
 	UpdatedAt       time.Time                     `gorm:"" redis:"updated_at"`
-	UserName        *string                       `gorm:"type:varchar(255);index" validate:"" redis:"user_name"`
+	UserName        *string                       `gorm:"column:username;type:varchar(255);index" validate:"" redis:"user_name"`
 	FullName        string                        `gorm:"not null;type:varchar(255);index" validate:"" redis:"full_name"`
 	Email           string                        `gorm:"unique;not null;type:varchar(255);index" redis:"email"`
 	PhoneNumber     *string                       `gorm:"type:varchar(20)" validate:"" redis:"phone_number"`

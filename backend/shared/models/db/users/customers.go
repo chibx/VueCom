@@ -23,30 +23,15 @@ type CustomerAddress struct {
 }
 
 type Customer struct {
-	ID              uint      `gorm:"primarykey" redis:"id"`
-	CreatedAt       time.Time `gorm:"" redis:"created_at"`
-	FullName        string    `gorm:"not null;type:varchar(255);index" redis:"full_name"`
-	PasswordHash    *string   `gorm:"" redis:"-"`
-	Email           string    `gorm:"unique;not null;type:varchar(255);index" redis:"email"`
-	IsEmailVerified bool      `gorm:"default:FALSE;not null" redis:"is_email_verified"`
-	PhoneNumber     *string   `gorm:"type:varchar(20);" redis:"phone_number"`
-	ImageUrl        *string   `gorm:"column:image_url" redis:"image_url"`
-	CountryID       *uint     ``
-
-	/*  id SERIAL PRIMARY KEY,
-	    full_name VARCHAR(255) NOT NULL,
-	    email VARCHAR(100) NOT NULL UNIQUE,
-	    phone_number VARCHAR(20) NOT NULL,
-	    address VARCHAR(255) NOT NULL,
-	    city VARCHAR(50) NOT NULL,
-	    state VARCHAR(50) NOT NULL,
-	    zip_code VARCHAR(20) NOT NULL,
-	    country INT,
-	    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	    is_email_verified BOOLEAN DEFAULT FALSE,
-	    image_url TEXT,
-	    password_hash TEXT, */
-
+	ID              uint              `gorm:"primarykey" redis:"id"`
+	CreatedAt       time.Time         `gorm:"" redis:"created_at"`
+	FullName        string            `gorm:"not null;type:varchar(255);index" redis:"full_name"`
+	PasswordHash    *string           `gorm:"" redis:"-"`
+	Email           string            `gorm:"unique;not null;type:varchar(255);index" redis:"email"`
+	IsEmailVerified bool              `gorm:"default:FALSE;not null" redis:"is_email_verified"`
+	PhoneNumber     *string           `gorm:"type:varchar(20);" redis:"phone_number"`
+	ImageUrl        *string           `gorm:"column:image_url" redis:"image_url"`
+	CountryID       *uint             ``
 	BillingAddress  *CustomerAddress  `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	ShippingAddress *CustomerAddress  `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	Sessions        []CustomerSession `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`

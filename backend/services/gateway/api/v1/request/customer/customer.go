@@ -7,10 +7,10 @@ type CustomerJWTPayload struct {
 }
 
 type CreateCustomerRequest struct {
-	FullName    string  `json:"full_name" validate:"required,min=5"`
-	Email       string  `json:"email" validate:"required,email"`
-	PhoneNumber *string `json:"phone_number" validate:""`
-	Image       *string `json:"image" validate:"http_url"`
+	FullName    string  `json:"full_name" validate:"required,min=5" name:"Full Name"`
+	Email       string  `json:"email" validate:"required,email" name:"Email Address"`
+	PhoneNumber *string `json:"phone_number" validate:"" name:"Phone Number"`
+	Image       *string `json:"image" validate:"http_url" name:"Image url"`
 	Country     uint    `json:"country" validate:"required"`
 	Password    *string `json:"password,omitempty" validate:"required"`
 }

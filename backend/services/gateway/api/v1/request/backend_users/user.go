@@ -36,9 +36,9 @@ type BackendJWTPayload struct {
 
 // Base Backend Panel User
 type CreateBackendUserRequest struct {
-	FullName        string  `form:"full_name" validate:"required,min=5"`
-	UserName        *string `form:"user_name" validate:"required,min=3"`
-	Email           string  `form:"email" validate:"required,email"`
+	FullName        string  `form:"full_name" validate:"required,min=5" name:"Full Name"`
+	UserName        *string `form:"user_name" validate:"required,min=3" name:"Username"`
+	Email           string  `form:"email" validate:"required,email" name:"Email Address"`
 	PhoneNumber     *string `form:"phone_number" validate:"min=10,max=15"`
 	Country         *string `form:"country" validate:"required_if=Role owner"`
 	IsEmailVerified bool    `form:"email_verified"`

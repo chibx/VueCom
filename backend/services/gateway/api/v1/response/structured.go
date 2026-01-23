@@ -5,7 +5,13 @@ import "github.com/gofiber/fiber/v2"
 type structuredResponse struct {
 	Code    int    `json:"code,omitempty"`
 	Message string `json:"message,omitempty"`
+	Errors  any    `json:"errors,omitempty"`
 	Data    any    `json:"data,omitempty"`
+}
+
+func isSlice(v any) bool {
+	_, ok := v.([]any) // Or customize for your error types
+	return ok
 }
 
 func NewResponse(code int, message string, data ...any) *structuredResponse {
@@ -14,8 +20,17 @@ func NewResponse(code int, message string, data ...any) *structuredResponse {
 		Message: message,
 	}
 
+	// if len(data) > 0 {
+	// 	resp.Data = data[0]
+	// }
+
 	if len(data) > 0 {
-		resp.Data = data[0]
+		// If first data is a map or slice, assume it's errors; else, it's Data
+		if _, ok := data[0].(map[string]string); ok || isSlice(data[0]) { // Helper to check slice
+			resp.Errors = data[0]
+		} else {
+			resp.Data = data[0]
+		}
 	}
 
 	return resp
@@ -40,7 +55,12 @@ func WriteResponse(ctx *fiber.Ctx, code int, message string, data ...any) error 
 	}
 
 	if len(data) > 0 {
-		resp.Data = data[0]
+		// If first data is a map or slice, assume it's errors; else, it's Data
+		if _, ok := data[0].(map[string]string); ok || isSlice(data[0]) { // Helper to check slice
+			resp.Errors = data[0]
+		} else {
+			resp.Data = data[0]
+		}
 	}
 
 	if code != 0 {

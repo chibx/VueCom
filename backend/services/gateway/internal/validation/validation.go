@@ -1,21 +1,21 @@
 package validation
 
 import (
+	"reflect"
+
 	"github.com/go-playground/validator/v10"
 )
 
 var Validator = validator.New(validator.WithRequiredStructEnabled())
 
-// func test() {
-// 	Validator.RegisterTagNameFunc(func(fld reflect.StructField) string {
-// 		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
-// 		if name == "-" {
-// 			return ""
-// 		}
-// 		return name
-// 	})
+func TagNameFunc(fld reflect.StructField) string {
+	name := fld.Tag.Get("name")
+	if name == "" {
+		return fld.Name
+	}
+	return name
+}
 
-// }
 // func UserStructLevelValidation(sl validator.StructLevel) {
 
 // 	user := sl.Current().Interface().(User)

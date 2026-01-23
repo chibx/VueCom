@@ -2,7 +2,9 @@ package gorm_pg
 
 import (
 	"context"
+	// "strings"
 
+	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"gorm.io/gorm"
@@ -28,7 +30,24 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.Back
 	return admin, nil
 }
 
-func GetUserByUsername(context context.Context, username string)
+func (br *backendUserRepository) GetUserByNameForLogin(ctx context.Context, username string) (*dto.UserForLogin, error) {
+	// selectedValue := "*"
+	// backendUser := &userModels.BackendUser{}
+
+	// if fields != nil {
+	// 	selectedValue = strings.Join(fields, ",")
+	// }
+	user := &dto.UserForLogin{}
+
+	// userModels.BackendUser
+	err := br.db.Model("backend_users").Where("user_name = ?", username).First(user).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
 
 func (br *backendUserRepository) GetUserById(ctx context.Context, id int) (*userModels.BackendUser, error) {
 	backendUser := &userModels.BackendUser{}

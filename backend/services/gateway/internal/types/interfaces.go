@@ -8,7 +8,7 @@ import (
 
 type DatabaseErr error
 
-var ErrDbNil DatabaseErr = errors.New("record not found")
+// var ErrDbNil DatabaseErr = errors.New("record not found")
 var ErrDbUnimplemented DatabaseErr = errors.New("unimplemented")
 
 type Database interface {

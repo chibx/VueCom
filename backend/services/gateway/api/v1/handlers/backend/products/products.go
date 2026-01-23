@@ -7,6 +7,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"gorm.io/gorm"
 
 	catModels "github.com/chibx/vuecom/backend/shared/models/db/catalog"
 
@@ -54,7 +55,7 @@ func GetProduct(ctx *fiber.Ctx, api *types.Api) error {
 	product, err := db.Products().GetProductById(ctx.Context(), toGet.ID)
 
 	if err != nil {
-		if errors.Is(err, types.ErrDbNil) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return response.WriteResponse(ctx, fiber.StatusNotFound, "Product with ID "+strconv.Itoa(toGet.ID)+" not found")
 		}
 		return response.WriteResponse(ctx, fiber.StatusInternalServerError, "Error occurred while fetching product")

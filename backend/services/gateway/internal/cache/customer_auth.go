@@ -8,6 +8,7 @@ import (
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+	"gorm.io/gorm"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
@@ -25,21 +26,24 @@ func GetCustomerSession(token string, api *types.Api, ctx context.Context) (*use
 	cus_session := &userModels.CustomerSession{}
 
 	err := cache.HGetAll(ctx, constants.CUST_SESS+token).Scan(cus_session)
+	notExist := cus_session.UserID == 0
 
-	if err != nil {
-		if !errors.Is(err, redis.Nil) {
+	if err != nil || notExist {
+		if notExist {
+			logger.Info("customer session not found in cache, fetching from db")
+			// return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
+		} else {
 			logger.Error("failed to get customer session from cache", zap.Error(err))
-			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
 		}
 
-		logger.Info("customer session not found in cache, fetching from db")
 		cus_session, err = db.Customers().GetSessionByToken(ctx, token)
-		if err != nil {
-			if errors.Is(err, types.ErrDbNil) {
-				logger.Error("customer session not found in db", zap.Error(err))
-				return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User Session not found. Consider logging in again")
-			}
 
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Error("customer session not found in db", zap.Error(err))
+			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User Session not found. Consider logging in again")
+		}
+
+		if err != nil {
 			logger.Error("failed to get customer session from db", zap.Error(err))
 			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while fetching your session data. Please try again later.")
 		}
@@ -69,21 +73,24 @@ func GetCustomerById(api *types.Api, id int, ctx context.Context) (*userModels.C
 
 	// Try to get from cache first
 	err := cache.HGetAll(ctx, constants.CUST_KEY+strconv.Itoa(id)).Scan(customer)
-	if err != nil {
-		if !errors.Is(err, redis.Nil) {
+	notExist := customer.ID == 0
+
+	if err != nil || notExist {
+		if notExist {
+			logger.Info("customer not found in cache, fetching from db")
+			// return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
+		} else {
 			logger.Error("failed to get customer from cache", zap.Error(err))
-			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
 		}
 
-		logger.Info("customer not found in cache, fetching from db")
 		customer, err = db.Customers().GetUserById(ctx, id)
 
-		if err != nil {
-			if errors.Is(err, types.ErrDbNil) {
-				logger.Error("customer not found in db", zap.Error(err))
-				return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "Customer not found. Consider logging in again")
-			}
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Error("customer not found in db", zap.Error(err))
+			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "Customer not found. Consider logging in again")
+		}
 
+		if err != nil {
 			logger.Error("failed to get customer from db", zap.Error(err))
 			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while fetching your session data. Please try again later.")
 		}

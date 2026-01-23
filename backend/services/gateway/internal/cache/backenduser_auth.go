@@ -8,6 +8,7 @@ import (
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+	"gorm.io/gorm"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
@@ -25,22 +26,24 @@ func GetBackendUserSession(token string, api *types.Api, ctx context.Context) (*
 	var backend_session *userModels.BackendSession
 
 	err := cache.HGetAll(ctx, constants.BU_SESS+token).Scan(&backend_session)
+	notExist := backend_session.UserId == 0
 
-	if err != nil {
-		if !errors.Is(err, redis.Nil) {
-			logger.Error("failed to get backend user session from cache", zap.Error(err))
-			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
+	if err != nil || notExist {
+		if notExist {
+			logger.Info("backend user session not found in cache")
+		} else {
+			logger.Error("failed to get backend user session from cache, fetching from db", zap.Error(err))
 		}
 
-		logger.Info("backend user session not found in cache, fetching from db")
 		backend_session, err = db.BackendUsers().GetSessionByToken(ctx, token)
 
-		if err != nil {
-			if errors.Is(err, types.ErrDbNil) {
-				logger.Error("backend user session not found in db", zap.Error(err))
-				return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User Session not found. Consider logging in again")
-			}
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Error("backend user session not found in db", zap.Error(err))
+			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User Session not found. Consider logging in again")
+		}
 
+		if err != nil {
+			// err can't be ErrRecordNotFound so it's fine here
 			logger.Error("failed to get backend user session from db", zap.Error(err))
 			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while fetching your session data. Please try again later.")
 		}
@@ -70,21 +73,24 @@ func GetBackendUserById(api *types.Api, id int, ctx context.Context) (*userModel
 
 	// Try to get from cache first
 	err := cache.HGetAll(ctx, constants.BU_KEY+strconv.Itoa(id)).Scan(backendUser)
-	if err != nil {
-		if !errors.Is(err, redis.Nil) {
+	notExist := backendUser.ID == 0
+
+	if err != nil || notExist {
+		if notExist {
+			logger.Info("backend user not found in cache, fetching from db")
+		} else {
 			logger.Error("failed to get backend user from cache", zap.Error(err))
-			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while getting your session data. Please try again later.")
 		}
 
-		logger.Info("backend user not found in cache, fetching from db")
 		backendUser, err = db.BackendUsers().GetUserById(ctx, id)
 
-		if err != nil {
-			if errors.Is(err, types.ErrDbNil) {
-				logger.Error("backend user not found in db", zap.Error(err))
-				return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User ID "+strconv.Itoa(id)+" not found. Consider logging in again")
-			}
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Error("backend user" + strconv.Itoa(id) + "not found in db")
+			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User ID "+strconv.Itoa(id)+" not found. Consider logging in again")
+		}
 
+		if err != nil {
+			// err can't be ErrRecordNotFound so it's fine here
 			logger.Error("failed to get backend user from db", zap.Error(err))
 			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while fetching your session data. Please try again later.")
 		}

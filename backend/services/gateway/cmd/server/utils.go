@@ -14,6 +14,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/config"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/db/gorm_pg"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/validation"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/go-redis/redis_rate/v10"
@@ -149,7 +150,7 @@ func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 	appData, err := api.Deps.DB.AppData().GetAppData(context.Background())
 
 	if err != nil {
-		if errors.Is(err, types.ErrDbNil) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			logger.Info("No active app found in DB")
 			return &appModels.AppData{}, err
 		}
@@ -197,6 +198,7 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 	plugRedis(v1_api)
 	setupLimiter(v1_api)
 	plugCloudinary(v1_api)
+	validation.Validator.RegisterTagNameFunc(validation.TagNameFunc)
 	// attachSentry(app)
 
 	// ---------------------------

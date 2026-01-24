@@ -2,6 +2,11 @@ package response
 
 import "github.com/gofiber/fiber/v2"
 
+type ErrorDetail struct {
+	Field   string `json:"field"`
+	Message string `json:"message"`
+}
+
 type structuredResponse struct {
 	Code    int    `json:"code,omitempty"`
 	Message string `json:"message,omitempty"`
@@ -14,20 +19,22 @@ func isSlice(v any) bool {
 	return ok
 }
 
+func isErrorField(v any) bool {
+	_, ok := v.([]ErrorDetail) // Or customize for your error types
+	// return ok
+	return ok
+}
+
 func NewResponse(code int, message string, data ...any) *structuredResponse {
 	var resp = &structuredResponse{
 		Code:    code,
 		Message: message,
 	}
 
-	// if len(data) > 0 {
-	// 	resp.Data = data[0]
-	// }
-
 	if len(data) > 0 {
-		// If first data is a map or slice, assume it's errors; else, it's Data
-		if _, ok := data[0].(map[string]string); ok || isSlice(data[0]) { // Helper to check slice
-			resp.Errors = data[0]
+		// If first data is a ErrorDetail, assume it's errors; else, it's Data
+		if errs, ok := data[0].([]ErrorDetail); ok {
+			resp.Errors = errs
 		} else {
 			resp.Data = data[0]
 		}
@@ -55,9 +62,9 @@ func WriteResponse(ctx *fiber.Ctx, code int, message string, data ...any) error 
 	}
 
 	if len(data) > 0 {
-		// If first data is a map or slice, assume it's errors; else, it's Data
-		if _, ok := data[0].(map[string]string); ok || isSlice(data[0]) { // Helper to check slice
-			resp.Errors = data[0]
+		// If first data is a ErrorDetail, assume it's errors; else, it's Data
+		if errs, ok := data[0].([]ErrorDetail); ok {
+			resp.Errors = errs
 		} else {
 			resp.Data = data[0]
 		}

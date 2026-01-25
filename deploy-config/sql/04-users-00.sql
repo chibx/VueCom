@@ -45,7 +45,7 @@ CREATE TABLE backend_users (
 );
 
 CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (email);
-CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (username);
+CREATE INDEX IF NOT EXISTS backend_user_username_idx ON backend_users USING hash (username);
 CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 
 -- CREATE TABLE backend_sessions (
@@ -87,6 +87,7 @@ CREATE TABLE backend_otps (
     UNIQUE (code, expiry_date)
 );
 
+CREATE INDEX IF NOT EXISTS backend_otps_code_idx ON backend_otps (code);
 CREATE INDEX IF NOT EXISTS backend_otps_expiry_idx ON backend_otps (expiry_date);
 
 CREATE TABLE backend_user_activities (
@@ -98,8 +99,8 @@ CREATE TABLE backend_user_activities (
     FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE SET NULL
 );
 
-CREATE INDEX IF NOT EXISTS backend_user_activities_idx ON backend_otps (user_id);
-CREATE INDEX IF NOT EXISTS backend_user_activities_title_idx ON backend_otps USING hash(log_title);
+CREATE INDEX IF NOT EXISTS backend_user_activities_idx ON backend_user_activities (user_id);
+CREATE INDEX IF NOT EXISTS backend_user_activities_title_idx ON backend_user_activities USING hash(log_title);
 
 CREATE TABLE api_keys (
     user_id INT NOT NULL,

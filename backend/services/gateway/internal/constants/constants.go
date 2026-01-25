@@ -52,7 +52,10 @@ const AnonymousLimitKey = "rl_anonymous:" // With Ip then
 const CustomerLimitKey = "rl_customer:"
 const CustomerHeaderKey = "X-Customer-Id"
 const BackendLimitKey = "rl_backend:"
-const BackendSessionTimeout = 30 * time.Minute
+
+// const BackendSessionTimeout = 30 * time.Minute
+const BackendAccessTkDur = 15 * time.Minute
+const BackendRefreshTkDur = 7 * 24 * time.Hour
 const ApiKeyCtxKey = "api_key"
 const BackendUserCtxKey = "backend_user"
 const BackendCookieKey = "backend_session"

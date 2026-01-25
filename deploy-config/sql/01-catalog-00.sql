@@ -56,8 +56,8 @@ CREATE TABLE products (
     sale_price DECIMAL(15, 2),
     discount_period TIMESTAMP,
     slug TEXT UNIQUE NOT NULL,
-    short_description TEXT DEFAULT "",
-    full_description TEXT DEFAULT "",
+    short_description TEXT DEFAULT '',
+    full_description TEXT DEFAULT '',
     weight DECIMAL(10, 3) DEFAULT 0.00,
     enabled BOOLEAN DEFAULT TRUE,
     -- is_featured BOOLEAN DEFAULT FALSE,
@@ -69,15 +69,13 @@ CREATE TABLE products (
     parent_id INT,
     image_url TEXT,
     preset_id INTEGER,
-    
+
     FOREIGN KEY (preset_id) REFERENCES presets(id) ON DELETE SET NULL,
     FOREIGN KEY (parent_id) REFERENCES products(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_sku ON products (sku);
 CREATE INDEX idx_slug ON products (slug);
-CREATE INDEX idx_category ON products (category_id);
-CREATE INDEX idx_active ON products (is_active);
 
 -- I sense a bug here
 CREATE TABLE product_category_values (
@@ -104,7 +102,7 @@ CREATE TABLE product_tags (
 CREATE INDEX idx_product_tags_tag_id ON product_tags (tag_id);
 
 
-CREATE TYPE promo_code_type AS ENUM ('percentage', 'fixed_amount', 'free_shipping')
+CREATE TYPE promo_code_type AS ENUM ('percentage', 'fixed_amount', 'free_shipping');
 -- Main Coupons Table
 CREATE TABLE promo_codes (
     id SERIAL PRIMARY KEY,
@@ -145,3 +143,5 @@ CREATE INDEX IF NOT EXISTS idx_promo_code_usages_code_id ON promo_code_usages(co
 CREATE INDEX IF NOT EXISTS idx_promo_code_usages_customer_id ON promo_code_usages(customer_id);
 CREATE INDEX IF NOT EXISTS idx_promo_code_usages_order_id ON promo_code_usages(order_id);
 CREATE INDEX IF NOT EXISTS idx_promo_code_usages_used_at ON promo_code_usages(used_at);
+
+\c postgres;

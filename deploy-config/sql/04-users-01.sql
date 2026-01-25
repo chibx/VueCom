@@ -94,3 +94,6 @@ CREATE TABLE customer_carts (
 
 CREATE INDEX IF NOT EXISTS customer_cart_id_idx ON customer_cart (customer_id);
 CREATE INDEX IF NOT EXISTS customer_cart_product_idx ON customer_cart (product_id);
+
+
+\c postgres;

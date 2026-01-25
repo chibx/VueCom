@@ -41,7 +41,7 @@ CREATE TABLE order_items (
     id SERIAL PRIMARY KEY,
     order_id INTEGER NOT NULL,
     -- product name
-    -- I could have used the product_id to get the product name from the catalog but I 
+    -- I could have used the product_id to get the product name from the catalog but I
     -- decided to store by name in a case where the product is deleted
     name TEXT NOT NULL,
     price DECIMAL(12, 2) NOT NULL,
@@ -50,3 +50,6 @@ CREATE TABLE order_items (
 );
 
 CREATE INDEX order_items_created_at_idx ON order_items(created_at);
+
+
+\c postgres;

@@ -67,7 +67,7 @@ CREATE INDEX idx_available ON inventory(available_qty);
 CREATE INDEX idx_updated ON inventory(updated_at);
 
 
-CREATE TYPE stock_movement_type AS ENUM('restock', 'sale', 'return', 'adjustment', 'transfer', 'other')
+CREATE TYPE stock_movement_type AS ENUM('restock', 'sale', 'return', 'adjustment', 'transfer', 'other');
 
 -- Stock Movement Log (Audit Trail)
 CREATE TABLE stock_movements (
@@ -89,3 +89,6 @@ CREATE TABLE stock_movements (
 CREATE INDEX idx_sku_stock_movements ON stock_movements USING hash(sku);
 CREATE INDEX idx_type_stock_movements ON stock_movements(movement_type);
 CREATE INDEX idx_date_stock_movements ON stock_movements(created_at);
+
+
+\c postgres;

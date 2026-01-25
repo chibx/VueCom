@@ -124,3 +124,6 @@ CREATE TABLE password_reset_requests (
 
 CREATE INDEX IF NOT EXISTS password_reset_requests_token_idx ON password_reset_requests USING hash(reset_token);
 CREATE INDEX IF NOT EXISTS password_reset_requests_used_idx ON password_reset_requests (used);
+
+
+\c postgres;

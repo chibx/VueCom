@@ -1,28 +1,22 @@
 package auth
 
-import (
-	"crypto/rand"
+// func GenerateSessionToken() (string, error) {
+// 	// Generate a random session token
+// 	bytes := make([]byte, 32) // e.g., 32 for ~256 bits entropy
+// 	if _, err := rand.Read(bytes); err != nil {
+// 		return "", err
+// 	}
+// 	return constants.BU_KEY + string(bytes), nil
+// }
 
-	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
-)
-
-func GenerateSessionToken() (string, error) {
-	// Generate a random session token
-	bytes := make([]byte, 32) // e.g., 32 for ~256 bits entropy
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return constants.BU_KEY + string(bytes), nil
-}
-
-func GenerateCustomerSessionToken() (string, error) {
-	// Generate a random session token
-	bytes := make([]byte, 32) // e.g., 32 for ~256 bits entropy
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return constants.CUST_KEY + string(bytes), nil
-}
+// func GenerateCustomerSessionToken() (string, error) {
+// 	// Generate a random session token
+// 	bytes := make([]byte, 32) // e.g., 32 for ~256 bits entropy
+// 	if _, err := rand.Read(bytes); err != nil {
+// 		return "", err
+// 	}
+// 	return constants.CUST_KEY + string(bytes), nil
+// }
 
 // func DeleteBackendSession(ctx context.Context, api *types.Api, session *userModels.BackendSession_Old) error {
 // 	// Delete the session from the database and cache

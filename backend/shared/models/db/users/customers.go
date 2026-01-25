@@ -26,6 +26,10 @@ type CustomerAddress struct {
 	// City          string   `gorm:"index;not null" redis:"city"`
 }
 
+func (w CustomerAddress) TableName() string {
+	return "customer_addresses"
+}
+
 type Customer struct {
 	ID              uint              `gorm:"primarykey" redis:"id"`
 	CreatedAt       time.Time         `gorm:"" redis:"created_at"`
@@ -83,4 +87,8 @@ type WishlistItem struct {
 	ProductID  uint      `gorm:"index"`
 	AddedAt    time.Time `gorm:"not null"`
 	// Product    *Product  `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+}
+
+func (w WishlistItem) TableName() string {
+	return "customer_wishlists"
 }

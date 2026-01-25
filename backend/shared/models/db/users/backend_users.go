@@ -97,6 +97,10 @@ type BackendUserActivity struct {
 	CreatedAt time.Time `gorm:"" redis:"created_at"`
 }
 
+func (w BackendUserActivity) TableName() string {
+	return "backend_user_activities"
+}
+
 type BackendPasswordResetRequest struct {
 	ID          uint      `gorm:"primarykey" redis:"id"`
 	UserId      uint      `gorm:"not null;index" redis:"user_id"`
@@ -104,4 +108,8 @@ type BackendPasswordResetRequest struct {
 	RequestedAt time.Time `gorm:"not null" redis:"requested_at"`
 	ExpiresAt   time.Time `gorm:"not null" redis:"expires_at"`
 	Used        bool      `gorm:"default:FALSE;not null" redis:"used"`
+}
+
+func (w BackendPasswordResetRequest) TableName() string {
+	return "password_reset_requests"
 }

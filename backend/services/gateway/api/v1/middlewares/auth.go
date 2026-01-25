@@ -52,6 +52,7 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 		var authHeader = ctx.Get("Authorization")
 		var tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
 		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
+		var tokenGroup = strings.Split(backendToken, ".")
 
 		if tokenStr != "" {
 			// TODO: Use tokenStr to validate the api (key) token
@@ -63,7 +64,15 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 		}
 		// else
 		if backendToken != "" {
-			backendUserSess, tokenErr = cache.GetBackendUserSession(backendToken, api, ctx.Context())
+			//
+
+			if len(tokenGroup) < 2 {
+				// I will just skip
+				return ctx.Next()
+			}
+
+			tokenId := tokenGroup[0]
+			backendUserSess, tokenErr = auth.GetBackendUserSession(tokenId, api, ctx.Context())
 			if tokenErr != nil {
 				logger.Error("failed to get user session from cache", zap.Error(tokenErr))
 			} else {
@@ -74,8 +83,9 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 				}
 			}
 
-			ctx.Locals(constants.BackendUserCtxKey, backendUser)
 		}
+
+		ctx.Locals(constants.BackendUserCtxKey, backendUser)
 
 		return ctx.Next()
 	}

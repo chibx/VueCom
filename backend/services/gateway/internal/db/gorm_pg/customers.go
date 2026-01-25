@@ -25,10 +25,10 @@ func (c *customerRepository) GetUserById(ctx context.Context, id int) (*userMode
 	return customer, nil
 }
 
-func (c *customerRepository) GetSessionByToken(ctx context.Context, token string) (*userModels.CustomerSession, error) {
+func (c *customerRepository) GetSessionByTokenId(ctx context.Context, tokenId string) (*userModels.CustomerSession, error) {
 	sessionData := &userModels.CustomerSession{}
 
-	err := c.db.WithContext(ctx).First(sessionData, "token = ?", token).Error
+	err := c.db.WithContext(ctx).First(sessionData, "id = ?", tokenId).Error
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (c *customerRepository) CreateSession(ctx context.Context, session *userMod
 }
 
 func (c *customerRepository) DeleteSession(ctx context.Context, session *userModels.CustomerSession) error {
-	err := c.db.WithContext(ctx).Where("customer_id = ? AND token = ?", session.UserID, session.Token).Delete(session).Error
+	err := c.db.WithContext(ctx).Delete(session).Error
 	if err != nil {
 		return err
 	}

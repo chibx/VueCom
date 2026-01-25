@@ -63,10 +63,10 @@ func (br *backendUserRepository) GetUserByApiKey(ctx context.Context, apiKey str
 	return nil, errDbUnimplemented
 }
 
-func (br *backendUserRepository) GetSessionByToken(ctx context.Context, token string) (*userModels.BackendSession, error) {
+func (br *backendUserRepository) GetSessionByTokenId(ctx context.Context, tokenId string) (*userModels.BackendSession, error) {
 	sessionData := &userModels.BackendSession{}
 
-	err := br.db.WithContext(ctx).First(sessionData, "token = ?", token).Error
+	err := br.db.WithContext(ctx).First(sessionData, "id = ?", tokenId).Error
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (br *backendUserRepository) CreateSession(ctx context.Context, session *use
 }
 
 func (br *backendUserRepository) DeleteSession(session *userModels.BackendSession, ctx context.Context) error {
-	err := br.db.WithContext(ctx).Where("user_id = ? AND token = ?", session.UserId, session.Token).Delete(session).Error
+	err := br.db.WithContext(ctx).Delete(session).Error
 	if err != nil {
 		return err
 	}

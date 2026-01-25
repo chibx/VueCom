@@ -32,8 +32,8 @@ CREATE TABLE warehouses (
     capacity INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (state) REFERENCES states(id),
-    FOREIGN KEY (country) REFERENCES countries(id)
+    FOREIGN KEY (state_id) REFERENCES states(id),
+    FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
 CREATE INDEX idx_warehouse_code ON warehouses(code);

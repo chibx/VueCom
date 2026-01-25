@@ -9,7 +9,7 @@ CREATE TABLE orders (
     -- currency ENUM('NGN', 'USD') DEFAULT 'NGN',
     currency TEXT DEFAULT 'NGN',
     -- status ENUM('pending', 'completed', 'cancelled') DEFAULT 'pending',
-    STATUS TEXT DEFAULT 'pending',
+    status TEXT DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     -- indirect
@@ -21,7 +21,7 @@ CREATE TABLE orders (
 );
 
 CREATE INDEX orders_user_idx ON orders(user_id);
-CREATE INDEX orders_status_idx ON orders(STATUS);
+CREATE INDEX orders_status_idx ON orders(status);
 CREATE INDEX orders_total_amount_idx ON orders(total_amount);
 CREATE INDEX orders_created_at_idx ON orders(created_at);
 CREATE INDEX orders_updated_at_idx ON orders(updated_at);

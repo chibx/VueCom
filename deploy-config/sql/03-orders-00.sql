@@ -49,7 +49,5 @@ CREATE TABLE order_items (
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
-CREATE INDEX order_items_created_at_idx ON order_items(created_at);
-
 
 \c postgres;

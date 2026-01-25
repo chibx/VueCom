@@ -1,6 +1,10 @@
 package users
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // For timed one time password
 type CustomerOTP struct {
@@ -41,13 +45,25 @@ type Customer struct {
 	// Wishlist        []Product         `gorm:"many2many:customer.customer_wishlists;"`
 }
 
+// type CustomerSession_Old struct {
+// 	UserID    uint      `gorm:"not null" redis:"user_id"`
+// 	Token     string    `gorm:"not null" redis:"-"` // redis key would be the token
+// 	ExpiredAt time.Time `gorm:"not null" redis:"expired_at"`
+// 	IpAddr    string    `gorm:"column:ip_address" redis:"ip_address"`
+// 	UserAgent string    `gorm:"not null" redis:"user_agent"`
+// 	Customer  *Customer `gorm:"foreignKey:CustomerID;constraint:OnDelete:CASCADE;" redis:"-"`
+// }
+
 type CustomerSession struct {
-	UserID    uint      `gorm:"not null" redis:"user_id"`
-	Token     string    `gorm:"not null" redis:"-"` // redis key would be the token
-	ExpiredAt time.Time `gorm:"not null" redis:"expired_at"`
-	IpAddr    string    `gorm:"column:ip_address" redis:"ip_address"`
-	UserAgent string    `gorm:"not null" redis:"user_agent"`
-	Customer  *Customer `gorm:"foreignKey:CustomerID;constraint:OnDelete:CASCADE;" redis:"-"`
+	ID               uuid.UUID    `gorm:"primarykey;not null;type:uuid" redis:"-"` // redis key would be the token id
+	UserId           uint         `gorm:"not null" redis:"user_id"`
+	RefreshTokenHash string       `gorm:"not null" redis:"-"`
+	LastIP           string       `gorm:"" redis:"last_ip"`
+	DeviceId         string       `gorm:"" redis:"device_id"`
+	UserAgent        string       `gorm:"not null" redis:"user_agent"`
+	CreatedAt        time.Time    `gorm:"not null" redis:"created_at"`
+	ExpiresAt        time.Time    `gorm:"not null" redis:"created_at"`
+	User             *BackendUser `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;" redis:"-"`
 }
 
 type CartItem struct {

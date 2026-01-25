@@ -2,6 +2,8 @@ package users
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // Country represents a country in the system
@@ -58,29 +60,40 @@ type BackendUser struct {
 	Role            string                        `gorm:"type:varchar(50)" redis:"role"`
 	PasswordHash    string                        `gorm:"not null" redis:"-"`
 	CreatedBy       *uint                         `gorm:"index" redis:"created_by"`
-	AccountsCreated []BackendUser                 `gorm:"foreignKey:CreatedBy;" redis:"-"`
 	ByApiKey        bool                          `gorm:"-:all" redis:"by_api_key"` // Track if the user is acting through an API key
+	AccountsCreated []BackendUser                 `gorm:"foreignKey:CreatedBy;" redis:"-"`
 	Activity        []BackendUserActivity         `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" redis:"-"`
 	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	PassResetReqs   []BackendPasswordResetRequest `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	Country         *Country                      `gorm:"foreignKey:CountryId;" redis:"-"`
-	// OTP             []BackendOTP                  `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 }
 
+// type BackendSession_Old struct {
+// 	UserId    uint         `gorm:"not null" redis:"user_id"`
+// 	Token     string       `gorm:"not null" redis:"-"` // redis key would be the token
+// 	CreatedAt time.Time    `gorm:"not null" redis:"created_at"`
+// 	IpAddr    string       `gorm:"column:ip_address" redis:"ip_address"`
+// 	UserAgent string       `gorm:"not null" redis:"user_agent"`
+// 	User      *BackendUser `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;" redis:"-"`
+// }
+
 type BackendSession struct {
-	UserId    uint         `gorm:"not null" redis:"user_id"`
-	Token     string       `gorm:"not null" redis:"-"` // redis key would be the token
-	CreatedAt time.Time    `gorm:"not null" redis:"created_at"`
-	IpAddr    string       `gorm:"column:ip_address" redis:"ip_address"`
-	UserAgent string       `gorm:"not null" redis:"user_agent"`
-	User      *BackendUser `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;" redis:"-"`
+	ID               uuid.UUID    `gorm:"primarykey;not null;type:uuid" redis:"-"` // redis key would be the token id
+	UserId           uint         `gorm:"not null" redis:"user_id"`
+	RefreshTokenHash string       `gorm:"not null" redis:"-"`
+	LastIP           string       `gorm:"" redis:"last_ip"`
+	DeviceId         string       `gorm:"" redis:"device_id"`
+	UserAgent        string       `gorm:"not null" redis:"user_agent"`
+	CreatedAt        time.Time    `gorm:"not null" redis:"created_at"`
+	ExpiresAt        time.Time    `gorm:"not null" redis:"created_at"`
+	User             *BackendUser `gorm:"foreignKey:UserId;constraint:OnDelete:CASCADE;" redis:"-"`
 }
 
 type BackendUserActivity struct {
 	UserId uint `gorm:"index;not null" redis:"user_id"`
 	// This would be like "Login", "Password Change", "Profile Update", "Order Handling"
-	LogTitle  string    `gorm:"type:varchar(100);not null" redis:"log_title"`
-	Activity  string    `gorm:"type:text;not null" redis:"activity"`
+	LogTitle  string    `gorm:"not null" redis:"log_title"`
+	Activity  string    `gorm:"not null" redis:"activity"`
 	CreatedAt time.Time `gorm:"" redis:"created_at"`
 }
 

@@ -67,16 +67,20 @@ type CustomerSession struct {
 }
 
 type CartItem struct {
-	CustomerID uint      `gorm:"primaryKey;index"`
-	ProductID  uint      `gorm:"primaryKey;index"`
+	CustomerID uint      `gorm:"index"`
+	ProductID  uint      `gorm:"index"`
 	Quantity   int       `gorm:"not null;default:1"`
 	AddedAt    time.Time `gorm:""`
 	// Product    *Product  `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
+func (c CartItem) TableName() string {
+	return "customer_carts"
+}
+
 type WishlistItem struct {
-	CustomerID uint      `gorm:"primaryKey;index"`
-	ProductID  uint      `gorm:"primaryKey;index"`
-	AddedAt    time.Time `gorm:""`
+	CustomerID uint      `gorm:"index"`
+	ProductID  uint      `gorm:"index"`
+	AddedAt    time.Time `gorm:"not null"`
 	// Product    *Product  `gorm:"foreignKey:ProductID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

@@ -10,7 +10,7 @@ CREATE TABLE customers (
     is_email_verified BOOLEAN DEFAULT FALSE,
     image_url TEXT,
     password_hash TEXT,
-    FOREIGN KEY (country) REFERENCES countries(id)
+    FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
 CREATE INDEX IF NOT EXISTS customers_email_idx ON customers USING hash (email);
@@ -26,7 +26,7 @@ CREATE TABLE customer_addresses (
     FOREIGN KEY (state_id) REFERENCES states(id)
 );
 
-CREATE INDEX IF NOT EXISTS customer_address_id_idx ON customer_addresses USING hash (customer_id);
+CREATE INDEX IF NOT EXISTS customer_address_id_idx ON customer_addresses (customer_id);
 
 
 -- CREATE TABLE customer_sessions (
@@ -52,7 +52,7 @@ CREATE TABLE customer_sessions (
     user_agent TEXT,
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES customers(id) ON DELETE CASCADE
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );
 
 -- CREATE INDEX idx_backend_sessions_refresh_token ON backend_sessions(refresh_token_hash);
@@ -69,6 +69,7 @@ CREATE TABLE customer_otps (
     UNIQUE(customer_id, code)
 );
 
+CREATE INDEX IF NOT EXISTS customer_otps_code_idx ON customer_otps (code);
 CREATE INDEX IF NOT EXISTS customer_otps_expiry_idx ON customer_otps (expiry_date);
 
 CREATE TABLE customer_wishlists (
@@ -87,13 +88,13 @@ CREATE TABLE customer_carts (
     -- indirect
     product_id BIGINT NOT NULL,
     quantity INT DEFAULT 1,
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
     UNIQUE (customer_id, product_id)
 );
 
-CREATE INDEX IF NOT EXISTS customer_cart_id_idx ON customer_cart (customer_id);
-CREATE INDEX IF NOT EXISTS customer_cart_product_idx ON customer_cart (product_id);
+CREATE INDEX IF NOT EXISTS customer_cart_id_idx ON customer_carts (customer_id);
+CREATE INDEX IF NOT EXISTS customer_cart_product_idx ON customer_carts (product_id);
 
 
 \c postgres;

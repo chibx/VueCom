@@ -27,7 +27,7 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 	app.Use(middlewares.ServeIndex(api))
 
 	// app.Static("*", "./"+constants.PublicFolder, fiber.Static{})
-	app.Get("/*", func(ctx *fiber.Ctx) error {
+	app.Get("*", func(ctx *fiber.Ctx) error {
 		return ctx.SendFile("./" + constants.PublicFolder + "/index.html")
 	})
 }

@@ -72,7 +72,7 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 	return b, nil
 }
 
-func GenerateFromPassword(password string, p *HashParams) (encodedHash string, err error) {
+func GenerateHashFromString(password string, p *HashParams) (encodedHash string, err error) {
 	salt, err := generateRandomBytes(p.SaltLength)
 	if err != nil {
 		return "", err
@@ -126,7 +126,7 @@ func splitHash(encodedHash string) (p *HashParams, salt, hash []byte, err error)
 	return p, salt, hash, nil
 }
 
-func ComparePasswordAndHash(password, encodedHash string) (match bool, err error) {
+func CompareRawAndHash(password, encodedHash string) (match bool, err error) {
 	p, salt, hash, err := splitHash(encodedHash)
 	if err != nil {
 		return false, err

@@ -51,18 +51,21 @@ func InitializeApp(api *types.Api) fiber.Handler {
 		err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing application. Try again later")
 		var appData = new(appModels.AppData)
 		// cache
-		_data, err := db.AppData().GetAppData(ctx.Context())
-		if err != nil {
-			logger.Error("Error getting AppData upon app initialization", zap.Error(err))
-			return response.FromFiberError(ctx, err500)
-		}
+		/* I might not need this since i check on server startup and i might have a background task refresh the local variable */
+		// ----------------------------------------------------
+		// _data, err := db.AppData().GetAppData(ctx.Context())
+		// if err != nil {
+		// 	logger.Error("Error getting AppData upon app initialization", zap.Error(err))
+		// 	return response.FromFiberError(ctx, err500)
+		// }
 
-		if _data != nil {
-			api.IsAppInit = true
-			api.AppName = _data.AppName
-			// api.AdminSlug = _data.AdminRoute // Just store the values if the IsAppInit guard does not do anything
-			return response.WriteResponse(ctx, fiber.StatusBadRequest, "An active app was found!!")
-		}
+		// if _data != nil {
+		// 	api.IsAppInit = true
+		// 	api.AppName = _data.AppName
+		// 	// api.AdminSlug = _data.AdminRoute // Just store the values if the IsAppInit guard does not do anything
+		// 	return response.WriteResponse(ctx, fiber.StatusBadRequest, "An active app was found!!")
+		// }
+		// ----------------------------------------------------
 
 		form, err := ctx.MultipartForm()
 		if err != nil {

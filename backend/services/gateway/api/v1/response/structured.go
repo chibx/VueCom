@@ -26,6 +26,10 @@ func isErrorField(v any) bool {
 }
 
 func NewResponse(code int, message string, data ...any) *structuredResponse {
+	if code == 0 {
+		code = fiber.StatusOK
+	}
+
 	var resp = &structuredResponse{
 		Code:    code,
 		Message: message,
@@ -72,6 +76,8 @@ func WriteResponse(ctx *fiber.Ctx, code int, message string, data ...any) error 
 
 	if code != 0 {
 		ctx.Status(code)
+	} else {
+		ctx.Status(fiber.StatusOK)
 	}
 
 	return ctx.JSON(resp)

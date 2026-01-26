@@ -3,7 +3,7 @@
 
 CREATE TABLE app_data (
     app_name TEXT NOT NULL,
-    admin_route TEXT NOT NULL,
+    admin_route TEXT,
     app_logo TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/redis/go-redis/v9"
@@ -31,6 +32,7 @@ var accessSecret = []byte("your-access-secret-key")
 // Login handler: Issues both tokens.
 func BackendLoginJWT(ctx *fiber.Ctx) error {
 	// Fake auth: Assume userID from credentials.
+
 	userID := uint(123)
 
 	// Access token.
@@ -60,7 +62,7 @@ func BackendLoginJWT(ctx *fiber.Ctx) error {
 
 	// Set refresh cookie.
 	ctx.Cookie(&fiber.Cookie{
-		Name:     "refresh_token",
+		Name:     constants.BackendRefreshTkKey,
 		Value:    refresh,
 		Expires:  expiry,
 		HTTPOnly: true,

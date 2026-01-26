@@ -54,7 +54,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 	db := api.Deps.DB
 	logger := api.Deps.Logger
 
-	passwordHash, err := auth.GenerateFromPassword(req.Password, auth.DefaultHashParams)
+	passwordHash, err := auth.GenerateHashFromString(req.Password, auth.DefaultHashParams)
 	if err != nil {
 		logger.Error("Failed to hash password for new backend user", zap.Error(err))
 		return nil, err

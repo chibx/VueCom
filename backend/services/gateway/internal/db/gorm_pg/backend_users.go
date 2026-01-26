@@ -99,7 +99,7 @@ func (br *backendUserRepository) CreateSession(ctx context.Context, session *use
 	return nil
 }
 
-func (br *backendUserRepository) DeleteSession(session *userModels.BackendSession, ctx context.Context) error {
+func (br *backendUserRepository) DeleteSession(ctx context.Context, session *userModels.BackendSession) error {
 	err := br.db.WithContext(ctx).Delete(session).Error
 	if err != nil {
 		return err
@@ -107,7 +107,7 @@ func (br *backendUserRepository) DeleteSession(session *userModels.BackendSessio
 	return nil
 }
 
-func (br *backendUserRepository) GetCountryIdByCode(code string, ctx context.Context) (uint, error) {
+func (br *backendUserRepository) GetCountryIdByCode(ctx context.Context, code string) (uint, error) {
 	var country userModels.Country
 	err := br.db.WithContext(ctx).Omit(clause.Associations).Select("id").Where("code = ?", code).First(&country).Error
 	if err != nil {

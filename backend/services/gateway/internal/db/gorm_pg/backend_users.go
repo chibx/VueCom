@@ -30,6 +30,17 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.Back
 	return admin, nil
 }
 
+func (br *backendUserRepository) HasAdmin(ctx context.Context) (bool, error) {
+	var count int64
+
+	err := br.db.Where("role = 'owner'").Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
 func (br *backendUserRepository) GetUserByNameForLogin(ctx context.Context, username string) (*dto.UserForLogin, error) {
 	// selectedValue := "*"
 	// backendUser := &userModels.BackendUser{}

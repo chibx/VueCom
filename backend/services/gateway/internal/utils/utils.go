@@ -74,7 +74,7 @@ func IsSupportedImage(image io.Reader) (bool, error) {
 		return false, err
 	}
 	if !slices.Contains(request.IMAGE_FORMATS, mtype.String()) {
-		return false, errors.New("uploaded logo must be either a jpeg, jpg or png image")
+		return false, errors.New("Invalid mimetype")
 	}
 
 	return true, nil

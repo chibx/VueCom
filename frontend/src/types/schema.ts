@@ -6,7 +6,7 @@ export const loginSchema = object({
   password: string()
     .required()
     .max(MAX_PASSWORD_LEN, 'Password cannot be up to 50 characters in length'),
-  stayLoggedIn: boolean(),
+  // stayLoggedIn: boolean(),
 })
 
 type SchemaValue<T> = T extends ObjectSchema<infer U> ? U : never

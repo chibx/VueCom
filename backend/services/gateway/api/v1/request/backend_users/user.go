@@ -60,7 +60,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 		return nil, err
 	}
 
-	hashedFullname, err := auth.Encrypt(req.FullName, api.Config.DbEncKey)
+	hashedFullname, err := auth.Encrypt(req.FullName, api.Config.SecretKey)
 	if err != nil {
 		logger.Error("Failed to encrypt fullname for new backend user", zap.Error(err))
 		return nil, err
@@ -74,7 +74,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 	// 	return nil, err
 	// }
 
-	hashedEmail, err := auth.Encrypt(req.Email, api.Config.DbEncKey)
+	hashedEmail, err := auth.Encrypt(req.Email, api.Config.SecretKey)
 	if err != nil {
 		logger.Error("Failed to encrypt email for new backend user", zap.Error(err))
 		return nil, err
@@ -82,7 +82,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 
 	var hashedPhoneNumber string
 	if req.PhoneNumber != nil {
-		hashedPhoneNumber, err = auth.Encrypt(*req.PhoneNumber, api.Config.DbEncKey)
+		hashedPhoneNumber, err = auth.Encrypt(*req.PhoneNumber, api.Config.SecretKey)
 	}
 	if err != nil {
 		logger.Error("Failed to encrypt phone number for new backend user", zap.Error(err))

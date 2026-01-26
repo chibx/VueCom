@@ -22,7 +22,6 @@ func GetConfig() *types.Config {
 		AllowedPaths: allowedPaths,
 		ApiEncKey:    loadKey("API_ENC_KEY"),
 		SecretKey:    loadKey("SECRET_KEY"),
-		DbEncKey:     loadKey("DB_ENC_KEY"),
 		IsSaas:       isSaaS(),
 	}
 }

@@ -16,42 +16,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// func ServeIndex(api *types.Api) fiber.Handler {
-// 	return func(ctx *fiber.Ctx) error {
-// 		logger := api.Deps.Logger
-// 		routeParts := utils.ExtractRouteParts(ctx.Path())
-// 		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
-// 		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*dbModels.BackendUser)
-
-// 		// Validate the user if he is accessing the admin panel
-// 		if len(routeParts) > 1 && routeParts[1] == api.AdminSlug {
-
-// 			if len(routeParts) > 2 && routeParts[2] == "login" {
-// 				if backendUser != nil {
-// 					return ctx.Redirect("/" + routeParts[1] + "/dashboard")
-// 				}
-// 				return utils.ServeIndex(ctx)
-// 			}
-
-// 			absoluteUrl := utils.GetAbsoluteUrl(ctx)
-// 			if backendToken == "" {
-// 				logger.Info("Redirecting to login", zap.String("route", routeParts[1]))
-// 				return ctx.Redirect("/" + routeParts[1] + "/login")
-// 			}
-
-// 			if backendUser == nil {
-// 				return ctx.Redirect("/"+routeParts[1]+"/login?redirectTo="+url.QueryEscape(absoluteUrl), fiber.StatusSeeOther)
-// 			}
-
-// 		}
-
-// 		return ctx.Next()
-// 	}
-// }
-
 func ServeIndex(api *types.Api) fiber.Handler {
+	logger := api.Deps.Logger
 	return func(ctx *fiber.Ctx) error {
-		logger := api.Deps.Logger
 		absoluteUrl := utils.GetAbsoluteUrl(ctx)
 		routeParts := utils.ExtractRouteParts(ctx.Path())
 		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
@@ -60,8 +27,6 @@ func ServeIndex(api *types.Api) fiber.Handler {
 		var isAppInitRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "init"
 		var isAdminCreateRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "create-user"
 		var redirectTo = "?redirectTo=" + url.QueryEscape(absoluteUrl)
-		// Validate the user if he is accessing the admin panel
-		// if len(routeParts) > 1 && routeParts[1] == api.AdminSlug {
 
 		if isAppInitRoute && api.IsAppInit {
 			if backendUser != nil {

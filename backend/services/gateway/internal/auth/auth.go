@@ -5,11 +5,13 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"net"
 	"time"
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
@@ -27,6 +29,28 @@ func GenerateRefreshToken() (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(bytes), nil
+}
+
+func CompositeRefreshToken() (compositeToken string, refreshHash string, err error) {
+	UUID, err := uuid.NewRandom()
+	if err != nil {
+		return "", "", err
+	}
+	refreshToken, err := GenerateRefreshToken()
+	if err != nil {
+		return "", "", err
+	}
+	refreshTokenHash, err := GenerateHashFromString(refreshToken, DefaultHashParams)
+	if err != nil {
+		return "", "", err
+	}
+
+	id := UUID.String()
+	if id == "" {
+		return "", "", errors.New("Invalid UUID generated in composite function")
+	}
+
+	return fmt.Sprintf("%s.%s", id, refreshToken), refreshTokenHash, nil
 }
 
 func ValidateBackendUserSess(ctx *fiber.Ctx, session *userModels.BackendSession) error {
@@ -57,7 +81,27 @@ func ValidateBackendUserSess(ctx *fiber.Ctx, session *userModels.BackendSession)
 	return nil
 }
 
-func GetBackendUserSession(tokenId string, api *types.Api, ctx context.Context) (*userModels.BackendSession, error) {
+func CreateBackendSession(ctx context.Context, session *userModels.BackendSession, api *types.Api) error {
+	db := api.Deps.DB
+	var err error
+	logger := api.Deps.Logger
+	for tries := range 5 {
+		err = db.BackendUsers().CreateSession(ctx, session)
+		if err != nil {
+			if errors.Is(err, gorm.ErrDuplicatedKey) {
+				logger.Warn("Retrying after uuid duplicate key error", zap.Int("tries", tries+1))
+				continue
+			}
+
+			break
+		}
+		break
+	}
+
+	return err
+}
+
+func GetBackendUserSession(ctx context.Context, tokenId string, api *types.Api) (*userModels.BackendSession, error) {
 	db := api.Deps.DB
 	logger := api.Deps.Logger
 
@@ -77,7 +121,7 @@ func GetBackendUserSession(tokenId string, api *types.Api, ctx context.Context) 
 	return backend_session, nil
 }
 
-func GetCustomerSession(tokenId string, api *types.Api, ctx context.Context) (*userModels.CustomerSession, error) {
+func GetCustomerSession(ctx context.Context, tokenId string, api *types.Api) (*userModels.CustomerSession, error) {
 	db := api.Deps.DB
 	logger := api.Deps.Logger
 

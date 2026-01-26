@@ -89,7 +89,7 @@ func GenerateFromPassword(password string, p *HashParams) (encodedHash string, e
 	return encodedHash, nil
 }
 
-func decodeHash(encodedHash string) (p *HashParams, salt, hash []byte, err error) {
+func splitHash(encodedHash string) (p *HashParams, salt, hash []byte, err error) {
 	parts := strings.Split(encodedHash, "$")
 	if len(parts) != 6 {
 		return nil, nil, nil, ErrInvalidHash
@@ -127,7 +127,7 @@ func decodeHash(encodedHash string) (p *HashParams, salt, hash []byte, err error
 }
 
 func ComparePasswordAndHash(password, encodedHash string) (match bool, err error) {
-	p, salt, hash, err := decodeHash(encodedHash)
+	p, salt, hash, err := splitHash(encodedHash)
 	if err != nil {
 		return false, err
 	}

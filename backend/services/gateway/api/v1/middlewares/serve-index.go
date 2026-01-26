@@ -24,25 +24,7 @@ func ServeIndex(api *types.Api) fiber.Handler {
 		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
 		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*userModels.BackendUser)
 		var isLoginRoute = len(routeParts) == 2 && routeParts[1] == "login"
-		var isAppInitRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "init"
-		var isAdminCreateRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "create-user"
 		var redirectTo = "?redirectTo=" + url.QueryEscape(absoluteUrl)
-
-		if isAppInitRoute && api.IsAppInit {
-			if backendUser != nil {
-				return ctx.Redirect("/dashboard")
-			} else {
-				return ctx.Redirect("/login")
-			}
-		}
-
-		if isAdminCreateRoute && api.HasAdmin {
-			if backendUser != nil {
-				return ctx.Redirect("/dashboard")
-			} else {
-				return ctx.Redirect("/login")
-			}
-		}
 
 		if isLoginRoute {
 			if backendUser != nil {
@@ -55,7 +37,7 @@ func ServeIndex(api *types.Api) fiber.Handler {
 		if len(routeParts) == 1 || (len(routeParts) > 1 && routeParts[1] != "api") {
 			if backendToken == "" {
 				logger.Info("Redirecting to login")
-				return ctx.Redirect("/login" + redirectTo)
+				return ctx.Redirect("/login"+redirectTo, fiber.StatusSeeOther)
 			}
 
 			if backendUser == nil {

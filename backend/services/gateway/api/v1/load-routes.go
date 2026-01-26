@@ -19,7 +19,7 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 		return ctx.Status(200).SendString("OK")
 	})
 
-	app.Use(middlewares.ServeAssets(), middlewares.AuthMiddleware(api))
+	app.Use(middlewares.ServeAssets(), middlewares.AuthMiddleware(api), middlewares.RedirectCommon(api))
 
 	backend.LoadRoutes(app, api)
 	customer.LoadRoutes(app, api)

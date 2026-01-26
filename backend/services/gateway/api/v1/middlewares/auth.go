@@ -24,7 +24,7 @@ func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *use
 
 		if errors.As(validationErr, &sessionErr) {
 			if sessionErr.Type == server.SessionExpired {
-				ctx.ClearCookie(constants.BackendCookieKey)
+				ctx.ClearCookie(constants.BackendRefreshTkKey)
 				return nil, server.NewServerErr(fiber.StatusBadRequest, "Session token has expired. Please log in again.")
 			}
 		}
@@ -51,7 +51,7 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 		var tokenErr error
 		var authHeader = ctx.Get("Authorization")
 		var tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
-		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
+		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendRefreshTkKey))
 		var tokenGroup = strings.Split(backendToken, ".")
 
 		if tokenStr != "" {
@@ -72,7 +72,7 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			}
 
 			tokenId := tokenGroup[0]
-			backendUserSess, tokenErr = auth.GetBackendUserSession(tokenId, api, ctx.Context())
+			backendUserSess, tokenErr = auth.GetBackendUserSession(ctx.Context(), tokenId, api)
 			if tokenErr != nil {
 				logger.Error("failed to get user session from cache", zap.Error(tokenErr))
 			} else {

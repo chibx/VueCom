@@ -15,8 +15,8 @@ func RedirectCommon(api *types.Api) fiber.Handler {
 		routeParts := utils.ExtractRouteParts(ctx.Path())
 		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*userModels.BackendUser)
 		var isApiRoute = len(routeParts) > 1 && routeParts[1] == "api"
-		var isAppInitRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "init"
-		var isAdminCreateRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "create-user"
+		var isAppInitRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "initialize"
+		var isAdminCreateRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "create-owner"
 
 		// TODO: I will refactor these checks later
 		// ---------------------------------------------
@@ -46,7 +46,7 @@ func RedirectCommon(api *types.Api) fiber.Handler {
 			if isApiRoute {
 				return response.WriteResponse(ctx, fiber.StatusBadRequest, "There is no app initialized!!!")
 			}
-			return ctx.Redirect("/app/init")
+			return ctx.Redirect("/app/initialize")
 		}
 
 		if isAdminCreateRoute {
@@ -57,7 +57,7 @@ func RedirectCommon(api *types.Api) fiber.Handler {
 			if isApiRoute {
 				return response.WriteResponse(ctx, fiber.StatusBadRequest, "There is no app owner!!!")
 			}
-			return ctx.Redirect("/app/create-user")
+			return ctx.Redirect("/app/create-owner")
 		}
 
 		return ctx.Next()

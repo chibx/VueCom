@@ -48,7 +48,6 @@ func ServeIndex(api *types.Api) fiber.Handler {
 			if backendUser != nil {
 				return ctx.Redirect("/dashboard")
 			}
-			// return utils.ServeIndex(ctx)
 			return ctx.Next()
 		}
 
@@ -64,8 +63,6 @@ func ServeIndex(api *types.Api) fiber.Handler {
 				return ctx.Redirect("/login"+redirectTo, fiber.StatusSeeOther)
 			}
 		}
-
-		// }
 
 		return ctx.Next()
 	}

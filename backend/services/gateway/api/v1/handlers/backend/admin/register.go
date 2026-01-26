@@ -12,12 +12,9 @@ import (
 )
 
 func RegisterRoutes(app fiber.Router, api *types.Api) {
-	app.Post("/initialize-app", func(ctx *fiber.Ctx) error {
-		return InitializeApp(ctx, api)
-	})
-	app.Post("/register-owner", func(ctx *fiber.Ctx) error {
-		return RegisterOwner(ctx, api)
-	})
+	app.Post("/initialize-app", InitializeApp(api))
+	app.Post("/register-owner", RegisterOwner(api))
+
 	app.Get("/admin-exist", func(ctx *fiber.Ctx) error {
 		logger := api.Deps.Logger
 		exists, err := DoesOwnerExist(ctx, api)

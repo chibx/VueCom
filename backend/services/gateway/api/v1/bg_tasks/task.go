@@ -17,7 +17,7 @@ func RefreshAdminSlug(api *types.Api) {
 			appData, _ := cache.GetAppData(ctx, api)
 
 			if appData != nil {
-				api.AdminSlug = appData.AdminRoute
+				// api.AdminSlug = appData.AdminRoute
 			}
 		}
 	}()

@@ -223,16 +223,10 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 
 		if len(appData.AppName) > 0 {
 			v1_api.AppName = appData.AppName
-		} /* else {
-			logger.Warn("App Name not found in DB, using default 'Vuecom_test'")
-			v1_api.AppName = "Vuecom_test"
-		} */
+		}
 
-		if len(appData.AdminRoute) > 0 {
-			v1_api.AdminSlug = appData.AdminRoute
-		} /*  else {
-			v1_api.AdminSlug = "admin123"
-			logger.Warn("Admin Route not found in DB, using default 'admin123'")
+		/*	if len(appData.AdminRoute) > 0 {
+				v1_api.AdminSlug = appData.AdminRoute
 		} */
 	}
 }

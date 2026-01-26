@@ -9,6 +9,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 )
 
 func Login(api *types.Api) fiber.Handler {
@@ -44,6 +45,8 @@ func Login(api *types.Api) fiber.Handler {
 		if len(password) == 0 {
 			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Please enter a character")
 		}
+
+		logger.Info("Form fields", zap.Strings("fields", []string{username, password}))
 
 		// auth.ComparePasswordAndHash()
 

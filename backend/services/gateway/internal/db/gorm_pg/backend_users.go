@@ -42,16 +42,10 @@ func (br *backendUserRepository) HasAdmin(ctx context.Context) (bool, error) {
 }
 
 func (br *backendUserRepository) GetUserByNameForLogin(ctx context.Context, username string) (*dto.UserForLogin, error) {
-	// selectedValue := "*"
-	// backendUser := &userModels.BackendUser{}
-
-	// if fields != nil {
-	// 	selectedValue = strings.Join(fields, ",")
-	// }
-	user := &dto.UserForLogin{}
+	var user *dto.UserForLogin
 
 	// userModels.BackendUser
-	err := br.db.Model("backend_users").Where("user_name = ?", username).First(user).Error
+	err := br.db.Model(&userModels.BackendUser{}).Where("user_name = ?", username).First(user).Error
 
 	if err != nil {
 		return nil, err

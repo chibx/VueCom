@@ -92,7 +92,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 	var countryId uint
 	if req.Country != nil {
 		// err = api.Deps.DB.Model(&dbModels.Country{}).Where(dbModels.Country{Code: *req.Country}).Row().Scan(&countryId)
-		countryId, err = db.BackendUsers().GetCountryIdByCode(*req.Country, ctx)
+		countryId, err = db.BackendUsers().GetCountryIdByCode(ctx, *req.Country)
 		if err != nil {
 			logger.Error(fmt.Sprintf("Failed to get country ID for `%s` for new backend user", *req.Country), zap.Error(err))
 			if errors.Is(err, gorm.ErrRecordNotFound) {

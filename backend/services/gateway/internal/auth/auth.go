@@ -84,8 +84,14 @@ func ValidateBackendUserSess(ctx *fiber.Ctx, session *userModels.BackendSession)
 func CreateBackendSession(ctx context.Context, session *userModels.BackendSession, api *types.Api) error {
 	db := api.Deps.DB
 	var err error
+	var UUID uuid.UUID
 	logger := api.Deps.Logger
 	for tries := range 5 {
+		UUID, err = uuid.NewRandom()
+		if err != nil {
+			return err // or continue
+		}
+		session.ID = UUID
 		err = db.BackendUsers().CreateSession(ctx, session)
 		if err != nil {
 			if errors.Is(err, gorm.ErrDuplicatedKey) {

@@ -18,7 +18,6 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 	app.Get("/api/health", func(ctx *fiber.Ctx) error {
 		return ctx.Status(200).SendString("OK")
 	})
-
 	app.Use(middlewares.ServeAssets(), middlewares.AuthMiddleware(api), middlewares.RedirectCommon(api))
 
 	backend.LoadRoutes(app, api)

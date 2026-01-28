@@ -63,12 +63,12 @@ CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 -- CREATE INDEX IF NOT EXISTS backend_sessions_expires_at_idx ON backend_sessions (expires_at);
 
 CREATE TABLE backend_sessions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id INT NOT NULL,
     refresh_token_hash TEXT NOT NULL,
     device_id UUID NOT NULL,
     last_ip TEXT NOT NULL,
     user_agent TEXT,
+    used BOOLEAN DEFAULT FALSE,
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE
@@ -76,7 +76,6 @@ CREATE TABLE backend_sessions (
 
 -- CREATE INDEX idx_backend_sessions_refresh_token ON backend_sessions(refresh_token_hash);
 CREATE INDEX IF NOT EXISTS idx_backend_sessions_user_id ON backend_sessions(user_id);
-CREATE INDEX IF NOT EXISTS idx_backend_sessions_device ON backend_sessions(device_id);
 
 
 CREATE TABLE backend_otps (

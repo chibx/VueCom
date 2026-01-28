@@ -44,12 +44,12 @@ CREATE INDEX IF NOT EXISTS customer_address_id_idx ON customer_addresses (custom
 -- CREATE INDEX IF NOT EXISTS customer_sessions_expires_at_idx ON customer_sessions (expires_at);
 
 CREATE TABLE customer_sessions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     customer_id INT NOT NULL,
     refresh_token_hash TEXT NOT NULL,
     device_id UUID NOT NULL,
     last_ip TEXT NOT NULL,
     user_agent TEXT,
+    used BOOLEAN DEFAULT FALSE,
     expires_at TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
@@ -57,8 +57,6 @@ CREATE TABLE customer_sessions (
 
 -- CREATE INDEX idx_backend_sessions_refresh_token ON backend_sessions(refresh_token_hash);
 CREATE INDEX IF NOT EXISTS idx_customer_sessions_user_id ON customer_sessions(customer_id);
-CREATE INDEX IF NOT EXISTS idx_customer_sessions_device ON customer_sessions(device_id);
-
 
 
 CREATE TABLE customer_otps (

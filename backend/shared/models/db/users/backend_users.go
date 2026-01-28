@@ -2,8 +2,6 @@ package users
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // Country represents a country in the system
@@ -78,7 +76,6 @@ type BackendUser struct {
 // }
 
 type BackendSession struct {
-	ID               uuid.UUID    `gorm:"primarykey;not null;type:uuid" redis:"-"` // redis key would be the token id
 	UserId           uint         `gorm:"not null" redis:"user_id"`
 	RefreshTokenHash string       `gorm:"not null" redis:"-"`
 	LastIP           string       `gorm:"" redis:"last_ip"`

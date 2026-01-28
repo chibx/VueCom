@@ -11,7 +11,6 @@ import (
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
-	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 
@@ -31,11 +30,7 @@ func GenerateRefreshToken() (string, error) {
 	return hex.EncodeToString(bytes), nil
 }
 
-func CompositeRefreshToken() (compositeToken string, refreshHash string, err error) {
-	UUID, err := uuid.NewRandom()
-	if err != nil {
-		return "", "", err
-	}
+func CompositeRefreshToken() (token string, refreshHash string, err error) {
 	refreshToken, err := GenerateRefreshToken()
 	if err != nil {
 		return "", "", err
@@ -45,12 +40,7 @@ func CompositeRefreshToken() (compositeToken string, refreshHash string, err err
 		return "", "", err
 	}
 
-	id := UUID.String()
-	if id == "" {
-		return "", "", errors.New("Invalid UUID generated in composite function")
-	}
-
-	return fmt.Sprintf("%s.%s", id, refreshToken), refreshTokenHash, nil
+	return fmt.Sprintf("%s", refreshToken), refreshTokenHash, nil
 }
 
 func ValidateBackendUserSess(ctx *fiber.Ctx, session *userModels.BackendSession) error {
@@ -84,24 +74,10 @@ func ValidateBackendUserSess(ctx *fiber.Ctx, session *userModels.BackendSession)
 func CreateBackendSession(ctx context.Context, session *userModels.BackendSession, api *types.Api) error {
 	db := api.Deps.DB
 	var err error
-	var UUID uuid.UUID
 	logger := api.Deps.Logger
-	for tries := range 5 {
-		UUID, err = uuid.NewRandom()
-		if err != nil {
-			return err // or continue
-		}
-		session.ID = UUID
-		err = db.BackendUsers().CreateSession(ctx, session)
-		if err != nil {
-			if errors.Is(err, gorm.ErrDuplicatedKey) {
-				logger.Warn("Retrying after uuid duplicate key error", zap.Int("tries", tries+1))
-				continue
-			}
-
-			break
-		}
-		break
+	err = db.BackendUsers().CreateSession(ctx, session)
+	if err != nil {
+		logger.Error("Failed to create backend session", zap.Error(err))
 	}
 
 	return err

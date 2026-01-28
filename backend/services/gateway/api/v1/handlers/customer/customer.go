@@ -14,7 +14,7 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 	// app.Use(middlewares.AuthMiddleware(api))
 
 	/* /v1 handlers */
-	v1 := app.Group("/api/customer", middlewares.CustomerRateLimit(api))
+	v1 := app.Group("/api/v1/customer", middlewares.CustomerRateLimit(api))
 	productHandler.RegisterRoutes(v1, api)
 	orderHandler.RegisterRoutes(v1, api)
 }

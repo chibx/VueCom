@@ -58,6 +58,7 @@ const BackendAccessTkDur = 15 * time.Minute
 const BackendRefreshTkDur = 7 * 24 * time.Hour
 const CustomerAccessTkDur = 15 * time.Minute
 const CustomerRefreshTkDur = 7 * 24 * time.Hour
+const DeviceIDDur = 365 * 24 * time.Hour
 const ApiKeyCtxKey = "api_key"
 const BackendUserCtxKey = "backend_user"
 const DeviceIDKey = "device_id"

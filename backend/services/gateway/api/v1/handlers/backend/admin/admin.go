@@ -67,12 +67,7 @@ func InitializeApp(api *types.Api) fiber.Handler {
 		// }
 		// ----------------------------------------------------
 
-		form, err := ctx.MultipartForm()
-		if err != nil {
-			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Invalid form data")
-		}
-
-		appData, logoFile, err := validateInitializeProps(form)
+		appData, logoFile, err := validateInitializeProps(ctx)
 		if err != nil {
 			return response.WriteResponse(ctx, fiber.StatusBadRequest, err.Error())
 		}
@@ -222,8 +217,10 @@ func validateInitializeProps(ctx *fiber.Ctx) (*appModels.AppData, *multipart.Fil
 	logoFile, err := ctx.FormFile("app_logo")
 	if err != nil {
 		if errors.Is(err, fasthttp.ErrMissingFile) {
-			return
+			return nil, nil, errors.New("Logo is missing")
 		}
+
+		return nil, nil, errors.New("Something went wrong, please try again")
 	}
 
 	switch {

@@ -26,7 +26,6 @@ type CreateBackendUserRequest struct {
 	Country     *string `json:"country" form:"country" validate:"required_if=Role owner"`
 	Password    string  `json:"password" form:"password" validate:"required,min=8,max=25"`
 	// Role            string  `form:"role" validate:"required"`
-	// "image" field for user logo (optional)
 }
 
 func (req *CreateBackendUserRequest) Validate() error {

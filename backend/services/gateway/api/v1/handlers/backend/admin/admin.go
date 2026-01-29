@@ -223,20 +223,17 @@ func validateInitializeProps(ctx *fiber.Ctx) (*appModels.AppData, *multipart.Fil
 		return nil, nil, errors.New("Something went wrong, please try again")
 	}
 
-	switch {
-	case logoFile == nil:
+	if logoFile == nil {
 		return nil, nil, errors.New(fieldIsMissing("`Application logo`"))
 	}
 
-	switch {
-	case len(name) <= 3:
+	if len(name) <= 3 {
 		return nil, nil, errors.New("`Name` should have more than 3 characters")
 	}
 
 	if logoFile.Size > constants.MaxImageUpload {
 		return nil, nil, errors.New("uploaded logo must not be more than 5MB in size")
 	}
-	// fmt.Println(logoFile.Filename, logoFile.Header)
 
 	unknownErr := errors.New("unknown Error Occured! Try again")
 	logo, err := logoFile.Open()

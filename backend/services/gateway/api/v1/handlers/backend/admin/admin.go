@@ -235,7 +235,7 @@ func validateInitializeProps(ctx *fiber.Ctx) (*appModels.AppData, *multipart.Fil
 		return nil, nil, errors.New("uploaded logo must not be more than 5MB in size")
 	}
 
-	unknownErr := errors.New("unknown Error Occured! Try again")
+	unknownErr := errors.New("Something went wrong, please try again")
 	logo, err := logoFile.Open()
 	if err != nil {
 		return nil, nil, unknownErr

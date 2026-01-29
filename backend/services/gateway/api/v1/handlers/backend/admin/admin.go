@@ -3,10 +3,10 @@ package admin
 import (
 	"errors"
 	"mime/multipart"
-	"strings"
 
 	"github.com/chibx/vuecom/backend/shared/errors/server"
 	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
+	"github.com/valyala/fasthttp"
 
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
 	backendusers "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/backend_users"
@@ -210,23 +210,26 @@ func RegisterOwner(api *types.Api) fiber.Handler {
 	}
 }
 
-func validateInitializeProps(form *multipart.Form) (*appModels.AppData, *multipart.FileHeader, error) {
-	fields := form.Value
-	files := form.File
-	nameField := fields["name"]
-	logoFileField := files["app_logo"]
+func validateInitializeProps(ctx *fiber.Ctx) (*appModels.AppData, *multipart.FileHeader, error) {
+	// fields := form.Value
+	// files := form.File
+	// name := fields["name"]
+	// logoFileField := files["app_logo"]
 	var err error
 	var appData *appModels.AppData
 
-	switch {
-	case nameField == nil:
-		return nil, nil, errors.New(fieldIsMissing("`Name` field"))
-	case logoFileField == nil:
-		return nil, nil, errors.New(fieldIsMissing("`Application logo`"))
+	name := ctx.FormValue("name")
+	logoFile, err := ctx.FormFile("app_logo")
+	if err != nil {
+		if errors.Is(err, fasthttp.ErrMissingFile) {
+			return
+		}
 	}
 
-	name := strings.TrimSpace(nameField[0])
-	logoFile := logoFileField[0]
+	switch {
+	case logoFile == nil:
+		return nil, nil, errors.New(fieldIsMissing("`Application logo`"))
+	}
 
 	switch {
 	case len(name) <= 3:

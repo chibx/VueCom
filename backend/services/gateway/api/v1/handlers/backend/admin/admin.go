@@ -8,7 +8,6 @@ import (
 	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
 	"github.com/valyala/fasthttp"
 
-	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
 	backendusers "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/backend_users"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
@@ -125,7 +124,7 @@ func RegisterOwner(api *types.Api) fiber.Handler {
 
 		var err error
 		var db = api.Deps.DB
-		var cld = api.Deps.Cld
+		// var cld = api.Deps.Cld
 		err500 := fiber.NewError(fiber.StatusInternalServerError, "An error occurred, please try again")
 
 		userExists, err := DoesOwnerExist(ctx, api)
@@ -152,7 +151,7 @@ func RegisterOwner(api *types.Api) fiber.Handler {
 			return response.WriteResponse(ctx, fiber.StatusBadRequest, "One or more fields do not satisfy the requirements")
 		}
 
-		backUser, err := reqUser.ToDBBackendUser(api, ctx.Context())
+		backUser, err := reqUser.ToDBBackendUser(ctx.Context(), api, ctx)
 		if err != nil {
 			var serverErr *server.ServerErr
 			if errors.As(err, &serverErr) {
@@ -162,37 +161,37 @@ func RegisterOwner(api *types.Api) fiber.Handler {
 			return response.FromFiberError(ctx, err500)
 		}
 
-		reqUserImage, err := ctx.FormFile("image")
-		if err != nil {
-			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Invalid form data")
-		}
-		if reqUserImage != nil {
-			if reqUserImage.Size > constants.MaxImageUpload {
-				return response.WriteResponse(ctx, fiber.StatusBadRequest, "uploaded image must not be more than 5MB in size")
-			}
-			fileIO, err := reqUserImage.Open()
-			if err != nil {
-				return response.FromFiberError(ctx, err500)
-			}
+		// reqUserImage, err := ctx.FormFile("image")
+		// if err != nil {
+		// 	return response.WriteResponse(ctx, fiber.StatusBadRequest, "Invalid form data")
+		// }
+		// if reqUserImage != nil {
+		// 	if reqUserImage.Size > constants.MaxImageUpload {
+		// 		return response.WriteResponse(ctx, fiber.StatusBadRequest, "uploaded image must not be more than 5MB in size")
+		// 	}
+		// 	fileIO, err := reqUserImage.Open()
+		// 	if err != nil {
+		// 		return response.FromFiberError(ctx, err500)
+		// 	}
 
-			if reqUserImage.Size > constants.MaxImageUpload {
-				return response.WriteResponse(ctx, fiber.StatusBadRequest, "Uploaded file must not be more than 5MB in size")
-			}
-			_, err = utils.IsSupportedImage(fileIO)
-			if err != nil {
-				return response.WriteResponse(ctx, fiber.StatusBadRequest, "Uploaded image must be either a jpeg, jpg or png image")
-			}
-			result, err := cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
-				Folder:      request.GetBackendFolder(api),
-				Overwrite:   cldApi.Bool(true),
-				DisplayName: backUser.FullName,
-				PublicID:    backUser.FullName,
-			})
-			if err != nil {
-				return response.FromFiberError(ctx, err500)
-			}
-			backUser.Image = &result.SecureURL
-		}
+		// 	if reqUserImage.Size > constants.MaxImageUpload {
+		// 		return response.WriteResponse(ctx, fiber.StatusBadRequest, "Uploaded file must not be more than 5MB in size")
+		// 	}
+		// 	_, err = utils.IsSupportedImage(fileIO)
+		// 	if err != nil {
+		// 		return response.WriteResponse(ctx, fiber.StatusBadRequest, "Uploaded image must be either a jpeg, jpg or png image")
+		// 	}
+		// 	result, err := cld.Upload.Upload(ctx.Context(), fileIO, uploader.UploadParams{
+		// 		Folder:      request.GetBackendFolder(api),
+		// 		Overwrite:   cldApi.Bool(true),
+		// 		DisplayName: backUser.FullName,
+		// 		PublicID:    backUser.FullName,
+		// 	})
+		// 	if err != nil {
+		// 		return response.FromFiberError(ctx, err500)
+		// 	}
+		// 	backUser.Image = &result.SecureURL
+		// }
 
 		// err = gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), backUser)
 		err = db.BackendUsers().CreateUser(ctx.Context(), backUser)
@@ -206,10 +205,6 @@ func RegisterOwner(api *types.Api) fiber.Handler {
 }
 
 func validateInitializeProps(ctx *fiber.Ctx) (*appModels.AppData, *multipart.FileHeader, error) {
-	// fields := form.Value
-	// files := form.File
-	// name := fields["name"]
-	// logoFileField := files["app_logo"]
 	var err error
 	var appData *appModels.AppData
 

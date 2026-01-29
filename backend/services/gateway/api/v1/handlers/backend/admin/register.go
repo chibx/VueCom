@@ -5,6 +5,7 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -16,7 +17,7 @@ func RegisterRoutes(app fiber.Router, api *types.Api) {
 	app.Post("/register-owner", RegisterOwner(api))
 
 	app.Get("/admin-exist", func(ctx *fiber.Ctx) error {
-		logger := api.Deps.Logger
+		logger := utils.Logger()
 		exists, err := DoesOwnerExist(ctx, api)
 
 		if err != nil {

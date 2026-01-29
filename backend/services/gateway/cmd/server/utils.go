@@ -14,7 +14,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/config"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/db/gorm_pg"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/validation"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/go-redis/redis_rate/v10"
@@ -68,7 +68,7 @@ func plugCloudinary(api *types.Api) {
 }
 
 func plugDB(api *types.Api) {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	dsn := loadPostgresDSN()
 	var db *gorm.DB
 	var err error
@@ -95,7 +95,7 @@ func plugDB(api *types.Api) {
 }
 
 func plugRedis(api *types.Api) {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	redisUrl := getEnv("APP_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
@@ -146,7 +146,7 @@ func setupLimiter(api *types.Api) {
 // }
 
 func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	appData, err := api.Deps.DB.AppData().GetAppData(context.Background())
 
 	if err != nil {
@@ -163,7 +163,7 @@ func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 }
 
 func checkIfOwnerExists(api *types.Api) (bool, error) {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	count, err := api.Deps.DB.AppData().CountOwner(context.Background())
 
 	if err != nil {
@@ -189,7 +189,8 @@ func initLogger(v1_api *types.Api) {
 
 	logger := zap.New(core)
 
-	v1_api.Deps.Logger = logger
+	utils.SetLogger(logger)
+	// v1_api.Deps.Logger = logger
 }
 
 func initServer(_ *fiber.App, v1_api *types.Api) {
@@ -198,22 +199,7 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 	plugRedis(v1_api)
 	setupLimiter(v1_api)
 	plugCloudinary(v1_api)
-	validation.Validator.RegisterTagNameFunc(validation.TagNameFunc)
-	// attachSentry(app)
-
-	// ---------------------------
-	// appEnv := os.Getenv("APP_ENVIRONMENT")
-	// if appEnv != "production" {
-	// 	logger := v1_api.Deps.Logger
-	// 	// Migrate DB
-	// 	now := time.Now()
-	// 	err := v1_api.Deps.DB.Migrate()
-	// 	if err != nil {
-	// 		panic("Error while migration")
-	// 	}
-	// 	logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
-	// }
-	// --------------------------
+	utils.Validator().RegisterTagNameFunc(utils.TagNameFunc)
 
 	appData, _ := appIfInitialized(v1_api)
 	v1_api.HasAdmin, _ = checkIfOwnerExists(v1_api)

@@ -39,7 +39,7 @@ func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
 // TODO: Validate the business name and the admin route to avoid clashes with url and also storage buckets
 
 func InitializeApp(api *types.Api) fiber.Handler {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 
 	return func(ctx *fiber.Ctx) error {
 		if api.IsAppInit {
@@ -116,7 +116,7 @@ func InitializeApp(api *types.Api) fiber.Handler {
 }
 
 func RegisterOwner(api *types.Api) fiber.Handler {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 
 	return func(ctx *fiber.Ctx) error {
 		if api.HasAdmin {

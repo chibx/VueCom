@@ -12,6 +12,7 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
@@ -21,7 +22,7 @@ import (
 func GetCustomerById(api *types.Api, id int, ctx context.Context) (*userModels.Customer, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	customer := &userModels.Customer{}
 
 	// Try to get from cache first

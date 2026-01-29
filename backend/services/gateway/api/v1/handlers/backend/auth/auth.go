@@ -12,6 +12,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -21,7 +22,7 @@ import (
 )
 
 func Register(api *types.Api) fiber.Handler {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
 		var err error
 		errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while logging you in, please try again")
@@ -39,7 +40,7 @@ func Register(api *types.Api) fiber.Handler {
 }
 
 func Login(api *types.Api) fiber.Handler {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	db := api.Deps.DB
 	return func(ctx *fiber.Ctx) error {
 		var backendUser *dto.UserForLogin

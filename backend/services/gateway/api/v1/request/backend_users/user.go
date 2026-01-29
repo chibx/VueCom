@@ -10,7 +10,7 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/validation"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -47,12 +47,12 @@ type CreateBackendUserRequest struct {
 }
 
 func (req *CreateBackendUserRequest) Validate() error {
-	return validation.Validator.Struct(req)
+	return utils.Validator().Struct(req)
 }
 
 func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context.Context) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 
 	passwordHash, err := auth.GenerateHashFromString(req.Password, auth.DefaultHashParams)
 	if err != nil {

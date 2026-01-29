@@ -11,6 +11,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/cache"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -43,7 +44,7 @@ func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *use
 }
 
 func AuthMiddleware(api *types.Api) fiber.Handler {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
 		var backendUserSess *userModels.BackendSession
 		var apiKeyData *userModels.ApiKey

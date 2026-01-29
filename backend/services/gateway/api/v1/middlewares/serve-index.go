@@ -17,7 +17,7 @@ import (
 )
 
 func ServeIndex(api *types.Api) fiber.Handler {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
 		absoluteUrl := utils.GetAbsoluteUrl(ctx)
 		routeParts := utils.ExtractRouteParts(ctx.Path())

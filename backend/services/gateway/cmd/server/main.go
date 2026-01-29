@@ -6,6 +6,7 @@ import (
 	v1 "github.com/chibx/vuecom/backend/services/gateway/api/v1"
 	"github.com/chibx/vuecom/backend/services/gateway/config"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -26,9 +27,10 @@ func main() {
 	})
 
 	app.Use(helmet.New())
-
 	initServer(app, v1_api)
-	logger := v1_api.Deps.Logger
+
+	logger := utils.Logger()
+
 	defer func() {
 		_ = logger.Sync()
 	}()

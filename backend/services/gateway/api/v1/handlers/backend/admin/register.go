@@ -3,6 +3,7 @@ package admin
 import (
 	"errors"
 
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/middlewares"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
@@ -13,10 +14,11 @@ import (
 )
 
 func RegisterRoutes(app fiber.Router, api *types.Api) {
-	app.Post("/initialize-app", InitializeApp(api))
-	app.Post("/register-owner", RegisterOwner(api))
+	appGroup := app.Group("/api/app", middlewares.BackendRateLimit(api))
+	appGroup.Post("/initialize", InitializeApp(api))
+	appGroup.Post("/create-owner", RegisterOwner(api))
 
-	app.Get("/admin-exist", func(ctx *fiber.Ctx) error {
+	appGroup.Get("/admin-exist", func(ctx *fiber.Ctx) error {
 		logger := utils.Logger()
 		exists, err := DoesOwnerExist(ctx, api)
 
@@ -27,7 +29,7 @@ func RegisterRoutes(app fiber.Router, api *types.Api) {
 			}
 			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "An Error occurred, please try again")
 		}
-		return response.WriteResponse(ctx, fiber.StatusOK, "", fiber.Map{
+		return response.WriteResponse(ctx, fiber.StatusOK, "Success", fiber.Map{
 			"exists": exists,
 		})
 	})

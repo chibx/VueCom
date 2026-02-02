@@ -17,6 +17,16 @@ import (
 	"gorm.io/gorm"
 )
 
+type CreateOwnerRequest struct {
+	FullName    string  `json:"full_name" form:"full_name" validate:"required,min=5" name:"Full Name"`
+	UserName    *string `json:"user_name" form:"user_name" validate:"required,min=3" name:"Username"`
+	Email       string  `json:"email" form:"email" validate:"required,email" name:"Email Address"`
+	PhoneNumber *string `json:"phone_number" form:"phone_number" validate:"min=10,max=15"`
+	Country     *string `json:"country" form:"country" validate:"required_if=Role owner"`
+	Password    string  `json:"password" form:"password" validate:"required,min=8,max=25"`
+	// Role            string  `form:"role" validate:"required"`
+}
+
 // Base Backend Panel User
 type CreateBackendUserRequest struct {
 	FullName    string  `json:"full_name" form:"full_name" validate:"required,min=5" name:"Full Name"`
@@ -28,11 +38,11 @@ type CreateBackendUserRequest struct {
 	// Role            string  `form:"role" validate:"required"`
 }
 
-func (req *CreateBackendUserRequest) Validate() error {
+func (req *CreateOwnerRequest) Validate() error {
 	return utils.Validator().Struct(req)
 }
 
-func (req *CreateBackendUserRequest) ToDBBackendUser(ctx context.Context, api *types.Api, c *fiber.Ctx) (*userModels.BackendUser, error) {
+func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.Api, c *fiber.Ctx) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
 	logger := utils.Logger()
 

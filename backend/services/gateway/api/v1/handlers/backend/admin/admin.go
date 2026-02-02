@@ -139,7 +139,7 @@ func RegisterOwner(api *types.Api) fiber.Handler {
 			return response.WriteResponse(ctx, fiber.StatusBadRequest, "An existing owner was found!!")
 		}
 
-		var reqUser *backendusers.CreateBackendUserRequest
+		var reqUser *backendusers.CreateOwnerRequest
 		err = ctx.BodyParser(&reqUser)
 		if err != nil {
 			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Invalid request body")

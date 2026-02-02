@@ -91,7 +91,12 @@ func Login(api *types.Api) fiber.Handler {
 		var accessTokenExp = time.Now().Add(constants.BackendAccessTkDur)
 		var deviceId = ctx.Cookies(constants.DeviceIDKey)
 		var ipAddr = ctx.IP()
-		var compositeRefreshToken = ctx.Cookies(constants.BackendRefreshTkKey)
+		// var refreshToken = ctx.Cookies(constants.BackendRefreshTkKey)
+		// db.BackendUsers().DeleteSession(ctx.Context(), &userModels.BackendSession{
+		// 	DeviceId: deviceId,
+		// 	RefreshTokenHash: refreshToken,
+		// })
+
 		if deviceId == "" {
 			deviceUUID, err := uuid.NewRandom()
 			if err != nil {
@@ -116,7 +121,7 @@ func Login(api *types.Api) fiber.Handler {
 			})
 		}
 
-		compositeRefreshToken, refreshTokenHash, err := auth.CompositeRefreshToken()
+		refreshToken, refreshTokenHash, err := auth.CompositeRefreshToken()
 		if err != nil {
 			logger.Error("Error generating composite refresh token", zap.Error(err))
 			return response.FromFiberError(ctx, errLogin500)
@@ -141,7 +146,7 @@ func Login(api *types.Api) fiber.Handler {
 
 		ctx.Cookie(&fiber.Cookie{
 			Name:     constants.BackendRefreshTkKey,
-			Value:    compositeRefreshToken,
+			Value:    refreshToken,
 			Expires:  refreshTokenExp,
 			SameSite: "Strict",
 			HTTPOnly: true,

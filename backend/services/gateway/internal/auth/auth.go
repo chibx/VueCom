@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"net"
 	"time"
 
@@ -41,7 +40,7 @@ func CompositeRefreshToken() (token string, refreshHash string, err error) {
 		return "", "", err
 	}
 
-	return fmt.Sprintf("%s", refreshToken), refreshTokenHash, nil
+	return refreshToken, refreshTokenHash, nil
 }
 
 func ValidateBackendUserSess(ctx *fiber.Ctx, session *userModels.BackendSession) error {

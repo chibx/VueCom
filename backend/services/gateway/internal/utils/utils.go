@@ -65,7 +65,7 @@ func IsSupportedImage(image io.Reader) (bool, error) {
 		return false, err
 	}
 	if !slices.Contains(request.IMAGE_FORMATS, mtype.String()) {
-		return false, errors.New("Invalid mimetype")
+		return false, errors.New("invalid mimetype")
 	}
 
 	return true, nil

@@ -20,11 +20,14 @@ func ServeIndex(api *types.Api) fiber.Handler {
 	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
 		absoluteUrl := utils.GetAbsoluteUrl(ctx)
-		routeParts := utils.ExtractRouteParts(ctx.Path())
+		path := utils.WithTrailingSlash(ctx.Path())
+		routeParts := utils.ExtractRouteParts(path)
 		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendRefreshTkKey))
 		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*userModels.BackendUser)
 		var isLoginRoute = len(routeParts) == 2 && routeParts[1] == "login"
 		var redirectTo = "?redirectTo=" + url.QueryEscape(absoluteUrl)
+		var isAppInitPage = path == "/app/initialize/"
+		var isAdminCreatePage = path == "/app/create-owner/"
 
 		if isLoginRoute {
 			if backendUser != nil {
@@ -35,6 +38,9 @@ func ServeIndex(api *types.Api) fiber.Handler {
 
 		// prevent redirect on api route
 		if len(routeParts) == 1 || (len(routeParts) > 1 && routeParts[1] != "api") {
+			if isAppInitPage || isAdminCreatePage {
+				return ctx.Next()
+			}
 			if backendToken == "" {
 				logger.Info("Redirecting to login")
 				return ctx.Redirect("/login"+redirectTo, fiber.StatusSeeOther)

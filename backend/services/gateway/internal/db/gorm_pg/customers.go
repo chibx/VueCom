@@ -60,7 +60,7 @@ func (c *customerRepository) CreateSession(ctx context.Context, session *userMod
 }
 
 func (c *customerRepository) DeleteSession(ctx context.Context, session *userModels.CustomerSession) error {
-	err := c.db.WithContext(ctx).Delete(session).Error
+	err := c.db.WithContext(ctx).Delete(&userModels.CustomerSession{}, "refresh_token_hash = ? AND device_id = ?", session.RefreshTokenHash, session.DeviceId).Error
 	if err != nil {
 		return err
 	}

@@ -12,14 +12,14 @@ import (
 // I dont know what to call this function honestly
 func RedirectCommon(api *types.Api) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		path := ctx.Path()
+		path := utils.WithTrailingSlash(ctx.Path())
 		routeParts := utils.ExtractRouteParts(path)
 		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*userModels.BackendUser)
 		var isApiRoute = len(routeParts) > 1 && routeParts[1] == "api"
-		var isAppInitPage = path == "/app/initialize"
-		var isAdminCreatePage = path == "/app/create-owner"
-		var isAppInitRoute = path == "/api/app/initialize"
-		var isAdminCreateRoute = path == "/api/app/create-owner"
+		var isAppInitPage = path == "/app/initialize/"
+		var isAdminCreatePage = path == "/app/create-owner/"
+		var isAppInitRoute = path == "/api/app/initialize/"
+		var isAdminCreateRoute = path == "/api/app/create-owner/"
 
 		// TODO: I will refactor these checks later
 		if isAppInitRoute || isAdminCreateRoute {

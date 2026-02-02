@@ -48,7 +48,7 @@ func InitializeApp(api *types.Api) fiber.Handler {
 		db := api.Deps.DB
 		cld := api.Deps.Cld
 		err500 := fiber.NewError(fiber.StatusInternalServerError, "Error initializing application. Try again later")
-		var appData = new(appModels.AppData)
+		var appData *appModels.AppData
 		// cache
 		/* I might not need this since i check on server startup and i might have a background task refresh the local variable */
 		// ----------------------------------------------------
@@ -70,6 +70,7 @@ func InitializeApp(api *types.Api) fiber.Handler {
 		if err != nil {
 			return response.WriteResponse(ctx, fiber.StatusBadRequest, err.Error())
 		}
+
 		_, err = cld.Admin.CreateFolder(ctx.Context(), admin.CreateFolderParams{
 			Folder: appData.AppName,
 		})
@@ -212,10 +213,10 @@ func validateInitializeProps(ctx *fiber.Ctx) (*appModels.AppData, *multipart.Fil
 	logoFile, err := ctx.FormFile("app_logo")
 	if err != nil {
 		if errors.Is(err, fasthttp.ErrMissingFile) {
-			return nil, nil, errors.New("Logo is missing")
+			return nil, nil, errors.New("logo is missing")
 		}
 
-		return nil, nil, errors.New("Something went wrong, please try again")
+		return nil, nil, errors.New("something went wrong, please try again")
 	}
 
 	if logoFile == nil {
@@ -230,7 +231,7 @@ func validateInitializeProps(ctx *fiber.Ctx) (*appModels.AppData, *multipart.Fil
 		return nil, nil, errors.New("uploaded logo must not be more than 5MB in size")
 	}
 
-	unknownErr := errors.New("Something went wrong, please try again")
+	unknownErr := errors.New("something went wrong, please try again")
 	logo, err := logoFile.Open()
 	if err != nil {
 		return nil, nil, unknownErr

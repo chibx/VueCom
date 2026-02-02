@@ -19,6 +19,7 @@ func RedirectCommon(api *types.Api) fiber.Handler {
 		var isAdminCreateRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "create-owner"
 
 		// TODO: I will refactor these checks later
+
 		// ---------------------------------------------
 		// I might choose to handle this client-side instead as the api route meant to do the work will be the one guarded
 		if isAppInitRoute && api.IsAppInit {

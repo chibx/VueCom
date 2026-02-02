@@ -13,8 +13,8 @@ import (
 )
 
 func GlobalRateLimit(api *types.Api) fiber.Handler {
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
-		logger := utils.Logger()
 		res, err := api.Deps.Limiter.Allow(ctx.UserContext(), constants.GlobalLimitKey, constants.GlobalLimit)
 		if err != nil {
 			logger.Error("failed to allow global rate limit", zap.Error(err))
@@ -36,8 +36,8 @@ func GlobalRateLimit(api *types.Api) fiber.Handler {
 }
 
 func BackendRateLimit(api *types.Api) fiber.Handler {
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
-		logger := utils.Logger()
 		rlKey, _ := ctx.Locals("rl_key").(string)
 
 		// Work on a better way to do this
@@ -65,8 +65,8 @@ func BackendRateLimit(api *types.Api) fiber.Handler {
 }
 
 func CustomerRateLimit(api *types.Api) fiber.Handler {
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
-		logger := utils.Logger()
 		customerID := ctx.Get(constants.CustomerHeaderKey)
 		var limit = constants.CustomerLimit // Could maybe add a fallback for anonymous users but it aint compulsory
 		var rlKey string

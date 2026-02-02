@@ -12,17 +12,23 @@ import (
 // I dont know what to call this function honestly
 func RedirectCommon(api *types.Api) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
-		routeParts := utils.ExtractRouteParts(ctx.Path())
+		path := ctx.Path()
+		routeParts := utils.ExtractRouteParts(path)
 		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*userModels.BackendUser)
 		var isApiRoute = len(routeParts) > 1 && routeParts[1] == "api"
-		var isAppInitRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "initialize"
-		var isAdminCreateRoute = len(routeParts) == 3 && routeParts[1] == "app" && routeParts[2] == "create-owner"
+		var isAppInitPage = path == "/app/initialize"
+		var isAdminCreatePage = path == "/app/create-owner"
+		var isAppInitRoute = path == "/api/app/initialize"
+		var isAdminCreateRoute = path == "/api/app/create-owner"
 
 		// TODO: I will refactor these checks later
+		if isAppInitRoute || isAdminCreateRoute {
+			return ctx.Next()
+		}
 
 		// ---------------------------------------------
 		// I might choose to handle this client-side instead as the api route meant to do the work will be the one guarded
-		if isAppInitRoute && api.IsAppInit {
+		if isAppInitPage && api.IsAppInit {
 			if backendUser != nil {
 				return ctx.Redirect("/dashboard")
 			} else {
@@ -31,7 +37,7 @@ func RedirectCommon(api *types.Api) fiber.Handler {
 		}
 
 		// I might choose to handle this client-side instead as the api route meant to do the work will be the one guarded
-		if isAdminCreateRoute && api.HasAdmin {
+		if isAdminCreatePage && api.HasAdmin {
 			if backendUser != nil {
 				return ctx.Redirect("/dashboard")
 			} else {
@@ -39,7 +45,7 @@ func RedirectCommon(api *types.Api) fiber.Handler {
 			}
 		}
 
-		if isAppInitRoute {
+		if isAppInitPage {
 			return ctx.Next()
 		}
 
@@ -50,7 +56,7 @@ func RedirectCommon(api *types.Api) fiber.Handler {
 			return ctx.Redirect("/app/initialize")
 		}
 
-		if isAdminCreateRoute {
+		if isAdminCreatePage {
 			return ctx.Next()
 		}
 

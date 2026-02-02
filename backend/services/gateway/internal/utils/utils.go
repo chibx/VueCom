@@ -84,3 +84,7 @@ func GetAbsoluteUrl(ctx *fiber.Ctx) string {
 
 	return full_path
 }
+
+func WithTrailingSlash(str string) string {
+	return strings.TrimSuffix(str, "/") + "/"
+}

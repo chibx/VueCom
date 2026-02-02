@@ -14,17 +14,6 @@ type structuredResponse struct {
 	Data    any    `json:"data,omitempty"`
 }
 
-func isSlice(v any) bool {
-	_, ok := v.([]any) // Or customize for your error types
-	return ok
-}
-
-func isErrorField(v any) bool {
-	_, ok := v.([]ErrorDetail) // Or customize for your error types
-	// return ok
-	return ok
-}
-
 func NewResponse(code int, message string, data ...any) *structuredResponse {
 	if code == 0 {
 		code = fiber.StatusOK

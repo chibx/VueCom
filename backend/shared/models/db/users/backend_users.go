@@ -4,30 +4,40 @@ import (
 	"time"
 )
 
+type Continent struct {
+	ID        uint      `gorm:"primarykey" redis:"id"`
+	Name      string    `gorm:"not null;unique" redis:"name"`
+	Countries []Country `gorm:"foreignKey:ContinentId"`
+}
+
 // Country represents a country in the system
 type Country struct {
-	ID     uint    `gorm:"primarykey" redis:"id"`
-	Name   string  `gorm:"not null;unique;index" redis:"name"`
-	Code   string  `gorm:"not null;unique;index;type:varchar(5)" redis:"code"`
-	States []State `gorm:"foreignKey:CountryID;"`
+	ID          uint       `gorm:"primarykey" redis:"id"`
+	Name        string     `gorm:"not null;unique;index" redis:"name"`
+	Code        string     `gorm:"not null;unique;index;type:varchar(5)" redis:"code"`
+	ContinentId uint       `gorm:"" redis:"continent_id"`
+	Phone       string     `redis:"phone"`
+	Currency    string     `redis:"currency"`
+	States      []State    `gorm:"foreignKey:CountryID;" redis:"-"`
+	Continent   *Continent `gorm:"foreignKey:ContinentId" redis:"-"`
 }
 
 type State struct {
 	ID        uint   `gorm:"primarykey" redis:"id"`
 	Name      string `gorm:"not null;unique;index" redis:"name"`
 	CountryID uint   `gorm:"index" redis:"country_id"`
+	Cities    []City `gorm:"foreignKey:StateID" redis:"-"`
 }
 
-// type AppData struct {
-// 	Name       string             `json:"app_name" gorm:"" redis:"name"`
-// 	AdminRoute string             `json:"-" gorm:"" redis:"admin_route"`
-// 	LogoUrl    string             `json:"app_logo" gorm:"" redis:"logo_url"`
-// 	Settings   models.AppSettings `json:"settings" gorm:"type:jsonb;default:\"{}\"" redis:"settings"`
-// }
+type City struct {
+	ID      uint   `gorm:"primarykey" redis:"id"`
+	Name    string `gorm:"not null;unique;index" redis:"name"`
+	StateID uint   `gorm:"index" redis:"country_id"`
+}
 
-// func (AppData) TableName() string {
-// 	return "backend.app_data"
-// }
+func (c City) TableName() string {
+	return "cities"
+}
 
 type ApiKey struct {
 	ID        uint      `gorm:"primarykey" redis:"id"`

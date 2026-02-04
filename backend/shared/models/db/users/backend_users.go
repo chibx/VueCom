@@ -64,6 +64,7 @@ type BackendUser struct {
 	PhoneNumber     *string                       `gorm:"type:varchar(20)" validate:"" redis:"phone_number"`
 	Image           *string                       `gorm:"column:image_url" redis:"image_url"`
 	CountryId       *uint                         `gorm:"index" redis:"country"`
+	Is2FAEnabled    bool                          `gorm:"column:is_2fa_enabled;default:FALSE;not null" redis:"is_2fa_enabled"`
 	IsEmailVerified bool                          `gorm:"default:FALSE;not null" redis:"is_email_verified"`
 	Role            string                        `gorm:"type:varchar(50)" redis:"role"`
 	PasswordHash    string                        `gorm:"not null" redis:"-"`
@@ -74,6 +75,17 @@ type BackendUser struct {
 	Sessions        []BackendSession              `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	PassResetReqs   []BackendPasswordResetRequest `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	Country         *Country                      `gorm:"foreignKey:CountryId;" redis:"-"`
+}
+
+type Backend2FAToken struct {
+	UserId            uint         `gorm:"not null;unique" redis:"-"`
+	EncryptedToken    string       `gorm:"not null" redis:"-"`
+	HashedBackupToken string       `gorm:"not null" redis:"-"`
+	User              *BackendUser `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
+}
+
+func (Backend2FAToken) TableName() string {
+	return "backend_2fa_tokens"
 }
 
 // type BackendSession_Old struct {

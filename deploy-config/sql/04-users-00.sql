@@ -57,6 +57,7 @@ CREATE TABLE backend_users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     image TEXT,
     country_id INT,
+    is_2fa_enabled BOOLEAN DEFAULT FALSE,
     is_email_verified BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (country_id) REFERENCES countries(id)
 );
@@ -65,19 +66,13 @@ CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (e
 CREATE INDEX IF NOT EXISTS backend_user_username_idx ON backend_users USING hash (username);
 CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 
--- CREATE TABLE backend_sessions (
---     id SERIAL PRIMARY KEY,
---     user_id INT NOT NULL,
---     token TEXT NOT NULL,
---     ip_address VARCHAR(45),
---     user_agent TEXT,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     expires_at TIMESTAMP NOT NULL,
---     FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE
--- );
-
--- CREATE INDEX IF NOT EXISTS backend_sessions_userid_idx ON backend_sessions (user_id);
--- CREATE INDEX IF NOT EXISTS backend_sessions_expires_at_idx ON backend_sessions (expires_at);
+CREATE TABLE backend_2fa_tokens (
+    user_id INT NOT NULL,
+    encrypted_token TEXT NOT NULL,
+    hashed_backup_token TEXT NOT NULL,
+    UNIQUE (user_id),
+    FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE
+);
 
 CREATE TABLE backend_sessions (
     user_id INT NOT NULL,

@@ -27,12 +27,12 @@ type CountryList$1 = {
     [x: string]: CountryData$1;
 };
 
-type ConvContinent = {
+export type ConvContinent = {
     id: number;
     name: string;
 };
 
-type ConvCountry = {
+export type ConvCountry = {
     id: number;
     continentId: number;
     name: string;
@@ -41,16 +41,23 @@ type ConvCountry = {
     currency: string;
 };
 
-type ConvState = {
+export type ConvState = {
     id: number;
     name: string;
     countryId: number;
 };
 
-type ConvCity = {
+export type ConvCity = {
     id: number;
     name: string;
     stateId: number;
+};
+
+export type TransformedData = {
+    continents: ConvContinent[];
+    countries: ConvCountry[];
+    states: ConvState[];
+    cities: ConvCity[];
 };
 
 const counter = {
@@ -83,7 +90,7 @@ function mapToNameValArr(map: Record<string, unknown>) {
     return out;
 }
 
-function parseWorldData() {
+export function transformWorldData() {
     const worldStr = readFileSync("./compiled-cities.json", { encoding: "utf-8" });
     const worldData = JSON.parse(worldStr) as CountryList$1;
 
@@ -134,14 +141,16 @@ function parseWorldData() {
     }
 
     const output = {
-        continents: mapToNameValArr(continentMap),
+        continents: mapToNameValArr(continentMap) as ConvContinent[],
         countries: countriesArr,
         states: statesArr,
         cities: citiesArr,
     };
 
-    writeFileSync("./db-ready-world.json", JSON.stringify(output));
+    writeFileSync("./db-ready-world.json", JSON.stringify(output, null, 2));
     console.log("Done...!");
 }
 
-parseWorldData();
+if (import.meta.url === `file://${process.argv[1]}`) {
+    transformWorldData();
+}

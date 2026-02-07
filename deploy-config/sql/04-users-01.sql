@@ -2,9 +2,9 @@
 \c vuecom_users;
 CREATE TABLE customers (
     id SERIAL PRIMARY KEY,
-    full_name VARCHAR(255) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    phone_number VARCHAR(20) NOT NULL,
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    phone_number TEXT NOT NULL,
     country_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_email_verified BOOLEAN DEFAULT FALSE,

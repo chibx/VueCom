@@ -36,7 +36,7 @@ type Customer struct {
 	Email           string            `gorm:"unique;not null;type:varchar(255);index" redis:"email"`
 	IsEmailVerified bool              `gorm:"default:FALSE;not null" redis:"is_email_verified"`
 	PhoneNumber     *string           `gorm:"type:varchar(20);" redis:"phone_number"`
-	ImageUrl        *string           `gorm:"column:image_url" redis:"image_url"`
+	Image           *string           `gorm:"column:image_url" redis:"image_url"`
 	CountryID       *uint             ``
 	BillingAddress  *CustomerAddress  `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 	ShippingAddress *CustomerAddress  `gorm:"foreignKey:CustomerID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`

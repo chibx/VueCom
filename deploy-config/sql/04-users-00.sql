@@ -55,10 +55,12 @@ CREATE TABLE backend_users (
     role TEXT DEFAULT 'staff', -- Set to allow custom roles
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    image TEXT,
+    created_by INT,
+    image_url TEXT,
     country_id INT,
     is_2fa_enabled BOOLEAN DEFAULT FALSE,
     is_email_verified BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (created_by) REFERENCES backend_users(id),
     FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 

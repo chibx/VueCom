@@ -52,25 +52,25 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 		return nil, err
 	}
 
-	hashedFullname, err := auth.Encrypt(req.FullName, api.Config.SecretKey)
+	encryptedFullname, err := auth.Encrypt(req.FullName, api.Config.SecretKey)
 	if err != nil {
 		logger.Error("Failed to encrypt fullname for new backend user", zap.Error(err))
 		return nil, err
 	}
-	var hashedUsername string
+	var username string
 	if req.UserName != nil {
-		hashedUsername = *req.UserName // There is no need to encrypt the username (App specific)
+		username = *req.UserName // There is no need to encrypt the username (App specific)
 	}
 
-	hashedEmail, err := auth.Encrypt(req.Email, api.Config.SecretKey)
+	encryptedEmail, err := auth.Encrypt(req.Email, api.Config.SecretKey)
 	if err != nil {
 		logger.Error("Failed to encrypt email for new backend user", zap.Error(err))
 		return nil, err
 	}
 
-	var hashedPhoneNumber string
+	var encryptedPhoneNumber string
 	if req.PhoneNumber != nil {
-		hashedPhoneNumber, err = auth.Encrypt(*req.PhoneNumber, api.Config.SecretKey)
+		encryptedPhoneNumber, err = auth.Encrypt(*req.PhoneNumber, api.Config.SecretKey)
 	}
 	if err != nil {
 		logger.Error("Failed to encrypt phone number for new backend user", zap.Error(err))
@@ -93,10 +93,10 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 	// TODO: Implement image upload
 
 	user := &userModels.BackendUser{
-		FullName:     hashedFullname,
-		UserName:     &hashedUsername,
-		Email:        hashedEmail,
-		PhoneNumber:  &hashedPhoneNumber,
+		FullName:     encryptedFullname,
+		UserName:     &username,
+		Email:        encryptedEmail,
+		PhoneNumber:  &encryptedPhoneNumber,
 		Image:        nil,
 		PasswordHash: passwordHash,
 		// TODO: I need to have a way to lookup a secure token (sent to the user through email) in the request url
@@ -106,10 +106,10 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 	}
 
 	if req.UserName != nil {
-		user.UserName = &hashedUsername
+		user.UserName = &username
 	}
 	if req.PhoneNumber != nil {
-		user.PhoneNumber = &hashedPhoneNumber
+		user.PhoneNumber = &encryptedPhoneNumber
 	}
 	if countryId != 0 {
 		user.CountryId = &countryId

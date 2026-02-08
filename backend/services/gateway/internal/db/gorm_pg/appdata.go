@@ -3,9 +3,7 @@ package gorm_pg
 import (
 	"context"
 
-	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
-	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"gorm.io/gorm"
 )
@@ -16,15 +14,6 @@ type appdataRepository struct {
 
 func (ar *appdataRepository) CreateAppData(ctx context.Context, appData *appModels.AppData) error {
 	return ar.db.WithContext(ctx).Create(appData).Error
-}
-
-func (ar *appdataRepository) CountOwner(ctx context.Context) (int64, error) {
-	count := int64(0)
-	err := ar.db.WithContext(ctx).Model(&userModels.BackendUser{}).Where("role = ?", constants.OWNER).Count(&count).Error
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
 }
 
 // err := api.Deps.DB.First(appData).Error

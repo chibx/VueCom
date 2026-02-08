@@ -164,15 +164,15 @@ func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 
 func checkIfOwnerExists(api *types.Api) (bool, error) {
 	logger := utils.Logger()
-	count, err := api.Deps.DB.AppData().CountOwner(context.Background())
+	hasAdmin, err := api.Deps.DB.BackendUsers().HasAdmin(context.Background())
 
 	if err != nil {
 		logger.Error("Error occurerd while checking for owner existence", zap.Error(err))
 		return false, err
 	}
 
-	logger.Info("Owner existence check complete", zap.Int64("owner_count", count))
-	return count > 0, nil
+	logger.Info("Owner existence check complete", zap.Bool("owner_exists", hasAdmin))
+	return hasAdmin, nil
 }
 
 func initLogger(v1_api *types.Api) {

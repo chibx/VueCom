@@ -162,7 +162,6 @@ func RegisterOwner(api *types.Api) fiber.Handler {
 			return response.FromFiberError(ctx, err500)
 		}
 
-		// err = gorm.G[dbModels.BackendUser](db).Create(ctx.Context(), backUser)
 		err = db.BackendUsers().CreateUser(ctx.Context(), backUser)
 		if err != nil {
 			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "Error registering owner")

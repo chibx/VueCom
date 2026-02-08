@@ -3,6 +3,7 @@ package gorm_pg
 import (
 	"context"
 
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
@@ -19,7 +20,7 @@ func (ar *appdataRepository) CreateAppData(ctx context.Context, appData *appMode
 
 func (ar *appdataRepository) CountOwner(ctx context.Context) (int64, error) {
 	count := int64(0)
-	err := ar.db.WithContext(ctx).Model(&userModels.BackendUser{}).Where("role = 'owner'").Count(&count).Error
+	err := ar.db.WithContext(ctx).Model(&userModels.BackendUser{}).Where("role = ?", constants.OWNER).Count(&count).Error
 	if err != nil {
 		return 0, err
 	}

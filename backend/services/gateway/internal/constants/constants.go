@@ -7,6 +7,8 @@ import (
 	"github.com/go-redis/redis_rate/v10"
 )
 
+const OWNER = "owner"
+
 // Simple way of doing this, a better way would be to use a manifest from a bundler
 var PublicAssets = []string{
 	"assets",

@@ -69,8 +69,9 @@ CREATE INDEX IF NOT EXISTS backend_user_username_idx ON backend_users USING hash
 CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 
 CREATE TABLE backend_signup_data (
-    id UUID NOT NULL,
-    token TEXT NOT NULL
+    token TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    expiry_at TIMESTAMP NOT NULL
 );
 
 CREATE TABLE backend_2fa_tokens (
@@ -168,6 +169,7 @@ begin
             end if;
         end loop;
     end if;
-end$$;
+end
+$$;
 
 \c postgres;

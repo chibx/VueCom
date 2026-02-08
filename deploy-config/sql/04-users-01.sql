@@ -28,21 +28,6 @@ CREATE TABLE customer_addresses (
 
 CREATE INDEX IF NOT EXISTS customer_address_id_idx ON customer_addresses (customer_id);
 
-
--- CREATE TABLE customer_sessions (
---     id SERIAL PRIMARY KEY,
---     customer_id INT NOT NULL,
---     token VARCHAR(255) NOT NULL UNIQUE,
---     ip_address VARCHAR(45),
---     user_agent TEXT,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     expires_at TIMESTAMP NOT NULL,
---     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
--- );
-
--- CREATE INDEX IF NOT EXISTS customer_sessions_id_idx ON customer_sessions USING hash (customer_id);
--- CREATE INDEX IF NOT EXISTS customer_sessions_expires_at_idx ON customer_sessions (expires_at);
-
 CREATE TABLE customer_sessions (
     customer_id INT NOT NULL,
     refresh_token_hash TEXT NOT NULL,

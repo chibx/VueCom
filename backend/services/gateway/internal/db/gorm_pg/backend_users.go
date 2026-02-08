@@ -2,8 +2,10 @@ package gorm_pg
 
 import (
 	"context"
+
 	// "strings"
 
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
@@ -22,7 +24,7 @@ func (br *backendUserRepository) CreateUser(ctx context.Context, user *userModel
 func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.BackendUser, error) {
 	admin := &userModels.BackendUser{}
 
-	err := br.db.Select("role").Where("role = 'owner'").First(admin).Error
+	err := br.db.Select("role").Where("role = ?", constants.OWNER).First(admin).Error
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +35,8 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.Back
 func (br *backendUserRepository) HasAdmin(ctx context.Context) (bool, error) {
 	var count int64
 
-	err := br.db.Where("role = 'owner'").Count(&count).Error
+	err := br.db.Model(&userModels.BackendUser{}).WithContext(ctx).Where("role = ?", constants.OWNER).Count(&count).Error
+
 	if err != nil {
 		return false, err
 	}

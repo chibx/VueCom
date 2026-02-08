@@ -68,6 +68,11 @@ CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (e
 CREATE INDEX IF NOT EXISTS backend_user_username_idx ON backend_users USING hash (username);
 CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 
+CREATE TABLE backend_signup_data (
+    id UUID NOT NULL,
+    token TEXT NOT NULL
+);
+
 CREATE TABLE backend_2fa_tokens (
     user_id INT NOT NULL,
     encrypted_token TEXT NOT NULL,
@@ -139,5 +144,30 @@ CREATE TABLE password_reset_requests (
 CREATE INDEX IF NOT EXISTS password_reset_requests_token_idx ON password_reset_requests USING hash(reset_token);
 CREATE INDEX IF NOT EXISTS password_reset_requests_used_idx ON password_reset_requests (used);
 
+
+-- FUNCTIONS
+create or replace function check_if_creator(user_id int, assumed_creator int)
+returns bool
+language plpgsql
+as $$
+declare
+    tmp_id int;
+begin
+    select created_by into tmp_id from backend_users where id = user_id;
+
+    if found then
+        loop
+            if tmp_id = assumed_creator then
+                return TRUE;
+            else
+                select created_by into tmp_id from backend_users where id = tmp_id;
+
+                if tmp_id = NULL then
+                    return FALSE;
+                end if;
+            end if;
+        end loop;
+    end if;
+end$$;
 
 \c postgres;

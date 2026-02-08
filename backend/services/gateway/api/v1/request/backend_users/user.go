@@ -9,6 +9,7 @@ import (
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
@@ -22,9 +23,8 @@ type CreateOwnerRequest struct {
 	UserName    *string `json:"user_name" form:"user_name" validate:"required,min=3" name:"Username"`
 	Email       string  `json:"email" form:"email" validate:"required,email" name:"Email Address"`
 	PhoneNumber *string `json:"phone_number" form:"phone_number" validate:"min=10,max=15"`
-	Country     *string `json:"country" form:"country" validate:"required_if=Role owner"`
+	Country     *string `json:"country" form:"country" validate:"required"`
 	Password    string  `json:"password" form:"password" validate:"required,min=8,max=25"`
-	// Role            string  `form:"role" validate:"required"`
 }
 
 // Base Backend Panel User
@@ -33,9 +33,8 @@ type CreateBackendUserRequest struct {
 	UserName    *string `json:"user_name" form:"user_name" validate:"required,min=3" name:"Username"`
 	Email       string  `json:"email" form:"email" validate:"required,email" name:"Email Address"`
 	PhoneNumber *string `json:"phone_number" form:"phone_number" validate:"min=10,max=15"`
-	Country     *string `json:"country" form:"country" validate:"required_if=Role owner"`
+	Country     *string `json:"country" form:"country" validate:"required"`
 	Password    string  `json:"password" form:"password" validate:"required,min=8,max=25"`
-	// Role            string  `form:"role" validate:"required"`
 }
 
 func (req *CreateOwnerRequest) Validate() error {
@@ -102,7 +101,7 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 		// TODO: I need to have a way to lookup a secure token (sent to the user through email) in the request url
 		// c.Query("login_token"), then delete the token from the database,
 		// instead of this
-		// Role:            req.Role,
+		Role: constants.OWNER,
 	}
 
 	if req.UserName != nil {

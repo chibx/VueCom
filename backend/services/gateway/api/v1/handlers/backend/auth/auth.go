@@ -21,6 +21,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// Handles the registration links in the url
 func Register(api *types.Api) fiber.Handler {
 	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {

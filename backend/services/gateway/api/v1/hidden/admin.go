@@ -16,7 +16,7 @@ package v1
 
 // func (api *Api) DoesOwnerExist(ctx *fiber.Ctx) (bool, error) {
 // 	db := api.Deps.DB
-// 	backendUser, err := gorm.G[dbModels.BackendUser](db).Select("role").Where("role = 'owner'").First(ctx.Context())
+// 	backendUser, err := gorm.G[dbModels.BackendUser](db).Select("role").Where("role = ?", constants.OWNER).First(ctx.Context())
 // 	if err != nil {
 // 		return false, err
 // 	}

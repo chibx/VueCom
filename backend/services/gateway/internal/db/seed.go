@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -144,7 +145,10 @@ func SeedWorldData(ctx context.Context, db *sql.DB) error {
 
 	data, err := os.ReadFile("./db-ready-world.json")
 	if err != nil {
-		fmt.Printf("Error reading file: %v\n", err)
+		utils.Logger().Error("Error reading ./db-ready-world.json", zap.Error(err))
+		if errors.Is(err, os.ErrNotExist) {
+			utils.Logger().Info("Ensure that the `db-ready-world.json` file is in the same directory as the binary.")
+		}
 		return err
 	}
 

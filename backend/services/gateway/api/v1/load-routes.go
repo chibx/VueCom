@@ -4,6 +4,8 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/backend"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/customer"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/middlewares"
+
+	// "github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
@@ -16,14 +18,15 @@ func LoadRoutes(app fiber.Router, api *types.Api) {
 	app.Get("/api/health", func(ctx *fiber.Ctx) error {
 		return ctx.Status(200).SendString("OK")
 	})
-
-	app.Use(middlewares.AuthMiddleware(api), middlewares.ServeIndex(api))
+	app.Use(middlewares.ServeAssets(), middlewares.AuthMiddleware(api), middlewares.RedirectCommon(api))
 
 	backend.LoadRoutes(app, api)
 	customer.LoadRoutes(app, api)
 
-	app.Static("*", "./"+constants.PublicFolder)
-	app.Get("/*", func(ctx *fiber.Ctx) error {
+	app.Use(middlewares.ServeIndex(api))
+
+	// app.Static("*", "./"+constants.PublicFolder, fiber.Static{})
+	app.Get("*", func(ctx *fiber.Ctx) error {
 		return ctx.SendFile("./" + constants.PublicFolder + "/index.html")
 	})
 }

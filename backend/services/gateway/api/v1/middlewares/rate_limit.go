@@ -6,23 +6,24 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
 
 func GlobalRateLimit(api *types.Api) fiber.Handler {
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
-		logger := api.Deps.Logger
 		res, err := api.Deps.Limiter.Allow(ctx.UserContext(), constants.GlobalLimitKey, constants.GlobalLimit)
 		if err != nil {
 			logger.Error("failed to allow global rate limit", zap.Error(err))
-			return response.NewResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
+			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
 		}
 		if res.Allowed == 0 {
 			retryAfter := max(int(res.RetryAfter.Seconds()), 1)
 			ctx.Set("Retry-After", strconv.Itoa(retryAfter))
-			return response.NewResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{"error": "Too many requests (global limit exceeded)"})
+			return response.WriteResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{"error": "Too many requests (global limit exceeded)"})
 		}
 
 		// Optional headers
@@ -35,8 +36,8 @@ func GlobalRateLimit(api *types.Api) fiber.Handler {
 }
 
 func BackendRateLimit(api *types.Api) fiber.Handler {
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
-		logger := api.Deps.Logger
 		rlKey, _ := ctx.Locals("rl_key").(string)
 
 		// Work on a better way to do this
@@ -45,12 +46,12 @@ func BackendRateLimit(api *types.Api) fiber.Handler {
 		res, err := api.Deps.Limiter.Allow(ctx.Context(), rlKey, limit)
 		if err != nil {
 			logger.Error("failed to allow backend rate limit", zap.Error(err))
-			return response.NewResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
+			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
 		}
 		if res.Allowed == 0 {
 			retryAfter := max(int(res.RetryAfter.Seconds()), 1)
 			ctx.Set("Retry-After", strconv.Itoa(retryAfter))
-			return response.NewResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
+			return response.WriteResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
 				"error": "Too many requests (backend limit exceeded)",
 			})
 		}
@@ -64,8 +65,8 @@ func BackendRateLimit(api *types.Api) fiber.Handler {
 }
 
 func CustomerRateLimit(api *types.Api) fiber.Handler {
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
-		logger := api.Deps.Logger
 		customerID := ctx.Get(constants.CustomerHeaderKey)
 		var limit = constants.CustomerLimit // Could maybe add a fallback for anonymous users but it aint compulsory
 		var rlKey string
@@ -80,12 +81,12 @@ func CustomerRateLimit(api *types.Api) fiber.Handler {
 		res, err := api.Deps.Limiter.Allow(ctx.Context(), rlKey, limit)
 		if err != nil {
 			logger.Error("failed to allow customer rate limit", zap.Error(err))
-			return response.NewResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
+			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
 		}
 		if res.Allowed == 0 {
 			retryAfter := max(int(res.RetryAfter.Seconds()), 1)
 			ctx.Set("Retry-After", strconv.Itoa(retryAfter))
-			return response.NewResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
+			return response.WriteResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
 				"error": "Too many requests (customer limit exceeded)",
 			})
 		}

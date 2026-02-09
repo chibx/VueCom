@@ -12,6 +12,6 @@ type categoryRepository struct {
 	db *gorm.DB
 }
 
-func (c *categoryRepository) GetCategoryById(id int, ctx context.Context) (*catalogModels.Category, error) {
+func (c *categoryRepository) GetCategoryById(ctx context.Context, id int) (*catalogModels.Category, error) {
 	return nil, errDbUnimplemented
 }

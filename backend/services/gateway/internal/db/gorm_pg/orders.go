@@ -12,7 +12,7 @@ type orderRepository struct {
 	db *gorm.DB
 }
 
-func (o *orderRepository) GetOrderById(id int, ctx context.Context) (*orderModels.Order, error) {
+func (o *orderRepository) GetOrderById(ctx context.Context, id int) (*orderModels.Order, error) {
 	order := &orderModels.Order{}
 
 	err := o.db.WithContext(ctx).Where("id = ?", id).First(order).Error
@@ -23,6 +23,6 @@ func (o *orderRepository) GetOrderById(id int, ctx context.Context) (*orderModel
 	return order, nil
 }
 
-func (o *orderRepository) CreateOrder(order *orderModels.Order, ctx context.Context) error {
+func (o *orderRepository) CreateOrder(ctx context.Context, order *orderModels.Order) error {
 	return o.db.WithContext(ctx).Create(order).Error
 }

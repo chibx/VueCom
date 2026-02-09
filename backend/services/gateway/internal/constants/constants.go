@@ -7,12 +7,14 @@ import (
 	"github.com/go-redis/redis_rate/v10"
 )
 
+const OWNER = "owner"
+
 // Simple way of doing this, a better way would be to use a manifest from a bundler
 var PublicAssets = []string{
-	"styles.css",
 	"assets",
 	"favicon.ico",
 	"robots.txt",
+	"logo.webp",
 }
 
 var PublicFolder = func() string {
@@ -44,13 +46,25 @@ var (
 )
 
 // Max allowed image size in bytes i.e 5MB
-const MAX_IMAGE_UPLOAD = 5 * 1024 * 1024
+const MaxPasswordLimit = 30
+const MaxUsernameLimit = 30
+const MaxImageUpload = 5 * 1024 * 1024
 const GlobalLimitKey = "rl_global:app"
 const AnonymousLimitKey = "rl_anonymous:" // With Ip then
 const CustomerLimitKey = "rl_customer:"
 const CustomerHeaderKey = "X-Customer-Id"
 const BackendLimitKey = "rl_backend:"
-const BackendSessionTimeout = 30 * time.Minute
+
+// const BackendSessionTimeout = 30 * time.Minute
+const BackendAccessTkDur = 15 * time.Minute
+const BackendRefreshTkDur = 7 * 24 * time.Hour
+const CustomerAccessTkDur = 15 * time.Minute
+const CustomerRefreshTkDur = 7 * 24 * time.Hour
+const DeviceIDDur = 365 * 24 * time.Hour
 const ApiKeyCtxKey = "api_key"
 const BackendUserCtxKey = "backend_user"
-const BackendCookieKey = "backend_session"
+const DeviceIDKey = "device_id"
+const BackendRefreshTkKey = "backend_refresh_token"
+const BackendAccessTkKey = "backend_access_token"
+const CustomerRefreshTkKey = "customer_refresh_token"
+const CustomerAcccessTkKey = "customer_access_token"

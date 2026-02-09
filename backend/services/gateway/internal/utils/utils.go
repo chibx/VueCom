@@ -15,26 +15,17 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 )
 
-// func ExtractRouteParts(route string) []string {
-// 	route = utils.CopyString(route)
-// 	var routeLength = len(route)
-// 	var routeParts []string
-
-// 	if routeLength == 1 {
-// 		// It's just "/"
-// 		routeParts = []string{""}
-// 	} else {
-// 		var hasTrailingSlash = string(route[routeLength-1]) == "/"
-
-// 		if hasTrailingSlash {
-// 			route = route[:len(route)-1]
-// 		}
-// 		// First index is gonna be ""
-// 		routeParts = strings.Split(route, "/")[1:]
-// 	}
-
-// 	return routeParts
-// }
+// Copied from RequestCtx.StrictFormValue
+func StrictFormValue(ctx *fiber.Ctx, key string) string {
+	mf, err := ctx.MultipartForm()
+	if err == nil && mf.Value != nil {
+		vv := mf.Value[key]
+		if len(vv) > 0 {
+			return vv[0]
+		}
+	}
+	return ""
+}
 
 func ExtractRouteParts(route string) []string {
 	return strings.Split(strings.TrimRight(route, "/"), "/")
@@ -74,7 +65,7 @@ func IsSupportedImage(image io.Reader) (bool, error) {
 		return false, err
 	}
 	if !slices.Contains(request.IMAGE_FORMATS, mtype.String()) {
-		return false, errors.New("uploaded logo must be either a jpeg, jpg or png image")
+		return false, errors.New("invalid mimetype")
 	}
 
 	return true, nil
@@ -92,4 +83,8 @@ func GetAbsoluteUrl(ctx *fiber.Ctx) string {
 	}
 
 	return full_path
+}
+
+func WithTrailingSlash(str string) string {
+	return strings.TrimSuffix(str, "/") + "/"
 }

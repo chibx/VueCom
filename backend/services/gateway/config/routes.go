@@ -12,4 +12,4 @@ var allowedPaths = []string{
 	"robots.txt",
 }
 
-const defaultAdminSlug = "admin123"
+// const defaultAdminSlug = "admin123"

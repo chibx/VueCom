@@ -6,6 +6,7 @@ type UserErrType int
 const (
 	SessionExpired SessionErrType = iota
 	SessionDiffIpAddr
+	SessionInvalidIpAddr
 	SessionDiffUserAgent
 )
 

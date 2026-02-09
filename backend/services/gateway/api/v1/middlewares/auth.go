@@ -11,6 +11,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/cache"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -24,7 +25,7 @@ func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *use
 
 		if errors.As(validationErr, &sessionErr) {
 			if sessionErr.Type == server.SessionExpired {
-				ctx.ClearCookie(constants.BackendCookieKey)
+				ctx.ClearCookie(constants.BackendRefreshTkKey)
 				return nil, server.NewServerErr(fiber.StatusBadRequest, "Session token has expired. Please log in again.")
 			}
 		}
@@ -43,7 +44,7 @@ func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *use
 }
 
 func AuthMiddleware(api *types.Api) fiber.Handler {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
 		var backendUserSess *userModels.BackendSession
 		var apiKeyData *userModels.ApiKey
@@ -51,7 +52,8 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 		var tokenErr error
 		var authHeader = ctx.Get("Authorization")
 		var tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
-		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
+		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendRefreshTkKey))
+		var tokenGroup = strings.Split(backendToken, ".")
 
 		if tokenStr != "" {
 			// TODO: Use tokenStr to validate the api (key) token
@@ -63,7 +65,15 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 		}
 		// else
 		if backendToken != "" {
-			backendUserSess, tokenErr = cache.GetBackendUserSession(backendToken, api, ctx.Context())
+			//
+
+			if len(tokenGroup) < 2 {
+				// I will just skip
+				return ctx.Next()
+			}
+
+			tokenId := tokenGroup[0]
+			backendUserSess, tokenErr = auth.GetBackendUserSession(ctx.Context(), tokenId, api)
 			if tokenErr != nil {
 				logger.Error("failed to get user session from cache", zap.Error(tokenErr))
 			} else {
@@ -74,8 +84,9 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 				}
 			}
 
-			ctx.Locals(constants.BackendUserCtxKey, backendUser)
 		}
+
+		ctx.Locals(constants.BackendUserCtxKey, backendUser)
 
 		return ctx.Next()
 	}

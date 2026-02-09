@@ -9,6 +9,6 @@ import (
 type AppDataRepository interface {
 	CreateAppData(appData *appModels.AppData, ctx context.Context) error
 	GetAppData(ctx context.Context) (*appModels.AppData, error)
-	// api.Deps.DB.Model(&dbModels.BackendUser{}).Where("role = 'owner'").Count(&count)
+	// api.Deps.DB.Model(&dbModels.BackendUser{}).Where("role = ?", constants.OWNER).Count(&count)
 	CountOwner(ctx context.Context) (int64, error)
 }

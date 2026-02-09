@@ -16,64 +16,34 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// func ServeIndex(api *types.Api) fiber.Handler {
-// 	return func(ctx *fiber.Ctx) error {
-// 		logger := api.Deps.Logger
-// 		routeParts := utils.ExtractRouteParts(ctx.Path())
-// 		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
-// 		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*dbModels.BackendUser)
-
-// 		// Validate the user if he is accessing the admin panel
-// 		if len(routeParts) > 1 && routeParts[1] == api.AdminSlug {
-
-// 			if len(routeParts) > 2 && routeParts[2] == "login" {
-// 				if backendUser != nil {
-// 					return ctx.Redirect("/" + routeParts[1] + "/dashboard")
-// 				}
-// 				return utils.ServeIndex(ctx)
-// 			}
-
-// 			absoluteUrl := utils.GetAbsoluteUrl(ctx)
-// 			if backendToken == "" {
-// 				logger.Info("Redirecting to login", zap.String("route", routeParts[1]))
-// 				return ctx.Redirect("/" + routeParts[1] + "/login")
-// 			}
-
-// 			if backendUser == nil {
-// 				return ctx.Redirect("/"+routeParts[1]+"/login?redirectTo="+url.QueryEscape(absoluteUrl), fiber.StatusSeeOther)
-// 			}
-
-// 		}
-
-// 		return ctx.Next()
-// 	}
-// }
-
 func ServeIndex(api *types.Api) fiber.Handler {
+	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
-		logger := api.Deps.Logger
 		absoluteUrl := utils.GetAbsoluteUrl(ctx)
-		routeParts := utils.ExtractRouteParts(ctx.Path())
-		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendCookieKey))
+		path := utils.WithTrailingSlash(ctx.Path())
+		routeParts := utils.ExtractRouteParts(path)
+		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendRefreshTkKey))
 		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*userModels.BackendUser)
 		var isLoginRoute = len(routeParts) == 2 && routeParts[1] == "login"
 		var redirectTo = "?redirectTo=" + url.QueryEscape(absoluteUrl)
-		// Validate the user if he is accessing the admin panel
-		// if len(routeParts) > 1 && routeParts[1] == api.AdminSlug {
+		var isAppInitPage = path == "/app/initialize/"
+		var isAdminCreatePage = path == "/app/create-owner/"
 
 		if isLoginRoute {
 			if backendUser != nil {
 				return ctx.Redirect("/dashboard")
 			}
-			// return utils.ServeIndex(ctx)
 			return ctx.Next()
 		}
 
 		// prevent redirect on api route
 		if len(routeParts) == 1 || (len(routeParts) > 1 && routeParts[1] != "api") {
+			if isAppInitPage || isAdminCreatePage {
+				return ctx.Next()
+			}
 			if backendToken == "" {
 				logger.Info("Redirecting to login")
-				return ctx.Redirect("/login" + redirectTo)
+				return ctx.Redirect("/login"+redirectTo, fiber.StatusSeeOther)
 			}
 
 			if backendUser == nil {
@@ -81,8 +51,6 @@ func ServeIndex(api *types.Api) fiber.Handler {
 				return ctx.Redirect("/login"+redirectTo, fiber.StatusSeeOther)
 			}
 		}
-
-		// }
 
 		return ctx.Next()
 	}

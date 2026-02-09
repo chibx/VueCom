@@ -3,6 +3,10 @@ package gorm_pg
 import (
 	"context"
 
+	// "strings"
+
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"gorm.io/gorm"
@@ -13,14 +17,14 @@ type backendUserRepository struct {
 	db *gorm.DB
 }
 
-func (br *backendUserRepository) CreateUser(user *userModels.BackendUser, ctx context.Context) error {
+func (br *backendUserRepository) CreateUser(ctx context.Context, user *userModels.BackendUser) error {
 	return br.db.WithContext(ctx).Create(user).Error
 }
 
 func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.BackendUser, error) {
 	admin := &userModels.BackendUser{}
 
-	err := br.db.Select("role").Where("role = 'owner'").First(admin).Error
+	err := br.db.Select("role").Where("role = ?", constants.OWNER).First(admin).Error
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +32,32 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.Back
 	return admin, nil
 }
 
-func (br *backendUserRepository) GetUserById(id int, ctx context.Context) (*userModels.BackendUser, error) {
+func (br *backendUserRepository) HasAdmin(ctx context.Context) (bool, error) {
+	var count int64
+
+	err := br.db.Model(&userModels.BackendUser{}).WithContext(ctx).Where("role = ?", constants.OWNER).Count(&count).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
+func (br *backendUserRepository) GetUserByNameForLogin(ctx context.Context, username string) (*dto.UserForLogin, error) {
+	var user *dto.UserForLogin
+
+	// userModels.BackendUser
+	err := br.db.Model(&userModels.BackendUser{}).Where("user_name = ?", username).First(user).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (br *backendUserRepository) GetUserById(ctx context.Context, id int) (*userModels.BackendUser, error) {
 	backendUser := &userModels.BackendUser{}
 	err := br.db.WithContext(ctx).First(backendUser, "id = ?", id).Error
 	if err != nil {
@@ -38,14 +67,14 @@ func (br *backendUserRepository) GetUserById(id int, ctx context.Context) (*user
 	return backendUser, nil
 }
 
-func (br *backendUserRepository) GetUserByApiKey(apiKey string, ctx context.Context) (*userModels.BackendUser, error) {
+func (br *backendUserRepository) GetUserByApiKey(ctx context.Context, apiKey string) (*userModels.BackendUser, error) {
 	return nil, errDbUnimplemented
 }
 
-func (br *backendUserRepository) GetSessionByToken(token string, ctx context.Context) (*userModels.BackendSession, error) {
+func (br *backendUserRepository) GetSessionByTokenId(ctx context.Context, tokenId string) (*userModels.BackendSession, error) {
 	sessionData := &userModels.BackendSession{}
 
-	err := br.db.WithContext(ctx).First(sessionData, "token = ?", token).Error
+	err := br.db.WithContext(ctx).First(sessionData, "id = ?", tokenId).Error
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +82,7 @@ func (br *backendUserRepository) GetSessionByToken(token string, ctx context.Con
 	return sessionData, nil
 }
 
-func (br *backendUserRepository) GetSessions(userId int, ctx context.Context) ([]userModels.BackendSession, error) {
+func (br *backendUserRepository) GetSessions(ctx context.Context, userId int) ([]userModels.BackendSession, error) {
 	var sessions []userModels.BackendSession
 
 	err := br.db.WithContext(ctx).Find(&sessions, "user_id = ?", userId).Error
@@ -64,7 +93,7 @@ func (br *backendUserRepository) GetSessions(userId int, ctx context.Context) ([
 	return sessions, nil
 }
 
-func (br *backendUserRepository) CreateSession(session *userModels.BackendSession, ctx context.Context) error {
+func (br *backendUserRepository) CreateSession(ctx context.Context, session *userModels.BackendSession) error {
 	err := br.db.WithContext(ctx).Create(session).Error
 	if err != nil {
 		return err
@@ -73,19 +102,20 @@ func (br *backendUserRepository) CreateSession(session *userModels.BackendSessio
 	return nil
 }
 
-func (br *backendUserRepository) DeleteSession(session *userModels.BackendSession, ctx context.Context) error {
-	err := br.db.WithContext(ctx).Where("user_id = ? AND token = ?", session.UserId, session.Token).Delete(session).Error
+func (br *backendUserRepository) DeleteSession(ctx context.Context, session *userModels.BackendSession) error {
+	err := br.db.WithContext(ctx).Delete(&userModels.BackendSession{}, "refresh_token_hash = ? AND device_id = ?", session.RefreshTokenHash, session.DeviceId).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (br *backendUserRepository) GetCountryIdByCode(code string, ctx context.Context) (uint, error) {
+func (br *backendUserRepository) GetCountryIdByCode(ctx context.Context, code string) (uint, error) {
 	var country userModels.Country
 	err := br.db.WithContext(ctx).Omit(clause.Associations).Select("id").Where("code = ?", code).First(&country).Error
 	if err != nil {
 		return 0, err
 	}
+
 	return country.ID, nil
 }

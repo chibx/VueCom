@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"go.uber.org/zap"
 )
@@ -16,7 +17,7 @@ const BACKEND_USER_KEY_PATTERN = "backend_user:*"
 // TODO: I believe this simple function could be better optimized later
 
 func InvalidateCache(ctx context.Context, api *types.Api, pattern string) {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	rdb := api.Deps.Redis
 	go func() {
 		var cursor uint64

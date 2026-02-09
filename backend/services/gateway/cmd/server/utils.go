@@ -14,6 +14,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/config"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/db/gorm_pg"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/go-redis/redis_rate/v10"
@@ -67,7 +68,7 @@ func plugCloudinary(api *types.Api) {
 }
 
 func plugDB(api *types.Api) {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	dsn := loadPostgresDSN()
 	var db *gorm.DB
 	var err error
@@ -94,7 +95,7 @@ func plugDB(api *types.Api) {
 }
 
 func plugRedis(api *types.Api) {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	redisUrl := getEnv("APP_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
@@ -145,11 +146,11 @@ func setupLimiter(api *types.Api) {
 // }
 
 func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 	appData, err := api.Deps.DB.AppData().GetAppData(context.Background())
 
 	if err != nil {
-		if errors.Is(err, types.ErrDbNil) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			logger.Info("No active app found in DB")
 			return &appModels.AppData{}, err
 		}
@@ -157,21 +158,21 @@ func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 		return nil, err
 	}
 
-	logger.Info("App data fetched successfully from DB", zap.String("name", appData.Name))
+	logger.Info("App data fetched successfully from DB", zap.String("name", appData.AppName))
 	return appData, nil
 }
 
 func checkIfOwnerExists(api *types.Api) (bool, error) {
-	logger := api.Deps.Logger
-	count, err := api.Deps.DB.AppData().CountOwner(context.Background())
+	logger := utils.Logger()
+	hasAdmin, err := api.Deps.DB.BackendUsers().HasAdmin(context.Background())
 
 	if err != nil {
 		logger.Error("Error occurerd while checking for owner existence", zap.Error(err))
 		return false, err
 	}
 
-	logger.Info("Owner existence check complete", zap.Int64("owner_count", count))
-	return count > 0, nil
+	logger.Info("Owner existence check complete", zap.Bool("owner_exists", hasAdmin))
+	return hasAdmin, nil
 }
 
 func initLogger(v1_api *types.Api) {
@@ -188,7 +189,8 @@ func initLogger(v1_api *types.Api) {
 
 	logger := zap.New(core)
 
-	v1_api.Deps.Logger = logger
+	utils.SetLogger(logger)
+	// v1_api.Deps.Logger = logger
 }
 
 func initServer(_ *fiber.App, v1_api *types.Api) {
@@ -197,40 +199,20 @@ func initServer(_ *fiber.App, v1_api *types.Api) {
 	plugRedis(v1_api)
 	setupLimiter(v1_api)
 	plugCloudinary(v1_api)
-	// attachSentry(app)
-
-	// ---------------------------
-	// appEnv := os.Getenv("APP_ENVIRONMENT")
-	// if appEnv != "production" {
-	// 	logger := v1_api.Deps.Logger
-	// 	// Migrate DB
-	// 	now := time.Now()
-	// 	err := v1_api.Deps.DB.Migrate()
-	// 	if err != nil {
-	// 		panic("Error while migration")
-	// 	}
-	// 	logger.Info("Auto Migration took", zap.String("duration", strconv.Itoa(int(time.Since(now).Milliseconds()))+"ms"))
-	// }
-	// --------------------------
+	utils.Validator().RegisterTagNameFunc(utils.TagNameFunc)
 
 	appData, _ := appIfInitialized(v1_api)
 	v1_api.HasAdmin, _ = checkIfOwnerExists(v1_api)
 
 	if appData != nil {
-		v1_api.IsAppInit = appData.Name != ""
+		v1_api.IsAppInit = appData.AppName != ""
 
-		if len(appData.Name) > 0 {
-			v1_api.AppName = appData.Name
-		} /* else {
-			logger.Warn("App Name not found in DB, using default 'Vuecom_test'")
-			v1_api.AppName = "Vuecom_test"
-		} */
+		if len(appData.AppName) > 0 {
+			v1_api.AppName = appData.AppName
+		}
 
-		if len(appData.AdminRoute) > 0 {
-			v1_api.AdminSlug = appData.AdminRoute
-		} /*  else {
-			v1_api.AdminSlug = "admin123"
-			logger.Warn("Admin Route not found in DB, using default 'admin123'")
+		/*	if len(appData.AdminRoute) > 0 {
+				v1_api.AdminSlug = appData.AdminRoute
 		} */
 	}
 }

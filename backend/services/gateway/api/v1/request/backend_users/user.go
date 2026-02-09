@@ -9,80 +9,67 @@ import (
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/validation"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-// JWT Format sent back to the client dashboard
-type BackendJWTPayload struct {
-	UserId int    `json:"user_id"`
-	Role   string `json:"role"`
+type CreateOwnerRequest struct {
+	FullName    string  `json:"full_name" form:"full_name" validate:"required,min=5" name:"Full Name"`
+	UserName    *string `json:"user_name" form:"user_name" validate:"required,min=3" name:"Username"`
+	Email       string  `json:"email" form:"email" validate:"required,email" name:"Email Address"`
+	PhoneNumber *string `json:"phone_number" form:"phone_number" validate:"min=10,max=15"`
+	Country     *string `json:"country" form:"country" validate:"required"`
+	Password    string  `json:"password" form:"password" validate:"required,min=8,max=25"`
 }
-
-// type sharedUserProps struct {
-// 	FullName        string  `json:"full_name" gorm:"not null;type:varchar(255);index" validate:""`
-// 	UserName        *string `json:"user_name" gorm:"type:varchar(255);index" validate:""`
-// 	Email           string  `json:"email" gorm:"unique;not null;type:varchar(255);index"`
-// 	PhoneNumber     *string `json:"phone_number" gorm:"type:varchar(20)" validate:""`
-// 	Image           *string `json:"image" validate:"url"`
-// 	Country         uint    `json:"country" gorm:"index"`
-// 	IsEmailVerified bool    `json:"email_verified" gorm:"default:FALSE;not null"`
-// 	Password        *string `json:"password,omitempty" validate:"required"`
-// }
 
 // Base Backend Panel User
 type CreateBackendUserRequest struct {
-	FullName        string  `form:"full_name" validate:"required,min=5"`
-	UserName        *string `form:"user_name" validate:"required,min=3"`
-	Email           string  `form:"email" validate:"required,email"`
-	PhoneNumber     *string `form:"phone_number" validate:"min=10,max=15"`
-	Country         *string `form:"country" validate:"required_if=Role owner"`
-	IsEmailVerified bool    `form:"email_verified"`
-	Password        string  `form:"password" validate:"required,min=8,max=25"`
-	Role            string  `form:"role" validate:"required"`
+	FullName    string  `json:"full_name" form:"full_name" validate:"required,min=5" name:"Full Name"`
+	UserName    *string `json:"user_name" form:"user_name" validate:"required,min=3" name:"Username"`
+	Email       string  `json:"email" form:"email" validate:"required,email" name:"Email Address"`
+	PhoneNumber *string `json:"phone_number" form:"phone_number" validate:"min=10,max=15"`
+	Country     *string `json:"country" form:"country" validate:"required"`
+	Password    string  `json:"password" form:"password" validate:"required,min=8,max=25"`
 }
 
-func (req *CreateBackendUserRequest) Validate() error {
-	return validation.Validator.Struct(req)
+func (req *CreateOwnerRequest) Validate() error {
+	return utils.Validator().Struct(req)
 }
 
-func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context.Context) (*userModels.BackendUser, error) {
+func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.Api, c *fiber.Ctx) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
-	logger := api.Deps.Logger
+	logger := utils.Logger()
 
-	passwordHash, err := auth.GenerateFromPassword(req.Password, auth.DefaultHashParams)
+	passwordHash, err := auth.GenerateHashFromString(req.Password, auth.DefaultHashParams)
 	if err != nil {
 		logger.Error("Failed to hash password for new backend user", zap.Error(err))
 		return nil, err
 	}
 
-	hashedFullname, err := auth.Encrypt(req.FullName, api.Config.DbEncKey)
+	encryptedFullname, err := auth.Encrypt(req.FullName, api.Config.SecretKey)
 	if err != nil {
 		logger.Error("Failed to encrypt fullname for new backend user", zap.Error(err))
 		return nil, err
 	}
-	var hashedUsername string
+	var username string
 	if req.UserName != nil {
-		// hashedUsername, err = auth.Encrypt(*req.UserName, api.Config.DbEncKey)
-		hashedUsername = *req.UserName // There is no need to encrypt the username (App specific)
+		username = *req.UserName // There is no need to encrypt the username (App specific)
 	}
-	// if err != nil {
-	// 	return nil, err
-	// }
 
-	hashedEmail, err := auth.Encrypt(req.Email, api.Config.DbEncKey)
+	encryptedEmail, err := auth.Encrypt(req.Email, api.Config.SecretKey)
 	if err != nil {
 		logger.Error("Failed to encrypt email for new backend user", zap.Error(err))
 		return nil, err
 	}
 
-	var hashedPhoneNumber string
+	var encryptedPhoneNumber string
 	if req.PhoneNumber != nil {
-		hashedPhoneNumber, err = auth.Encrypt(*req.PhoneNumber, api.Config.DbEncKey)
+		encryptedPhoneNumber, err = auth.Encrypt(*req.PhoneNumber, api.Config.SecretKey)
 	}
 	if err != nil {
 		logger.Error("Failed to encrypt phone number for new backend user", zap.Error(err))
@@ -92,7 +79,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 	var countryId uint
 	if req.Country != nil {
 		// err = api.Deps.DB.Model(&dbModels.Country{}).Where(dbModels.Country{Code: *req.Country}).Row().Scan(&countryId)
-		countryId, err = db.BackendUsers().GetCountryIdByCode(*req.Country, ctx)
+		countryId, err = db.BackendUsers().GetCountryIdByCode(ctx, *req.Country)
 		if err != nil {
 			logger.Error(fmt.Sprintf("Failed to get country ID for `%s` for new backend user", *req.Country), zap.Error(err))
 			if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -102,25 +89,26 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(api *types.Api, ctx context
 		}
 	}
 
-	// TODO: Implement
 	// TODO: Implement image upload
 
 	user := &userModels.BackendUser{
-		FullName:        hashedFullname,
-		UserName:        &hashedUsername,
-		Email:           hashedEmail,
-		PhoneNumber:     &hashedPhoneNumber,
-		Image:           nil,
-		IsEmailVerified: req.IsEmailVerified,
-		PasswordHash:    passwordHash,
-		Role:            req.Role,
+		FullName:     encryptedFullname,
+		UserName:     &username,
+		Email:        encryptedEmail,
+		PhoneNumber:  &encryptedPhoneNumber,
+		Image:        nil,
+		PasswordHash: passwordHash,
+		// TODO: I need to have a way to lookup a secure token (sent to the user through email) in the request url
+		// c.Query("login_token"), then delete the token from the database,
+		// instead of this
+		Role: constants.OWNER,
 	}
 
 	if req.UserName != nil {
-		user.UserName = &hashedUsername
+		user.UserName = &username
 	}
 	if req.PhoneNumber != nil {
-		user.PhoneNumber = &hashedPhoneNumber
+		user.PhoneNumber = &encryptedPhoneNumber
 	}
 	if countryId != 0 {
 		user.CountryId = &countryId

@@ -29,6 +29,7 @@ func RegisterRoutes(app fiber.Router, api *types.Api) {
 			}
 			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "An Error occurred, please try again")
 		}
+
 		return response.WriteResponse(ctx, fiber.StatusOK, "Success", fiber.Map{
 			"exists": exists,
 		})

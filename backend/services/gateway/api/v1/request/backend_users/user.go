@@ -20,7 +20,7 @@ import (
 
 type CreateOwnerRequest struct {
 	FullName    string  `json:"full_name" form:"full_name" validate:"required,min=5" name:"Full Name"`
-	UserName    *string `json:"user_name" form:"user_name" validate:"required,min=3" name:"Username"`
+	UserName    string  `json:"user_name" form:"user_name" validate:"required,min=3" name:"Username"`
 	Email       string  `json:"email" form:"email" validate:"required,email" name:"Email Address"`
 	PhoneNumber *string `json:"phone_number" form:"phone_number" validate:"min=10,max=15"`
 	Country     *string `json:"country" form:"country" validate:"required"`
@@ -30,11 +30,16 @@ type CreateOwnerRequest struct {
 // Base Backend Panel User
 type CreateBackendUserRequest struct {
 	FullName    string  `json:"full_name" form:"full_name" validate:"required,min=5" name:"Full Name"`
-	UserName    *string `json:"user_name" form:"user_name" validate:"required,min=3" name:"Username"`
+	UserName    string  `json:"user_name" form:"user_name" validate:"required,min=3" name:"Username"`
 	Email       string  `json:"email" form:"email" validate:"required,email" name:"Email Address"`
 	PhoneNumber *string `json:"phone_number" form:"phone_number" validate:"min=10,max=15"`
 	Country     *string `json:"country" form:"country" validate:"required"`
 	Password    string  `json:"password" form:"password" validate:"required,min=8,max=25"`
+}
+
+type UserLogin struct {
+	Email    string `json:"email" form:"email"`
+	Password string `json:"password" form:"password"`
 }
 
 func (req *CreateOwnerRequest) Validate() error {
@@ -56,10 +61,10 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 		logger.Error("Failed to encrypt fullname for new backend user", zap.Error(err))
 		return nil, err
 	}
-	var username string
-	if req.UserName != nil {
-		username = *req.UserName // There is no need to encrypt the username (App specific)
-	}
+	var username string = req.UserName
+	// if req.UserName != nil {
+	// 	username = *req.UserName // There is no need to encrypt the username (App specific)
+	// }
 
 	encryptedEmail, err := auth.Encrypt(req.Email, api.Config.SecretKey)
 	if err != nil {
@@ -93,7 +98,7 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 
 	user := &userModels.BackendUser{
 		FullName:     encryptedFullname,
-		UserName:     &username,
+		UserName:     username,
 		Email:        encryptedEmail,
 		PhoneNumber:  &encryptedPhoneNumber,
 		Image:        nil,
@@ -104,9 +109,9 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 		Role: constants.OWNER,
 	}
 
-	if req.UserName != nil {
-		user.UserName = &username
-	}
+	// if req.UserName != nil {
+	// 	user.UserName = &username
+	// }
 	if req.PhoneNumber != nil {
 		user.PhoneNumber = &encryptedPhoneNumber
 	}

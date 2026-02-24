@@ -17,6 +17,11 @@ type backendUserRepository struct {
 	db *gorm.DB
 }
 
+func (br *backendUserRepository) CreateRegToken(ctx context.Context, token string, supervisor uint) error {
+
+	return nil
+}
+
 func (br *backendUserRepository) CreateUser(ctx context.Context, user *userModels.BackendUser) error {
 	return br.db.WithContext(ctx).Create(user).Error
 }

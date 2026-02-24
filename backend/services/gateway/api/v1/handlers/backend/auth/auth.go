@@ -13,6 +13,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
+	"github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
@@ -25,10 +26,28 @@ import (
 // Handles the registration links in the url
 func Register(api *types.Api) fiber.Handler {
 	logger := utils.Logger()
+	db := api.Deps.DB
 	errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while logging you in, please try again")
 	return func(ctx *fiber.Ctx) error {
 		var err error
+		var errorBag = []response.ErrorDetail{}
 		var userForRegister = new(backendusers.CreateBackendUserRequest)
+		var regTokenJWT = ctx.Cookies("reg_token")
+		if len(strings.TrimSpace(regTokenJWT)) == 0 {
+			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Invalid Request!")
+		}
+
+		regToken, err = auth.ValidateRegToken(api, regTokenJWT, api.Config.SecretKey)
+		if err != nil {
+			var serverErr server.ServerErr
+			if errors.As(err, serverErr) {
+				return response.WriteResponse(ctx, fiber.StatusBadRequest, serverErr.Message)
+			}
+			return response.FromFiberError(ctx, errLogin500)
+		}
+
+		// db
+
 		err = ctx.BodyParser(userForRegister)
 		if err != nil {
 			logger.Error("Error occured while parsing login values", zap.Error(err))
@@ -44,7 +63,19 @@ func Register(api *types.Api) fiber.Handler {
 			var validationErr = err.(validator.ValidationErrors)
 
 			for _, v := range validationErr {
+				field := v.Field()
+				message := v.Error()
 
+				error := response.ErrorDetail{
+					Field:   field,
+					Message: message,
+				}
+
+				errorBag = append(errorBag, error)
+
+			}
+			if len(errorBag) > 1 {
+				return response.WriteResponse(ctx, fiber.StatusBadRequest, "One or more fields are invalid", errorBag)
 			}
 		}
 

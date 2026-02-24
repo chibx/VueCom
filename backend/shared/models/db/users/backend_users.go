@@ -77,14 +77,16 @@ type BackendUser struct {
 	Country         *Country                      `gorm:"foreignKey:CountryId;" redis:"-"`
 }
 
-type BackendSignupData struct {
-	Token     string    `gorm:"not null"`
-	CreatedAt time.Time `gorm:"" redis:"created_at"`
-	ExpiryAt  time.Time `gorm:"" redis:"expiry_at"`
+type SignupToken struct {
+	ID         uint      `gorm:"primarykey"`
+	Token      string    `gorm:"not null"`
+	Supervisor uint      `gorm:""`
+	CreatedAt  time.Time `gorm:"" redis:"created_at"`
+	ExpiryAt   time.Time `gorm:"" redis:"expiry_at"`
 }
 
-func (t BackendSignupData) TableName() string {
-	return "backend_signup_data"
+func (t SignupToken) TableName() string {
+	return "backend_signup_token"
 }
 
 type Backend2FAToken struct {

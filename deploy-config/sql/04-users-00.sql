@@ -44,7 +44,6 @@ CREATE TABLE cities (
     FOREIGN KEY (state_id) REFERENCES states(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE backend_users (
     id SERIAL PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
@@ -68,11 +67,16 @@ CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (e
 CREATE INDEX IF NOT EXISTS backend_user_username_idx ON backend_users USING hash (username);
 CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 
-CREATE TABLE backend_signup_data (
+CREATE TABLE backend_signup_token (
+    id SERIAL PRIMARY KEY,
     token TEXT NOT NULL,
+    supervisor INT NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    expiry_at TIMESTAMP NOT NULL
+    expired_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (supervisor) REFERENCES backend_users(id)
 );
+
+CREATE INDEX IF NOT EXISTS backend_signup_token_idx ON backend_signup_token USING hash (token);
 
 CREATE TABLE backend_2fa_tokens (
     user_id INT NOT NULL,

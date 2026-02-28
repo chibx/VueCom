@@ -2,6 +2,7 @@ package gorm_pg
 
 import (
 	"context"
+	"time"
 
 	// "strings"
 
@@ -18,14 +19,22 @@ type backendUserRepository struct {
 	db *gorm.DB
 }
 
-func (br *backendUserRepository) CreateRegToken(ctx context.Context, token string) error {
+func (br *backendUserRepository) CreateRegToken(ctx context.Context, token string, supervisor uint, code string) error {
+	var now = time.Now()
+	var tokenStruc = &userModels.SignupToken{
+		Token:      token,
+		Code:       code,
+		Supervisor: supervisor,
+		CreatedAt:  now,
+		ExpiryAt:   now.Add(constants.BackendRegTkDur),
+	}
 
-	return nil
+	return br.db.WithContext(ctx).Create(tokenStruc).Error
 }
 
 func (br *backendUserRepository) GetRegToken(ctx context.Context, token string) (*userModels.SignupToken, error) {
 	var tokenStruc = &userModels.SignupToken{}
-	err := br.db.Where("token = ?", token).Preload("Super").First(tokenStruc).Error
+	err := br.db.WithContext(ctx).Where("token = ?", token).Preload("Super").First(tokenStruc).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, serverErrors.ErrDBRecordNotFound

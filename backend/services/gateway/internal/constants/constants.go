@@ -8,6 +8,7 @@ import (
 )
 
 const OWNER = "owner"
+const OWNER_ID = 1
 
 // Simple way of doing this, a better way would be to use a manifest from a bundler
 var PublicAssets = []string{

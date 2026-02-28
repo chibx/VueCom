@@ -1,5 +1,9 @@
 package server
 
+import "errors"
+
+var ErrDBRecordNotFound = errors.New("Record Not Found!!!")
+
 type ServerErr struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`

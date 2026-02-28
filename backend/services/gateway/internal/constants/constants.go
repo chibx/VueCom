@@ -57,6 +57,7 @@ const CustomerHeaderKey = "X-Customer-Id"
 const BackendLimitKey = "rl_backend:"
 
 // const BackendSessionTimeout = 30 * time.Minute
+const BackendRegTkDur = 30 * time.Minute
 const BackendAccessTkDur = 15 * time.Minute
 const BackendRefreshTkDur = 7 * 24 * time.Hour
 const CustomerAccessTkDur = 15 * time.Minute

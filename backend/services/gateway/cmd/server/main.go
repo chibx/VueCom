@@ -37,5 +37,6 @@ func main() {
 
 	v1.LoadRoutes(app, v1_api)
 
+    fmt.Printf("Server is listening on http://%s:%s\n", config.Host, config.Port)
 	logger.Fatal("Error starting server:", zap.Error(app.Listen(fmt.Sprintf("%s:%s", config.Host, config.Port))))
 }

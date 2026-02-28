@@ -54,6 +54,14 @@ type BackendOTP struct {
 	User       *BackendUser `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 }
 
+type BackendRole struct {
+	ID           uint     `gorm:"primarykey" redis:"id"`
+	Name         string   `gorm:"" redis:"name"`
+	ParentID     uint     `gorm:"" redis:"parent_id"`
+	AllowedPerms []string `gorm:"column:allowed_permissions;type:text[]" redis:"allowed_permissions"`
+	// ParentRole *BackendRole `gorm:"foreignKey:ParentID" redis:"-"`
+}
+
 type BackendUser struct {
 	ID              uint                          `gorm:"primarykey" redis:"id"`
 	CreatedAt       time.Time                     `gorm:"" redis:"created_at"`
@@ -66,7 +74,7 @@ type BackendUser struct {
 	CountryId       *uint                         `gorm:"index" redis:"country"`
 	Is2FAEnabled    bool                          `gorm:"column:is_2fa_enabled;default:FALSE;not null" redis:"is_2fa_enabled"`
 	IsEmailVerified bool                          `gorm:"default:FALSE;not null" redis:"is_email_verified"`
-	Role            string                        `gorm:"type:varchar(50)" redis:"role"`
+	RoleID          *uint                         `gorm:"" redis:"role_id"`
 	PasswordHash    string                        `gorm:"not null" redis:"-"`
 	CreatedBy       *uint                         `gorm:"index" redis:"created_by"`
 	ByApiKey        bool                          `gorm:"-:all" redis:"by_api_key"` // Track if the user is acting through an API key

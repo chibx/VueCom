@@ -44,6 +44,18 @@ CREATE TABLE cities (
     FOREIGN KEY (state_id) REFERENCES states(id) ON DELETE CASCADE
 );
 
+CREATE TABLE backend_roles (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    parent_id INT,
+    allowed_permissions TEXT[],
+    FOREIGN KEY (parent_id) REFERENCES backend_roles (id)
+);
+
+CREATE INDEX IF NOT EXISTS backend_roles_name_idx ON backend_roles (name);
+
+INSERT INTO backend_roles (name, allowed_permissions) VALUES ('owner', '{"*"}');
+
 CREATE TABLE backend_users (
     id SERIAL PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
@@ -51,7 +63,7 @@ CREATE TABLE backend_users (
     password_hash TEXT NOT NULL,
     full_name TEXT NOT NULL,
     phone_number TEXT,
-    role TEXT DEFAULT 'staff', -- Set to allow custom roles
+    role_id INT NOT NULL, -- Set to allow custom roles
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INT,
@@ -59,6 +71,7 @@ CREATE TABLE backend_users (
     country_id INT,
     is_2fa_enabled BOOLEAN DEFAULT FALSE,
     is_email_verified BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (role_id) REFERENCES backend_roles (id),
     FOREIGN KEY (created_by) REFERENCES backend_users(id),
     FOREIGN KEY (country_id) REFERENCES countries(id)
 );

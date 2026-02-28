@@ -70,6 +70,7 @@ CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 CREATE TABLE backend_signup_tokens (
     id SERIAL PRIMARY KEY,
     token TEXT NOT NULL UNIQUE,
+    code TEXT NOT NULL,
     supervisor INT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     expired_at TIMESTAMP NOT NULL,

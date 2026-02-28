@@ -80,6 +80,7 @@ type BackendUser struct {
 type SignupToken struct {
 	ID         uint         `gorm:"primarykey"`
 	Token      string       `gorm:"not null"`
+	Code       string       `gorm:""`
 	Supervisor uint         `gorm:""`
 	CreatedAt  time.Time    `gorm:"" redis:"created_at"`
 	ExpiryAt   time.Time    `gorm:"" redis:"expiry_at"`

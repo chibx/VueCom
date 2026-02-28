@@ -63,8 +63,6 @@ CREATE TABLE backend_users (
     FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
-CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (email);
-CREATE INDEX IF NOT EXISTS backend_user_username_idx ON backend_users USING hash (username);
 CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 
 CREATE TABLE backend_signup_tokens (
@@ -77,7 +75,6 @@ CREATE TABLE backend_signup_tokens (
     FOREIGN KEY (supervisor) REFERENCES backend_users(id)
 );
 
-CREATE INDEX IF NOT EXISTS backend_signup_token_idx ON backend_signup_tokens USING hash (token);
 CREATE INDEX IF NOT EXISTS backend_signup_super_idx ON backend_signup_tokens (supervisor);
 
 CREATE TABLE backend_2fa_tokens (
@@ -148,7 +145,6 @@ CREATE TABLE password_reset_requests (
     FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS password_reset_requests_token_idx ON password_reset_requests USING hash(reset_token);
 CREATE INDEX IF NOT EXISTS password_reset_requests_used_idx ON password_reset_requests (used);
 
 

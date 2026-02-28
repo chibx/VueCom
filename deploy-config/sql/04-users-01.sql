@@ -13,8 +13,6 @@ CREATE TABLE customers (
     FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
-CREATE INDEX IF NOT EXISTS customers_email_idx ON customers USING hash (email);
-
 CREATE TABLE customer_addresses (
     id SERIAL PRIMARY KEY,
     customer_id INT NOT NULL,

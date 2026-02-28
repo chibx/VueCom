@@ -17,9 +17,19 @@ type backendUserRepository struct {
 	db *gorm.DB
 }
 
-func (br *backendUserRepository) CreateRegToken(ctx context.Context, token string, supervisor uint) error {
+func (br *backendUserRepository) CreateRegToken(ctx context.Context, token string) error {
 
 	return nil
+}
+
+func (br *backendUserRepository) GetRegToken(ctx context.Context, token string) (*userModels.SignupToken, error) {
+	var tokenStruc = &userModels.SignupToken{}
+	err := br.db.Where("token = ?", token).Preload("Super").First(tokenStruc).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return tokenStruc, nil
 }
 
 func (br *backendUserRepository) CreateUser(ctx context.Context, user *userModels.BackendUser) error {

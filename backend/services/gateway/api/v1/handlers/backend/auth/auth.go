@@ -250,3 +250,11 @@ func Login(api *types.Api) fiber.Handler {
 		return nil
 	}
 }
+
+func CreateSignupToken(api *types.Api) fiber.Handler {
+	_ = utils.Logger()
+	_ = api.Deps.DB
+	return func(ctx *fiber.Ctx) error {
+		return nil
+	}
+}

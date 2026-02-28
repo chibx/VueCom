@@ -6,14 +6,13 @@ import (
 	"strconv"
 	"time"
 
-	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
-	"gorm.io/gorm"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
@@ -38,13 +37,13 @@ func GetBackendUserById(api *types.Api, id int, ctx context.Context) (*userModel
 
 		backendUser, err = db.BackendUsers().GetUserById(ctx, id)
 
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 			logger.Error("backend user" + strconv.Itoa(id) + "not found in db")
 			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User ID "+strconv.Itoa(id)+" not found. Consider logging in again")
 		}
 
 		if err != nil {
-			// err can't be ErrRecordNotFound so it's fine here
+			// err can't be serverErrors.ErrDBRecordNotFound so it's fine here
 			logger.Error("failed to get backend user from db", zap.Error(err))
 			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Something went wrong while fetching your session data. Please try again later.")
 		}

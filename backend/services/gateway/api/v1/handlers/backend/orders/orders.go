@@ -10,8 +10,8 @@ import (
 
 	"github.com/chibx/vuecom/backend/shared/models/db/orders"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 )
 
 func CreateOrder(ctx *fiber.Ctx, api *types.Api) error {
@@ -54,7 +54,7 @@ func GetOrder(ctx *fiber.Ctx, api *types.Api) error {
 	order, err := db.Orders().GetOrderById(ctx.Context(), toGet.ID)
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 			return response.WriteResponse(ctx, fiber.StatusNotFound, "Order with ID "+strconv.Itoa(toGet.ID)+" not found", nil)
 		}
 		return response.WriteResponse(ctx, fiber.StatusInternalServerError, "Failed to get order", nil)

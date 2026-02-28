@@ -13,9 +13,9 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 type CreateOwnerRequest struct {
@@ -87,7 +87,7 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 		countryId, err = db.BackendUsers().GetCountryIdByCode(ctx, *req.Country)
 		if err != nil {
 			logger.Error(fmt.Sprintf("Failed to get country ID for `%s` for new backend user", *req.Country), zap.Error(err))
-			if errors.Is(err, gorm.ErrRecordNotFound) {
+			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 				return nil, server.NewServerErr(fiber.StatusBadRequest, fmt.Sprintf("Record for Country %s does not exist", *req.Country))
 			}
 			return nil, err

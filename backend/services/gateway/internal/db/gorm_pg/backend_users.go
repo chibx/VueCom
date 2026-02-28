@@ -7,6 +7,7 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"gorm.io/gorm"
@@ -26,6 +27,9 @@ func (br *backendUserRepository) GetRegToken(ctx context.Context, token string) 
 	var tokenStruc = &userModels.SignupToken{}
 	err := br.db.Where("token = ?", token).Preload("Super").First(tokenStruc).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 
@@ -41,6 +45,9 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.Back
 
 	err := br.db.Select("role").Where("role = ?", constants.OWNER).First(admin).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 
@@ -66,6 +73,9 @@ func (br *backendUserRepository) GetUserByNameForLogin(ctx context.Context, user
 	err := br.db.Model(&userModels.BackendUser{}).Where("user_name = ?", username).First(user).Error
 
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 
@@ -76,6 +86,9 @@ func (br *backendUserRepository) GetUserById(ctx context.Context, id int) (*user
 	backendUser := &userModels.BackendUser{}
 	err := br.db.WithContext(ctx).First(backendUser, "id = ?", id).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 
@@ -91,6 +104,9 @@ func (br *backendUserRepository) GetSessionByTokenId(ctx context.Context, tokenI
 
 	err := br.db.WithContext(ctx).First(sessionData, "id = ?", tokenId).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 
@@ -129,6 +145,9 @@ func (br *backendUserRepository) GetCountryIdByCode(ctx context.Context, code st
 	var country userModels.Country
 	err := br.db.WithContext(ctx).Omit(clause.Associations).Select("id").Where("code = ?", code).First(&country).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return 0, serverErrors.ErrDBRecordNotFound
+		}
 		return 0, err
 	}
 

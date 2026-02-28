@@ -8,9 +8,9 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 func RegisterRoutes(app fiber.Router, api *types.Api) {
@@ -24,7 +24,7 @@ func RegisterRoutes(app fiber.Router, api *types.Api) {
 
 		if err != nil {
 			logger.Error("Error checking for existing users", zap.Error(err))
-			if errors.Is(err, gorm.ErrRecordNotFound) {
+			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 				return response.WriteResponse(ctx, fiber.StatusBadRequest, "Owner does not exist")
 			}
 			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "An Error occurred, please try again")

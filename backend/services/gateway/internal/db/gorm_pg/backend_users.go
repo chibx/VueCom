@@ -66,7 +66,7 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.Back
 func (br *backendUserRepository) HasAdmin(ctx context.Context) (bool, error) {
 	var count int64
 
-	err := br.db.Model(&userModels.BackendUser{}).WithContext(ctx).Where("role = ?", constants.OWNER).Count(&count).Error
+	err := br.db.Model(&userModels.BackendUser{}).WithContext(ctx).Where("role_id = ?", constants.OWNER_ID).Count(&count).Error
 
 	if err != nil {
 		return false, err

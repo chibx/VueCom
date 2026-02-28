@@ -67,16 +67,17 @@ CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (e
 CREATE INDEX IF NOT EXISTS backend_user_username_idx ON backend_users USING hash (username);
 CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 
-CREATE TABLE backend_signup_token (
+CREATE TABLE backend_signup_tokens (
     id SERIAL PRIMARY KEY,
-    token TEXT NOT NULL,
+    token TEXT NOT NULL UNIQUE,
     supervisor INT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     expired_at TIMESTAMP NOT NULL,
     FOREIGN KEY (supervisor) REFERENCES backend_users(id)
 );
 
-CREATE INDEX IF NOT EXISTS backend_signup_token_idx ON backend_signup_token USING hash (token);
+CREATE INDEX IF NOT EXISTS backend_signup_token_idx ON backend_signup_tokens USING hash (token);
+CREATE INDEX IF NOT EXISTS backend_signup_super_idx ON backend_signup_tokens (supervisor);
 
 CREATE TABLE backend_2fa_tokens (
     user_id INT NOT NULL,

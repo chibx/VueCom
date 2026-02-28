@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
@@ -62,7 +61,7 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 		logger.Error("Failed to encrypt fullname for new backend user", zap.Error(err))
 		return nil, err
 	}
-	var username string = req.UserName
+	var username = req.UserName
 	// if req.UserName != nil {
 	// 	username = *req.UserName // There is no need to encrypt the username (App specific)
 	// }
@@ -89,7 +88,7 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 		if err != nil {
 			logger.Error(fmt.Sprintf("Failed to get country ID for `%s` for new backend user", *req.Country), zap.Error(err))
 			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
-				return nil, server.NewServerErr(fiber.StatusBadRequest, fmt.Sprintf("Record for Country %s does not exist", *req.Country))
+				return nil, serverErrors.NewServerErr(fiber.StatusBadRequest, fmt.Sprintf("Record for Country %s does not exist", *req.Country))
 			}
 			return nil, err
 		}
@@ -164,7 +163,7 @@ func (req *CreateBackendUserRequest) ToDBBackendUser(ctx context.Context, api *t
 		if err != nil {
 			logger.Error(fmt.Sprintf("Failed to get country ID for `%s` for new backend user", *req.Country), zap.Error(err))
 			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
-				return nil, server.NewServerErr(fiber.StatusBadRequest, fmt.Sprintf("Record for Country %s does not exist", *req.Country))
+				return nil, serverErrors.NewServerErr(fiber.StatusBadRequest, fmt.Sprintf("Record for Country %s does not exist", *req.Country))
 			}
 			return nil, err
 		}

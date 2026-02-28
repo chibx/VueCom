@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"crypto/subtle"
 	"errors"
 	"strconv"
 	"strings"
@@ -13,12 +14,11 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
-	"github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
@@ -27,59 +27,100 @@ import (
 func Register(api *types.Api) fiber.Handler {
 	logger := utils.Logger()
 	db := api.Deps.DB
-	errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while logging you in, please try again")
+	errRegister500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating your account, please try again")
 	return func(ctx *fiber.Ctx) error {
 		var err error
-		var errorBag = []response.ErrorDetail{}
+		// var errorBag = []serverErrors.ErrorDetail{}
 		var userForRegister = new(backendusers.CreateBackendUserRequest)
 		var regTokenJWT = ctx.Cookies("reg_token")
+		var now = time.Now()
 		if len(strings.TrimSpace(regTokenJWT)) == 0 {
 			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Invalid Request!")
 		}
 
-		regToken, err = auth.ValidateRegToken(api, regTokenJWT, api.Config.SecretKey)
+		regToken, err := auth.ValidateRegToken(api, regTokenJWT, api.Config.SecretKey)
 		if err != nil {
-			var serverErr server.ServerErr
-			if errors.As(err, serverErr) {
-				return response.WriteResponse(ctx, fiber.StatusBadRequest, serverErr.Message)
+			var serverErrors = new(serverErrors.ServerErr)
+			if errors.As(err, &serverErrors) {
+				return response.WriteResponse(ctx, fiber.StatusBadRequest, serverErrors.Message)
 			}
-			return response.FromFiberError(ctx, errLogin500)
+			return response.FromFiberError(ctx, errRegister500)
 		}
 
-		// db
+		if now.After(regToken.ExpiresAt.Time) {
+			logger.Warn("Reg Token: Used after jwt expiration")
+			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Expired Registration Token!!")
+		}
 
 		err = ctx.BodyParser(userForRegister)
 		if err != nil {
 			logger.Error("Error occured while parsing login values", zap.Error(err))
-			return response.FromFiberError(ctx, errLogin500)
+			return response.FromFiberError(ctx, errRegister500)
 		}
 
 		err = utils.Validator().Struct(userForRegister)
+
 		if err != nil {
 			if errors.Is(err, &validator.InvalidValidationError{}) {
 				logger.Error("InvalidValidationError while registering a user", zap.Error(err))
-				return response.WriteResponse(ctx, fiber.ErrBadRequest.Code, fiber.ErrBadRequest.Message)
+				return response.WriteResponse(ctx, fiber.ErrBadRequest.Code, errRegister500.Message)
 			}
-			var validationErr = err.(validator.ValidationErrors)
 
-			for _, v := range validationErr {
-				field := v.Field()
-				message := v.Error()
+			errorBag := serverErrors.ValErrToBag(err)
 
-				error := response.ErrorDetail{
-					Field:   field,
-					Message: message,
-				}
-
-				errorBag = append(errorBag, error)
-
-			}
-			if len(errorBag) > 1 {
+			if len(errorBag) > 0 {
 				return response.WriteResponse(ctx, fiber.StatusBadRequest, "One or more fields are invalid", errorBag)
 			}
 		}
 
-		return nil
+		tokenStruc, err := db.BackendUsers().GetRegToken(ctx.Context(), regTokenJWT)
+
+		if err != nil {
+			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
+				return response.WriteResponse(ctx, fiber.StatusBadRequest, "Registration Token not found.")
+			}
+
+			return response.FromFiberError(ctx, errRegister500)
+		}
+
+		if now.After(tokenStruc.ExpiryAt) {
+			logger.Warn("Reg Token: Used after db expiration")
+			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Expired Registration Token!!")
+		}
+
+		if subtle.ConstantTimeCompare([]byte(tokenStruc.Code), []byte(userForRegister.Code)) == 0 {
+			logger.Warn("Invalid Code used")
+			// TODO: Maybe add a counter that would delete the token and alert the app owner of a potential cyber attack
+			return response.WriteResponse(ctx, fiber.StatusUnauthorized, "You cannot proceed")
+		}
+
+		if len(userForRegister.UserName) > constants.MaxUsernameLimit {
+			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Please enter a username less than "+strconv.Itoa(constants.MaxUsernameLimit)+" characters")
+		}
+
+		if len(userForRegister.Password) > constants.MaxPasswordLimit {
+			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Please enter a password less than "+strconv.Itoa(constants.MaxPasswordLimit)+" characters")
+		}
+
+		user, err := userForRegister.ToDBBackendUser(ctx.Context(), api, ctx)
+		if err != nil {
+			var serverErr = new(serverErrors.ServerErr)
+			if errors.As(err, &serverErr) {
+				logger.Error(serverErr.Message)
+				return response.WriteResponse(ctx, serverErr.Code, serverErr.Message)
+			}
+
+			logger.Error("Error converting user to db backend user", zap.Error(err))
+			return response.FromFiberError(ctx, errRegister500)
+		}
+
+		err = db.BackendUsers().CreateUser(ctx.Context(), user)
+		if err != nil {
+			logger.Error("DB Error creating backend user", zap.Error(err))
+			return response.FromFiberError(ctx, errRegister500)
+		}
+
+		return response.WriteResponse(ctx, fiber.StatusOK, "User created successfully.")
 	}
 }
 
@@ -95,7 +136,7 @@ func Login(api *types.Api) fiber.Handler {
 		username := strings.TrimSpace(ctx.FormValue("username"))
 
 		if len(username) > constants.MaxUsernameLimit {
-			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Please enter a password less than "+strconv.Itoa(constants.MaxUsernameLimit)+" characters")
+			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Please enter a username less than "+strconv.Itoa(constants.MaxUsernameLimit)+" characters")
 		}
 
 		if len(username) == 0 {
@@ -112,7 +153,7 @@ func Login(api *types.Api) fiber.Handler {
 
 		backendUser, err = db.BackendUsers().GetUserByNameForLogin(ctx.Context(), username)
 		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
+			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 				return response.WriteResponse(ctx, fiber.StatusUnauthorized, "Invalid username and/or password")
 			}
 

@@ -37,6 +37,11 @@ type CreateBackendUserRequest struct {
 	Password    string  `json:"password" form:"password" validate:"required,min=6"`
 }
 
+type CreateTokenRequest struct {
+	Supervisor uint   `json:"supervisor" validate:"required,gt=0"`
+	Email      string `json:"email" validate:"required,email"`
+}
+
 type UserLogin struct {
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password" form:"password"`

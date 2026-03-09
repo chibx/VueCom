@@ -26,6 +26,20 @@ func NewServerErr(code int, message string) *ServerErr {
 	return &ServerErr{Code: code, Message: message}
 }
 
+func HandleValidationError(err error) (isFatal bool, errorBag []ErrorDetail) {
+	if err == nil {
+		return false, nil
+	}
+
+	var invalidErr *validator.InvalidValidationError
+	if errors.As(err, &invalidErr) {
+		return true, nil
+	}
+
+	bag := ValErrToBag(err)
+	return false, bag
+}
+
 func ValErrToBag(err error) []ErrorDetail {
 	var validationErr, ok = err.(validator.ValidationErrors)
 	var errorBag = make([]ErrorDetail, 0)

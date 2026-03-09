@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"crypto/sha256"
 	"crypto/subtle"
 	"errors"
 	"strconv"
@@ -14,9 +15,11 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
+	"github.com/chibx/vuecom/backend/shared/events"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
-	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"github.com/pquerna/otp"
+	"github.com/pquerna/otp/hotp"
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
@@ -27,7 +30,7 @@ import (
 func Register(api *types.Api) fiber.Handler {
 	logger := utils.Logger()
 	db := api.Deps.DB
-	errRegister500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating your account, please try again")
+	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating your account, please try again")
 	return func(ctx *fiber.Ctx) error {
 		var err error
 		// var errorBag = []serverErrors.ErrorDetail{}
@@ -44,7 +47,7 @@ func Register(api *types.Api) fiber.Handler {
 			if errors.As(err, &serverErrors) {
 				return response.WriteResponse(ctx, fiber.StatusBadRequest, serverErrors.Message)
 			}
-			return response.FromFiberError(ctx, errRegister500)
+			return response.FromFiberError(ctx, err500)
 		}
 
 		if now.After(regToken.ExpiresAt.Time) {
@@ -55,22 +58,18 @@ func Register(api *types.Api) fiber.Handler {
 		err = ctx.BodyParser(userForRegister)
 		if err != nil {
 			logger.Error("Error occured while parsing login values", zap.Error(err))
-			return response.FromFiberError(ctx, errRegister500)
+			return response.FromFiberError(ctx, err500)
 		}
 
 		err = utils.Validator().Struct(userForRegister)
 
-		if err != nil {
-			if errors.Is(err, &validator.InvalidValidationError{}) {
-				logger.Error("InvalidValidationError while registering a user", zap.Error(err))
-				return response.WriteResponse(ctx, fiber.ErrBadRequest.Code, errRegister500.Message)
-			}
-
-			errorBag := serverErrors.ValErrToBag(err)
-
-			if len(errorBag) > 0 {
-				return response.WriteResponse(ctx, fiber.StatusBadRequest, "One or more fields are invalid", errorBag)
-			}
+		isFatal, errorBag := serverErrors.HandleValidationError(err)
+		if isFatal {
+			logger.Error("InvalidValidationError while registering a user", zap.Error(err))
+			return response.WriteResponse(ctx, fiber.ErrBadRequest.Code, err500.Message)
+		}
+		if len(errorBag) > 0 {
+			return response.WriteResponse(ctx, fiber.StatusBadRequest, "One or more fields are invalid", errorBag)
 		}
 
 		tokenStruc, err := db.BackendUsers().GetRegToken(ctx.Context(), regTokenJWT)
@@ -80,7 +79,7 @@ func Register(api *types.Api) fiber.Handler {
 				return response.WriteResponse(ctx, fiber.StatusBadRequest, "Registration Token not found.")
 			}
 
-			return response.FromFiberError(ctx, errRegister500)
+			return response.FromFiberError(ctx, err500)
 		}
 
 		if now.After(tokenStruc.ExpiryAt) {
@@ -111,14 +110,16 @@ func Register(api *types.Api) fiber.Handler {
 			}
 
 			logger.Error("Error converting user to db backend user", zap.Error(err))
-			return response.FromFiberError(ctx, errRegister500)
+			return response.FromFiberError(ctx, err500)
 		}
 
 		err = db.BackendUsers().CreateUser(ctx.Context(), user)
 		if err != nil {
 			logger.Error("DB Error creating backend user", zap.Error(err))
-			return response.FromFiberError(ctx, errRegister500)
+			return response.FromFiberError(ctx, err500)
 		}
+
+		// TODO: Add an ip addition feature
 
 		return response.WriteResponse(ctx, fiber.StatusOK, "User created successfully.")
 	}
@@ -252,9 +253,73 @@ func Login(api *types.Api) fiber.Handler {
 }
 
 func CreateSignupToken(api *types.Api) fiber.Handler {
-	_ = utils.Logger()
-	_ = api.Deps.DB
+	logger := utils.Logger()
+	db := api.Deps.DB
+	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating signup token, please try again")
 	return func(ctx *fiber.Ctx) error {
-		return nil
+		var reqBody = backendusers.CreateTokenRequest{}
+		err := ctx.BodyParser(&reqBody)
+		if err != nil {
+			return response.FromFiberError(ctx, err500)
+		}
+		err = utils.Validator().Struct(reqBody)
+		isFatal, errorBag := serverErrors.HandleValidationError(err)
+		if isFatal {
+			logger.Error("InvalidValidationError while creating a signup token", zap.Error(err))
+			return response.WriteResponse(ctx, fiber.ErrBadRequest.Code, err500.Message)
+		}
+		if len(errorBag) > 0 {
+			return response.WriteResponse(ctx, fiber.StatusBadRequest, "One or more fields are invalid", errorBag)
+		}
+		now := time.Now()
+		hash := sha256.New()
+		hash.Write([]byte(reqBody.Email + strconv.Itoa(int(now.Unix()))))
+		final := string(hash.Sum(nil))
+
+		key, err := hotp.Generate(hotp.GenerateOpts{
+			AccountName: reqBody.Email,
+			Issuer:      api.AppName,
+			Digits:      8,
+			Algorithm:   otp.AlgorithmSHA256,
+			SecretSize:  16,
+		})
+
+		if err != nil {
+			logger.Error("Error creating code for the registration token.", zap.Error(err))
+			return err500
+		}
+
+		code := key.String()
+
+		err = db.BackendUsers().CreateRegToken(ctx.Context(), final, reqBody.Supervisor, code)
+		if err != nil {
+			return response.FromFiberError(ctx, err500)
+		}
+
+		// TODO: Implement code sending the token the email
+		_, _ = events.DefaultEmitter.Publish(ctx.Context(), &events.Event{
+			Type: events.EMAIL_SEND,
+		})
+
+		return response.WriteResponse(ctx, fiber.StatusOK, "Code created successfully.")
+	}
+}
+
+func RevokeSignupToken(api *types.Api) fiber.Handler {
+	logger := utils.Logger()
+	db := api.Deps.DB
+	res200 := response.NewResponse(fiber.StatusOK, "Token was revoked successfully.")
+	return func(ctx *fiber.Ctx) error {
+		token := strings.TrimSpace(ctx.FormValue("token"))
+		if token == "" {
+			return response.From(ctx, res200)
+		}
+
+		err := db.BackendUsers().DeleteRegToken(ctx.Context(), token)
+		if err != nil {
+			logger.Error("Error deleting registration token", zap.Error(err))
+			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "Something went wrong while processing your request, please try again.")
+		}
+		return response.From(ctx, res200)
 	}
 }

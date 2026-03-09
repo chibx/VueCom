@@ -64,9 +64,7 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			// This should be the api key struct
 			// We will also check for customer login from here
 			ctx.Locals(constants.ApiKeyCtxKey, apiKeyData)
-		}
-		// else
-		if backendToken != "" {
+		} else if backendToken != "" {
 			//
 
 			// if len(tokenGroup) < 2 {
@@ -92,9 +90,8 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			}
 
 			backendUser = &reqctx.BackendUser{ID: validJWT.UserID}
+			ctx.Locals(constants.BackendUserCtxKey, backendUser)
 		}
-
-		ctx.Locals(constants.BackendUserCtxKey, backendUser)
 
 		return ctx.Next()
 	}

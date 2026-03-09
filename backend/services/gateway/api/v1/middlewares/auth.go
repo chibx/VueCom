@@ -7,6 +7,7 @@ import (
 	"github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 	reqctx "github.com/chibx/vuecom/backend/shared/reqctx"
+	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
@@ -87,6 +88,11 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			if err != nil {
 				// Dummy Log
 				logger.Error("Error during authentication", zap.Error(err))
+
+				if errors.Is(err, jwt.ErrTokenExpired) {
+					// Token is either expired or not active yet
+
+				}
 			}
 
 			backendUser = &reqctx.BackendUser{ID: validJWT.UserID}

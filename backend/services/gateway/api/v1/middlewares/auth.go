@@ -6,6 +6,8 @@ import (
 
 	"github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+	reqctx "github.com/chibx/vuecom/backend/shared/reqctx"
+	"go.uber.org/zap"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/cache"
@@ -14,7 +16,6 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
-	"go.uber.org/zap"
 )
 
 func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *userModels.BackendSession) (*userModels.BackendUser, error) {
@@ -46,14 +47,14 @@ func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *use
 func AuthMiddleware(api *types.Api) fiber.Handler {
 	logger := utils.Logger()
 	return func(ctx *fiber.Ctx) error {
-		var backendUserSess *userModels.BackendSession
+		// var backendUserSess *userModels.BackendSession
 		var apiKeyData *userModels.ApiKey
-		var backendUser *userModels.BackendUser
-		var tokenErr error
+		var backendUser *reqctx.BackendUser
+		// var tokenErr error
 		var authHeader = ctx.Get("Authorization")
 		var tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
-		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendRefreshTkKey))
-		var tokenGroup = strings.Split(backendToken, ".")
+		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendAccessTkKey))
+		// var tokenGroup = strings.Split(backendToken, ".")
 
 		if tokenStr != "" {
 			// TODO: Use tokenStr to validate the api (key) token
@@ -61,29 +62,36 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			_ = apiKeyData
 
 			// This should be the api key struct
+			// We will also check for customer login from here
 			ctx.Locals(constants.ApiKeyCtxKey, apiKeyData)
 		}
 		// else
 		if backendToken != "" {
 			//
 
-			if len(tokenGroup) < 2 {
-				// I will just skip
-				return ctx.Next()
+			// if len(tokenGroup) < 2 {
+			// 	// I will just skip
+			// 	return ctx.Next()
+			// }
+			// tokenId := tokenGroup[0]
+			// backendUserSess, tokenErr = auth.GetBackendUserSession(ctx.Context(), tokenId, api)
+			// if tokenErr != nil {
+			// 	logger.Error("failed to get user session from cache", zap.Error(tokenErr))
+			// } else {
+			// 	var authErr error
+			// 	backendUser, authErr = getAuthUserFromSession(ctx, api, backendUserSess)
+			// 	if authErr != nil {
+			// 		logger.Error("failed to get user data from session", zap.Error(authErr))
+			// 	}
+			// }
+
+			validJWT, err := auth.ValidateBackendAccessToken(api, backendToken, api.Config.SecretKey)
+			if err != nil {
+				// Dummy Log
+				logger.Error("Error during authentication", zap.Error(err))
 			}
 
-			tokenId := tokenGroup[0]
-			backendUserSess, tokenErr = auth.GetBackendUserSession(ctx.Context(), tokenId, api)
-			if tokenErr != nil {
-				logger.Error("failed to get user session from cache", zap.Error(tokenErr))
-			} else {
-				var authErr error
-				backendUser, authErr = getAuthUserFromSession(ctx, api, backendUserSess)
-				if authErr != nil {
-					logger.Error("failed to get user data from session", zap.Error(authErr))
-				}
-			}
-
+			backendUser = &reqctx.BackendUser{ID: validJWT.UserID}
 		}
 
 		ctx.Locals(constants.BackendUserCtxKey, backendUser)

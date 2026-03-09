@@ -5,21 +5,22 @@ go 1.25.0
 require github.com/joho/godotenv v1.5.1
 
 require (
-	github.com/gabriel-vasile/mimetype v1.4.10
-	github.com/go-playground/validator/v10 v10.28.0
+	// vuecom/shared v0.0.1
+	github.com/chibx/vuecom/backend/shared v0.0.1
+	github.com/gabriel-vasile/mimetype v1.4.12
+	github.com/go-playground/validator/v10 v10.30.1
 	github.com/go-redis/redis_rate/v10 v10.0.1
 	github.com/goccy/go-json v0.10.5
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	go.uber.org/zap v1.27.1
-	// vuecom/shared v0.0.1
-	github.com/chibx/vuecom/backend/shared v0.0.1
 )
 
 require (
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/stretchr/testify v1.11.1 // indirect
+	github.com/pquerna/otp v1.5.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 )
 
@@ -30,7 +31,7 @@ require (
 	github.com/creasty/defaults v1.7.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gofiber/fiber/v2 v2.52.9
-	github.com/google/uuid v1.6.0 // indirect
+	github.com/google/uuid v1.6.0
 	github.com/gorilla/schema v1.4.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -45,7 +46,7 @@ require (
 	github.com/redis/go-redis/v9 v9.17.2
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.57.0 // indirect
+	github.com/valyala/fasthttp v1.57.0
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/crypto v0.47.0
 	golang.org/x/sync v0.19.0 // indirect
@@ -55,4 +56,4 @@ require (
 	gorm.io/gorm v1.31.1
 )
 
-// replace vuecom/shared => ../../shared
+replace github.com/chibx/vuecom/backend/shared => ../../shared

@@ -10,6 +10,7 @@ import (
 
 	backendusers "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/backend_users"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
+	backendResp "github.com/chibx/vuecom/backend/services/gateway/api/v1/response/backend_users"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
@@ -128,10 +129,10 @@ func Register(api *types.Api) fiber.Handler {
 func Login(api *types.Api) fiber.Handler {
 	logger := utils.Logger()
 	db := api.Deps.DB
+	errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while logging you in, please try again")
 	return func(ctx *fiber.Ctx) error {
 		var backendUser *dto.UserForLogin
 		var err error
-		errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while logging you in, please try again")
 
 		password := strings.TrimSpace(ctx.FormValue("password"))
 		username := strings.TrimSpace(ctx.FormValue("username"))
@@ -177,11 +178,6 @@ func Login(api *types.Api) fiber.Handler {
 		var accessTokenExp = time.Now().Add(constants.BackendAccessTkDur)
 		var deviceId = ctx.Cookies(constants.DeviceIDKey)
 		var ipAddr = ctx.IP()
-		// var refreshToken = ctx.Cookies(constants.BackendRefreshTkKey)
-		// db.BackendUsers().DeleteSession(ctx.Context(), &userModels.BackendSession{
-		// 	DeviceId: deviceId,
-		// 	RefreshTokenHash: refreshToken,
-		// })
 
 		if deviceId == "" {
 			deviceUUID, err := uuid.NewRandom()
@@ -248,7 +244,123 @@ func Login(api *types.Api) fiber.Handler {
 			Secure:   true,
 		})
 
-		return nil
+		return response.WriteResponse(ctx, fiber.StatusOK, "Success")
+	}
+}
+
+func Refresh(api *types.Api) fiber.Handler {
+	db := api.Deps.DB
+	logger := utils.Logger()
+	errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Couldn't refresh user's session")
+	return func(ctx *fiber.Ctx) error {
+		refreshTk := ctx.Cookies(constants.BackendRefreshTkKey)
+		if refreshTk == "" {
+			return response.WriteResponse(ctx, fiber.StatusUnauthorized, "User Session not found. Try logging in again")
+		}
+
+		refreshTkHash, err := auth.GenerateHashFromString(refreshTk, auth.DefaultHashParams)
+		if err != nil {
+			return response.FromFiberError(ctx, errLogin500)
+		}
+		session, err := db.BackendUsers().GetSessionByTokenHash(ctx.Context(), refreshTkHash)
+		if err != nil {
+			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
+				return response.WriteResponse(ctx, fiber.StatusUnauthorized, "User Session not found. Try logging in again")
+			}
+
+			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "Something went wrong, couldn't refresh user's session.")
+		}
+
+		if time.Now().After(session.ExpiresAt) {
+			err = db.BackendUsers().DeleteSession(ctx.Context(), session)
+			if err != nil {
+				logger.Error("Error deleting session token", zap.Error(err))
+			}
+			return response.WriteResponse(ctx, fiber.StatusUnauthorized, "User Session has expired, you have to login again.")
+		}
+
+		var refreshTokenExp = time.Now().Add(constants.BackendRefreshTkDur)
+		var accessTokenExp = time.Now().Add(constants.BackendAccessTkDur)
+		var deviceId = ctx.Cookies(constants.DeviceIDKey)
+		var ipAddr = ctx.IP()
+
+		// TODO: Validate more
+		if deviceId != session.DeviceId {
+			// This was meant to replace fingerprinting (in a way)
+		}
+
+		if ipAddr != session.LastIP {
+			// Do some IP range magic or ignore
+		}
+
+		if deviceId == "" {
+			deviceUUID, err := uuid.NewRandom()
+			if err != nil {
+				logger.Error("Error generating deviceUUID", zap.Error(err))
+				return response.FromFiberError(ctx, errLogin500)
+			}
+
+			deviceId = deviceUUID.String()
+			if deviceId == "" {
+				logger.Error("Invalid uuid string while se")
+				return response.FromFiberError(ctx, errLogin500)
+			}
+
+			// Set the deviceId anyways
+			ctx.Cookie(&fiber.Cookie{
+				Name:     constants.DeviceIDKey,
+				Value:    deviceId,
+				Expires:  time.Now().Add(constants.DeviceIDDur),
+				SameSite: "Strict",
+				HTTPOnly: true,
+				Secure:   true,
+			})
+		}
+
+		refreshToken, refreshTokenHash, err := auth.CompositeRefreshToken()
+		if err != nil {
+			logger.Error("Error generating composite refresh token", zap.Error(err))
+			return response.FromFiberError(ctx, errLogin500)
+		}
+
+		backendSession := userModels.BackendSession{
+			UserId:           session.UserId,
+			RefreshTokenHash: refreshTokenHash,
+			LastIP:           ipAddr,
+			DeviceId:         deviceId,
+			ExpiresAt:        refreshTokenExp,
+		}
+		err = auth.CreateBackendSession(ctx.Context(), &backendSession, api)
+		if err != nil {
+			return response.FromFiberError(ctx, errLogin500)
+		}
+
+		accessToken, err := auth.GenerateBackendAccessToken(api, int(session.UserId))
+		if err != nil {
+			return response.FromFiberError(ctx, errLogin500)
+		}
+
+		ctx.Cookie(&fiber.Cookie{
+			Name:     constants.BackendRefreshTkKey,
+			Value:    refreshToken,
+			Expires:  refreshTokenExp,
+			SameSite: "Strict",
+			HTTPOnly: true,
+			Secure:   true,
+		})
+
+		ctx.Cookie(&fiber.Cookie{
+			Name:     constants.BackendAccessTkKey,
+			Value:    accessToken,
+			Expires:  accessTokenExp,
+			SameSite: "Strict",
+			HTTPOnly: true,
+			Secure:   true,
+		})
+
+		return response.WriteResponse(ctx, fiber.StatusOK, "", backendResp.RefreshResp{
+			AccessToken: accessToken,
+		})
 	}
 }
 

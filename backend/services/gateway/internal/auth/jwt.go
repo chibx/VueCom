@@ -77,7 +77,7 @@ func ValidateBackendAccessToken(api *types.Api, tokenString string, secretKey []
 		return &jwtField, nil
 	}
 
-	return nil, fmt.Errorf("invalid token")
+	return nil, jwt.ErrTokenSignatureInvalid
 }
 
 func ValidateCustomerAccessToken(api *types.Api, tokenString string, secretKey []byte) (*JWTField, error) {

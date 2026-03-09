@@ -75,7 +75,7 @@ func BackendLoginJWT(ctx *fiber.Ctx) error {
 }
 
 // Refresh handler: Uses refresh to create new access.
-func RefreshJWT(ctx *fiber.Ctx) error {
+func _RefreshJWT(ctx *fiber.Ctx) error {
 	refresh := ctx.Cookies("refresh_token")
 	if refresh == "" {
 		return ctx.Status(http.StatusUnauthorized).SendString("No refresh token")

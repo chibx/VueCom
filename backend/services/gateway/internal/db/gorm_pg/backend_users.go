@@ -112,10 +112,10 @@ func (br *backendUserRepository) GetUserByApiKey(ctx context.Context, apiKey str
 	return nil, errDbUnimplemented
 }
 
-func (br *backendUserRepository) GetSessionByTokenId(ctx context.Context, tokenId string) (*userModels.BackendSession, error) {
+func (br *backendUserRepository) GetSessionByTokenHash(ctx context.Context, tokenHash string) (*userModels.BackendSession, error) {
 	sessionData := &userModels.BackendSession{}
 
-	err := br.db.WithContext(ctx).First(sessionData, "id = ?", tokenId).Error
+	err := br.db.WithContext(ctx).First(sessionData, "refresh_token_hash = ?", tokenHash).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, serverErrors.ErrDBRecordNotFound

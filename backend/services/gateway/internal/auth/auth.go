@@ -82,13 +82,13 @@ func CreateBackendSession(ctx context.Context, session *userModels.BackendSessio
 	return err
 }
 
-func GetBackendUserSession(ctx context.Context, tokenId string, api *types.Api) (*userModels.BackendSession, error) {
+func GetBackendUserSession(ctx context.Context, tokenHash string, api *types.Api) (*userModels.BackendSession, error) {
 	db := api.Deps.DB
 	logger := utils.Logger()
 
 	var backend_session *userModels.BackendSession
 
-	backend_session, err := db.BackendUsers().GetSessionByTokenId(ctx, tokenId)
+	backend_session, err := db.BackendUsers().GetSessionByTokenHash(ctx, tokenHash)
 
 	if err != nil {
 		if errors.Is(err, serverErrors.ErrDBRecordNotFound) {

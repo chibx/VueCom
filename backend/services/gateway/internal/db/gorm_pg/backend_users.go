@@ -32,6 +32,10 @@ func (br *backendUserRepository) CreateRegToken(ctx context.Context, token strin
 	return br.db.WithContext(ctx).Create(tokenStruc).Error
 }
 
+func (br *backendUserRepository) DeleteRegToken(ctx context.Context, token string) error {
+	return br.db.WithContext(ctx).Where("token = ?", token).Delete(&userModels.SignupToken{}).Error
+}
+
 func (br *backendUserRepository) GetRegToken(ctx context.Context, token string) (*userModels.SignupToken, error) {
 	var tokenStruc = &userModels.SignupToken{}
 	err := br.db.WithContext(ctx).Where("token = ?", token).Preload("Super").First(tokenStruc).Error

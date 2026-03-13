@@ -7,13 +7,12 @@ option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
 
 
 message Category {
-  string id = 1;
+  uint64 id = 1;
   string name = 2;
-  string description = 3;
 }
 
 message GetCategoryRequest {
-  string id = 1;
+  uint64 id = 1;
 }
 
 message GetCategoryResponse {

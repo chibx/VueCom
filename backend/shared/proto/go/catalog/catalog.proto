@@ -9,17 +9,17 @@ option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
 
 service CatalogService {
   // Add your service methods here
-  rpc AddProduct(AddProductRequest) returns (AddProductResponse);
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
   rpc GetProduct(GetProductRequest) returns (GetProductResponse);
   rpc GetCategory(GetCategoryRequest) returns (GetCategoryResponse);
 }
 
-message AddProductRequest {
+message CreateProductRequest {
   string name = 1;
   string description = 2;
   double price = 3;
 }
 
-message AddProductResponse {
-  string id = 1;
+message CreateProductResponse {
+  uint64 id = 1;
 }

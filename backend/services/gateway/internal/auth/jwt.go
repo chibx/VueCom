@@ -56,7 +56,7 @@ func GenerateCustomerAccessToken(api *types.Api, customerId int) (string, error)
 	return tokenString, nil
 }
 
-func ValidateBackendAccessToken(api *types.Api, tokenString string, secretKey []byte) (int, error) {
+func ValidateBackendAccessToken(api *types.Api, tokenString string, secretKey []byte) (*JWTField, error) {
 	logger := utils.Logger()
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -67,20 +67,20 @@ func ValidateBackendAccessToken(api *types.Api, tokenString string, secretKey []
 
 	if err != nil {
 		logger.Error("Failed to validate backend jwt token", zap.Error(err))
-		return 0, err
+		return nil, err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		var jwtField = JWTField{}
 		claimsToJWTField(claims, &jwtField)
-		userId := jwtField.UserID
-		return userId, nil
+		// userId := jwtField.UserID
+		return &jwtField, nil
 	}
 
-	return 0, fmt.Errorf("invalid token")
+	return nil, jwt.ErrTokenSignatureInvalid
 }
 
-func ValidateCustomerAccessToken(api *types.Api, tokenString string, secretKey []byte) (int, error) {
+func ValidateCustomerAccessToken(api *types.Api, tokenString string, secretKey []byte) (*JWTField, error) {
 	logger := utils.Logger()
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -91,7 +91,7 @@ func ValidateCustomerAccessToken(api *types.Api, tokenString string, secretKey [
 
 	if err != nil {
 		logger.Error("Failed to validate customer jwt token", zap.Error(err))
-		return 0, err
+		return nil, err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
@@ -99,13 +99,13 @@ func ValidateCustomerAccessToken(api *types.Api, tokenString string, secretKey [
 		claimsToJWTField(claims, &jwtField)
 		isValid := validateJWTMeta(api, &jwtField)
 		if !isValid {
-			return 0, errors.New("invalid session token")
+			return nil, errors.New("invalid session token")
 		}
-		userId := jwtField.UserID
-		return userId, nil
+		// userId := jwtField.UserID
+		return &jwtField, nil
 	}
 
-	return 0, fmt.Errorf("invalid token")
+	return nil, fmt.Errorf("invalid token")
 }
 
 func claimsToJWTField(claims jwt.MapClaims, jwtField *JWTField) {

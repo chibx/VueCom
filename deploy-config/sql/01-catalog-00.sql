@@ -126,8 +126,6 @@ CREATE TABLE promo_codes (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_promo_codes_code ON promo_codes USING hash(code);
-
 CREATE TABLE promo_code_usages (
     id SERIAL PRIMARY KEY,
     code_id INTEGER NOT NULL,

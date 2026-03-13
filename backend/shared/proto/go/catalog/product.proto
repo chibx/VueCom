@@ -6,15 +6,15 @@ package catalog;
 option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
 
 message Product {
-  string id = 1;
+  uint64 id = 1;
   string name = 2;
   string description = 3;
   double price = 4;
-  string category_id = 5;
+  uint64 category_id = 5;
 }
 
 message GetProductRequest {
-  string id = 1;
+  uint64 id = 1;
 }
 
 message GetProductResponse {

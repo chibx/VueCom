@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+	reqctx "github.com/chibx/vuecom/backend/shared/reqctx"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
@@ -23,7 +23,7 @@ func ServeIndex(api *types.Api) fiber.Handler {
 		path := utils.WithTrailingSlash(ctx.Path())
 		routeParts := utils.ExtractRouteParts(path)
 		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendRefreshTkKey))
-		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*userModels.BackendUser)
+		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*reqctx.BackendUser)
 		var isLoginRoute = len(routeParts) == 2 && routeParts[1] == "login"
 		var redirectTo = "?redirectTo=" + url.QueryEscape(absoluteUrl)
 		var isAppInitPage = path == "/app/initialize/"

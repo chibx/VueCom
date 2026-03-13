@@ -8,6 +8,7 @@ import (
 )
 
 const OWNER = "owner"
+const OWNER_ID = 1
 
 // Simple way of doing this, a better way would be to use a manifest from a bundler
 var PublicAssets = []string{
@@ -56,11 +57,13 @@ const CustomerHeaderKey = "X-Customer-Id"
 const BackendLimitKey = "rl_backend:"
 
 // const BackendSessionTimeout = 30 * time.Minute
+const BackendRegTkDur = 30 * time.Minute
 const BackendAccessTkDur = 15 * time.Minute
 const BackendRefreshTkDur = 7 * 24 * time.Hour
 const CustomerAccessTkDur = 15 * time.Minute
 const CustomerRefreshTkDur = 7 * 24 * time.Hour
 const DeviceIDDur = 365 * 24 * time.Hour
+const RegTokenDur = 30 * time.Minute
 const ApiKeyCtxKey = "api_key"
 const BackendUserCtxKey = "backend_user"
 const DeviceIDKey = "device_id"

@@ -16,6 +16,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/go-redis/redis_rate/v10"
 	"github.com/gofiber/fiber/v2"
@@ -150,7 +151,7 @@ func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 	appData, err := api.Deps.DB.AppData().GetAppData(context.Background())
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 			logger.Info("No active app found in DB")
 			return &appModels.AppData{}, err
 		}
@@ -175,7 +176,7 @@ func checkIfOwnerExists(api *types.Api) (bool, error) {
 	return hasAdmin, nil
 }
 
-func initLogger(v1_api *types.Api) {
+func initLogger() {
 	writer := zapcore.AddSync(os.Stdout) // Use standard output as the log target
 	zapPreset := zap.NewProductionEncoderConfig()
 	zapPreset.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -194,7 +195,7 @@ func initLogger(v1_api *types.Api) {
 }
 
 func initServer(_ *fiber.App, v1_api *types.Api) {
-	initLogger(v1_api)
+	initLogger()
 	plugDB(v1_api)
 	plugRedis(v1_api)
 	setupLimiter(v1_api)

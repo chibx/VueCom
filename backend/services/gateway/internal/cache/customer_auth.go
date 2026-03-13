@@ -8,7 +8,6 @@ import (
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
-	"gorm.io/gorm"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
@@ -39,7 +38,7 @@ func GetCustomerById(api *types.Api, id int, ctx context.Context) (*userModels.C
 
 		customer, err = db.Customers().GetUserById(ctx, id)
 
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 			logger.Error("customer not found in db", zap.Error(err))
 			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "Customer not found. Consider logging in again")
 		}

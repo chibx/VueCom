@@ -8,15 +8,14 @@ import (
 	"net"
 	"time"
 
-	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -83,16 +82,16 @@ func CreateBackendSession(ctx context.Context, session *userModels.BackendSessio
 	return err
 }
 
-func GetBackendUserSession(ctx context.Context, tokenId string, api *types.Api) (*userModels.BackendSession, error) {
+func GetBackendUserSession(ctx context.Context, tokenHash string, api *types.Api) (*userModels.BackendSession, error) {
 	db := api.Deps.DB
 	logger := utils.Logger()
 
 	var backend_session *userModels.BackendSession
 
-	backend_session, err := db.BackendUsers().GetSessionByTokenId(ctx, tokenId)
+	backend_session, err := db.BackendUsers().GetSessionByTokenHash(ctx, tokenHash)
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 			logger.Error("backend user session not found in db", zap.Error(err))
 			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User Session not found. Consider logging in again")
 		}
@@ -112,7 +111,7 @@ func GetCustomerSession(ctx context.Context, tokenId string, api *types.Api) (*u
 	backend_session, err := db.Customers().GetSessionByTokenId(ctx, tokenId)
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 			logger.Error("backend user session not found in db", zap.Error(err))
 			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User Session not found. Consider logging in again")
 		}

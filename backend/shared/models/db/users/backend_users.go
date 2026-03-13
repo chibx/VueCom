@@ -54,11 +54,19 @@ type BackendOTP struct {
 	User       *BackendUser `gorm:"foreignKey:UserId;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" redis:"-"`
 }
 
+type BackendRole struct {
+	ID           uint     `gorm:"primarykey" redis:"id"`
+	Name         string   `gorm:"" redis:"name"`
+	ParentID     uint     `gorm:"" redis:"parent_id"`
+	AllowedPerms []string `gorm:"column:allowed_permissions;type:text[]" redis:"allowed_permissions"`
+	// ParentRole *BackendRole `gorm:"foreignKey:ParentID" redis:"-"`
+}
+
 type BackendUser struct {
 	ID              uint                          `gorm:"primarykey" redis:"id"`
 	CreatedAt       time.Time                     `gorm:"" redis:"created_at"`
 	UpdatedAt       time.Time                     `gorm:"" redis:"updated_at"`
-	UserName        *string                       `gorm:"column:username;type:varchar(255);index" validate:"" redis:"user_name"`
+	UserName        string                        `gorm:"column:username;type:varchar(255);index" validate:"" redis:"user_name"`
 	FullName        string                        `gorm:"not null;type:varchar(255);index" validate:"" redis:"full_name"`
 	Email           string                        `gorm:"unique;not null;type:varchar(255);index" redis:"email"`
 	PhoneNumber     *string                       `gorm:"type:varchar(20)" validate:"" redis:"phone_number"`
@@ -66,7 +74,7 @@ type BackendUser struct {
 	CountryId       *uint                         `gorm:"index" redis:"country"`
 	Is2FAEnabled    bool                          `gorm:"column:is_2fa_enabled;default:FALSE;not null" redis:"is_2fa_enabled"`
 	IsEmailVerified bool                          `gorm:"default:FALSE;not null" redis:"is_email_verified"`
-	Role            string                        `gorm:"type:varchar(50)" redis:"role"`
+	RoleID          *uint                         `gorm:"" redis:"role_id"`
 	PasswordHash    string                        `gorm:"not null" redis:"-"`
 	CreatedBy       *uint                         `gorm:"index" redis:"created_by"`
 	ByApiKey        bool                          `gorm:"-:all" redis:"by_api_key"` // Track if the user is acting through an API key
@@ -77,14 +85,18 @@ type BackendUser struct {
 	Country         *Country                      `gorm:"foreignKey:CountryId;" redis:"-"`
 }
 
-type BackendSignupData struct {
-	Token     string    `gorm:"not null"`
-	CreatedAt time.Time `gorm:"" redis:"created_at"`
-	ExpiryAt  time.Time `gorm:"" redis:"expiry_at"`
+type SignupToken struct {
+	ID         uint         `gorm:"primarykey"`
+	Token      string       `gorm:"not null"`
+	Code       string       `gorm:""`
+	Supervisor uint         `gorm:""`
+	CreatedAt  time.Time    `gorm:"" redis:"created_at"`
+	ExpiryAt   time.Time    `gorm:"" redis:"expiry_at"`
+	Super      *BackendUser `gorm:"foreignKey:Supervisor"`
 }
 
-func (t BackendSignupData) TableName() string {
-	return "backend_signup_data"
+func (t SignupToken) TableName() string {
+	return "backend_signup_tokens"
 }
 
 type Backend2FAToken struct {

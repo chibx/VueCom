@@ -3,6 +3,7 @@ package gorm_pg
 import (
 	"context"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	catModels "github.com/chibx/vuecom/backend/shared/models/db/catalog"
 
 	"gorm.io/gorm"
@@ -21,6 +22,9 @@ func (p *productRepository) GetProductById(ctx context.Context, id int) (*catMod
 
 	err := p.db.WithContext(ctx).Where("id = ?", id).First(product).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 

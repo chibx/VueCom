@@ -4,7 +4,6 @@ import (
 	"errors"
 	"mime/multipart"
 
-	"github.com/chibx/vuecom/backend/shared/errors/server"
 	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
 	"github.com/valyala/fasthttp"
 
@@ -16,12 +15,12 @@ import (
 
 	// userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	cldApi "github.com/cloudinary/cloudinary-go/v2/api"
 	"github.com/cloudinary/cloudinary-go/v2/api/admin"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
@@ -131,7 +130,7 @@ func RegisterOwner(api *types.Api) fiber.Handler {
 		userExists, err := DoesOwnerExist(ctx, api)
 		if err != nil {
 			logger.Error("Error checking for existing users", zap.Error(err))
-			if errors.Is(err, gorm.ErrRecordNotFound) {
+			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 				return response.WriteResponse(ctx, fiber.StatusBadRequest, "Owner does not exist")
 			}
 			return response.FromFiberError(ctx, err500)
@@ -154,7 +153,7 @@ func RegisterOwner(api *types.Api) fiber.Handler {
 
 		backUser, err := reqUser.ToDBBackendUser(ctx.Context(), api, ctx)
 		if err != nil {
-			var serverErr *server.ServerErr
+			var serverErr *serverErrors.ServerErr
 			if errors.As(err, &serverErr) {
 				return response.WriteResponse(ctx, serverErr.Code, serverErr.Message)
 			}

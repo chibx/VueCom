@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/chibx/vuecom/backend/shared/errors/server"
 	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/cache/keys"
@@ -14,10 +13,10 @@ import (
 
 	// userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 func GetAppData(ctx context.Context, api *types.Api) (*appModels.AppData, error) {
@@ -30,19 +29,19 @@ func GetAppData(ctx context.Context, api *types.Api) (*appModels.AppData, error)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			logger.Error("Error fetching app data from redis", zap.Error(err))
-			return nil, server.NewServerErr(fiber.StatusInternalServerError, "Error fetching app data")
+			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Error fetching app data")
 		}
 
 		// Key Not Found
 		// err := db.WithContext(ctx).Limit(1).First(appData).Error;
 		appData, err = db.AppData().GetAppData(ctx)
 		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, server.NewServerErr(fiber.StatusNotFound, "App data not found")
+			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
+				return nil, serverErrors.NewServerErr(fiber.StatusNotFound, "App data not found")
 			}
 
 			logger.Error("Error fetching app data from database", zap.Error(err))
-			return nil, server.NewServerErr(fiber.StatusInternalServerError, "Error fetching app data")
+			return nil, serverErrors.NewServerErr(fiber.StatusInternalServerError, "Error fetching app data")
 		}
 
 		go func() {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/redis/go-redis/v9"
@@ -74,7 +75,7 @@ func BackendLoginJWT(ctx *fiber.Ctx) error {
 }
 
 // Refresh handler: Uses refresh to create new access.
-func RefreshJWT(ctx *fiber.Ctx) error {
+func _RefreshJWT(ctx *fiber.Ctx) error {
 	refresh := ctx.Cookies("refresh_token")
 	if refresh == "" {
 		return ctx.Status(http.StatusUnauthorized).SendString("No refresh token")
@@ -88,7 +89,7 @@ func RefreshJWT(ctx *fiber.Ctx) error {
 	if !errors.Is(err, redis.Nil) {
 		// Cache miss: Fall back to DB.
 		if err := db.Where("token = ? AND expires_at > ?", refresh, time.Now()).First(&refToken).Error; err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
+			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
 				return ctx.Status(http.StatusUnauthorized).SendString("Invalid or expired refresh token")
 			}
 			return err

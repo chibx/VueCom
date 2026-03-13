@@ -3,6 +3,7 @@ package gorm_pg
 import (
 	"context"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"gorm.io/gorm"
@@ -20,6 +21,9 @@ func (c *customerRepository) GetUserById(ctx context.Context, id int) (*userMode
 	customer := &userModels.Customer{}
 	err := c.db.WithContext(ctx).First(customer, "id = ?", id).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 	return customer, nil
@@ -30,6 +34,9 @@ func (c *customerRepository) GetSessionByTokenId(ctx context.Context, tokenId st
 
 	err := c.db.WithContext(ctx).First(sessionData, "id = ?", tokenId).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 

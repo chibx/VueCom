@@ -1,11 +1,9 @@
 package response
 
-import "github.com/gofiber/fiber/v2"
-
-type ErrorDetail struct {
-	Field   string `json:"field"`
-	Message string `json:"message"`
-}
+import (
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
+	"github.com/gofiber/fiber/v2"
+)
 
 type structuredResponse struct {
 	Code    int    `json:"code,omitempty"`
@@ -26,7 +24,7 @@ func NewResponse(code int, message string, data ...any) *structuredResponse {
 
 	if len(data) > 0 {
 		// If first data is a ErrorDetail, assume it's errors; else, it's Data
-		if errs, ok := data[0].([]ErrorDetail); ok {
+		if errs, ok := data[0].([]serverErrors.ErrorDetail); ok {
 			resp.Errors = errs
 		} else {
 			resp.Data = data[0]
@@ -56,7 +54,7 @@ func WriteResponse(ctx *fiber.Ctx, code int, message string, data ...any) error 
 
 	if len(data) > 0 {
 		// If first data is a ErrorDetail, assume it's errors; else, it's Data
-		if errs, ok := data[0].([]ErrorDetail); ok {
+		if errs, ok := data[0].([]serverErrors.ErrorDetail); ok {
 			resp.Errors = errs
 		} else {
 			resp.Data = data[0]

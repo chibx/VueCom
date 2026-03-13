@@ -5,7 +5,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
-	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
+	reqctx "github.com/chibx/vuecom/backend/shared/reqctx"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,7 +14,7 @@ func RedirectCommon(api *types.Api) fiber.Handler {
 	return func(ctx *fiber.Ctx) error {
 		path := utils.WithTrailingSlash(ctx.Path())
 		routeParts := utils.ExtractRouteParts(path)
-		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*userModels.BackendUser)
+		var backendUser, _ = ctx.Locals(constants.BackendUserCtxKey).(*reqctx.BackendUser)
 		var isApiRoute = len(routeParts) > 1 && routeParts[1] == "api"
 		var isAppInitPage = path == "/app/initialize/"
 		var isAdminCreatePage = path == "/app/create-owner/"

@@ -138,7 +138,11 @@ func SeedWorldData(ctx context.Context, db *sql.DB) error {
 		return err
 	}
 
-	row.Scan(&allExists)
+	err = row.Scan(&allExists)
+	if err != nil {
+		return err
+	}
+
 	if allExists {
 		return nil
 	}

@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	v1 "github.com/chibx/vuecom/backend/services/gateway/api/v1"
 	"github.com/chibx/vuecom/backend/services/gateway/config"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
@@ -28,14 +30,18 @@ func main() {
 
 	app.Use(helmet.New())
 	initServer(app, v1_api)
-
+	stopConns := grpc.InitClients()
 	logger := utils.Logger()
 
 	defer func() {
 		_ = logger.Sync()
 	}()
 
+	defer stopConns()
+
 	v1.LoadRoutes(app, v1_api)
 
+	logger.Info(fmt.Sprintf("Server is listening on http://%s:%s\n", config.Host, config.Port), zap.Time("now", time.Now()))
 	logger.Fatal("Error starting server:", zap.Error(app.Listen(fmt.Sprintf("%s:%s", config.Host, config.Port))))
+
 }

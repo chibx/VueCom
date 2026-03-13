@@ -2,11 +2,13 @@ package gorm_pg
 
 import (
 	"context"
+	"time"
 
 	// "strings"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"gorm.io/gorm"
@@ -15,6 +17,36 @@ import (
 
 type backendUserRepository struct {
 	db *gorm.DB
+}
+
+func (br *backendUserRepository) CreateRegToken(ctx context.Context, token string, supervisor uint, code string) error {
+	var now = time.Now()
+	var tokenStruc = &userModels.SignupToken{
+		Token:      token,
+		Code:       code,
+		Supervisor: supervisor,
+		CreatedAt:  now,
+		ExpiryAt:   now.Add(constants.BackendRegTkDur),
+	}
+
+	return br.db.WithContext(ctx).Create(tokenStruc).Error
+}
+
+func (br *backendUserRepository) DeleteRegToken(ctx context.Context, token string) error {
+	return br.db.WithContext(ctx).Where("token = ?", token).Delete(&userModels.SignupToken{}).Error
+}
+
+func (br *backendUserRepository) GetRegToken(ctx context.Context, token string) (*userModels.SignupToken, error) {
+	var tokenStruc = &userModels.SignupToken{}
+	err := br.db.WithContext(ctx).Where("token = ?", token).Preload("Super").First(tokenStruc).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
+		return nil, err
+	}
+
+	return tokenStruc, nil
 }
 
 func (br *backendUserRepository) CreateUser(ctx context.Context, user *userModels.BackendUser) error {
@@ -26,6 +58,9 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.Back
 
 	err := br.db.Select("role").Where("role = ?", constants.OWNER).First(admin).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 
@@ -35,7 +70,7 @@ func (br *backendUserRepository) GetAdmin(ctx context.Context) (*userModels.Back
 func (br *backendUserRepository) HasAdmin(ctx context.Context) (bool, error) {
 	var count int64
 
-	err := br.db.Model(&userModels.BackendUser{}).WithContext(ctx).Where("role = ?", constants.OWNER).Count(&count).Error
+	err := br.db.Model(&userModels.BackendUser{}).WithContext(ctx).Where("role_id = ?", constants.OWNER_ID).Count(&count).Error
 
 	if err != nil {
 		return false, err
@@ -51,6 +86,9 @@ func (br *backendUserRepository) GetUserByNameForLogin(ctx context.Context, user
 	err := br.db.Model(&userModels.BackendUser{}).Where("user_name = ?", username).First(user).Error
 
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 
@@ -61,6 +99,9 @@ func (br *backendUserRepository) GetUserById(ctx context.Context, id int) (*user
 	backendUser := &userModels.BackendUser{}
 	err := br.db.WithContext(ctx).First(backendUser, "id = ?", id).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 
@@ -71,11 +112,14 @@ func (br *backendUserRepository) GetUserByApiKey(ctx context.Context, apiKey str
 	return nil, errDbUnimplemented
 }
 
-func (br *backendUserRepository) GetSessionByTokenId(ctx context.Context, tokenId string) (*userModels.BackendSession, error) {
+func (br *backendUserRepository) GetSessionByTokenHash(ctx context.Context, tokenHash string) (*userModels.BackendSession, error) {
 	sessionData := &userModels.BackendSession{}
 
-	err := br.db.WithContext(ctx).First(sessionData, "id = ?", tokenId).Error
+	err := br.db.WithContext(ctx).First(sessionData, "refresh_token_hash = ?", tokenHash).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 
@@ -114,6 +158,9 @@ func (br *backendUserRepository) GetCountryIdByCode(ctx context.Context, code st
 	var country userModels.Country
 	err := br.db.WithContext(ctx).Omit(clause.Associations).Select("id").Where("code = ?", code).First(&country).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return 0, serverErrors.ErrDBRecordNotFound
+		}
 		return 0, err
 	}
 

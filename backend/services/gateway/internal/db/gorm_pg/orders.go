@@ -3,6 +3,7 @@ package gorm_pg
 import (
 	"context"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	orderModels "github.com/chibx/vuecom/backend/shared/models/db/orders"
 
 	"gorm.io/gorm"
@@ -17,6 +18,9 @@ func (o *orderRepository) GetOrderById(ctx context.Context, id int) (*orderModel
 
 	err := o.db.WithContext(ctx).Where("id = ?", id).First(order).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 

@@ -44,6 +44,17 @@ CREATE TABLE cities (
     FOREIGN KEY (state_id) REFERENCES states(id) ON DELETE CASCADE
 );
 
+CREATE TABLE backend_roles (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    parent_id INT,
+    allowed_permissions TEXT[],
+    FOREIGN KEY (parent_id) REFERENCES backend_roles (id)
+);
+
+CREATE INDEX IF NOT EXISTS backend_roles_name_idx ON backend_roles (name);
+
+INSERT INTO backend_roles (name, allowed_permissions) VALUES ('owner', '{"*"}');
 
 CREATE TABLE backend_users (
     id SERIAL PRIMARY KEY,
@@ -52,7 +63,7 @@ CREATE TABLE backend_users (
     password_hash TEXT NOT NULL,
     full_name TEXT NOT NULL,
     phone_number TEXT,
-    role TEXT DEFAULT 'staff', -- Set to allow custom roles
+    role_id INT NOT NULL, -- Set to allow custom roles
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INT,
@@ -60,19 +71,24 @@ CREATE TABLE backend_users (
     country_id INT,
     is_2fa_enabled BOOLEAN DEFAULT FALSE,
     is_email_verified BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (role_id) REFERENCES backend_roles (id),
     FOREIGN KEY (created_by) REFERENCES backend_users(id),
     FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
-CREATE INDEX IF NOT EXISTS backend_user_email_idx ON backend_users USING hash (email);
-CREATE INDEX IF NOT EXISTS backend_user_username_idx ON backend_users USING hash (username);
 CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
 
-CREATE TABLE backend_signup_data (
-    token TEXT NOT NULL,
+CREATE TABLE backend_signup_tokens (
+    id SERIAL PRIMARY KEY,
+    token TEXT NOT NULL UNIQUE,
+    code TEXT NOT NULL,
+    supervisor INT NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    expiry_at TIMESTAMP NOT NULL
+    expired_at TIMESTAMP NOT NULL,
+    FOREIGN KEY (supervisor) REFERENCES backend_users(id)
 );
+
+CREATE INDEX IF NOT EXISTS backend_signup_super_idx ON backend_signup_tokens (supervisor);
 
 CREATE TABLE backend_2fa_tokens (
     user_id INT NOT NULL,
@@ -142,7 +158,6 @@ CREATE TABLE password_reset_requests (
     FOREIGN KEY (user_id) REFERENCES backend_users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS password_reset_requests_token_idx ON password_reset_requests USING hash(reset_token);
 CREATE INDEX IF NOT EXISTS password_reset_requests_used_idx ON password_reset_requests (used);
 
 

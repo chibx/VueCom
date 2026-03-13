@@ -1,0 +1,19 @@
+syntax = "proto3";
+package orders;
+
+// option go_package = ".";
+option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/orders";
+
+service OrderService {
+  // Add your service methods here
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+}
+
+message CreateOrderRequest {
+  string user_id = 1;
+  string product_id = 2;
+}
+
+message CreateOrderResponse {
+  uint64 id = 1;
+}

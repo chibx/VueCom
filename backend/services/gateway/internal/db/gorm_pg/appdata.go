@@ -3,6 +3,7 @@ package gorm_pg
 import (
 	"context"
 
+	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
 
 	"gorm.io/gorm"
@@ -22,6 +23,9 @@ func (ar *appdataRepository) GetAppData(ctx context.Context) (*appModels.AppData
 	appData := &appModels.AppData{}
 	err := ar.db.WithContext(ctx).First(appData).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, serverErrors.ErrDBRecordNotFound
+		}
 		return nil, err
 	}
 	return appData, nil

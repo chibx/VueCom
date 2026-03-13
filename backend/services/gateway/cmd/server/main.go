@@ -42,10 +42,6 @@ func main() {
 	v1.LoadRoutes(app, v1_api)
 
 	logger.Info(fmt.Sprintf("Server is listening on http://%s:%s\n", config.Host, config.Port), zap.Time("now", time.Now()))
-	defer func() {
-		logger.Info("Server stopped", zap.Time("now", time.Now()))
-	}()
-
 	logger.Fatal("Error starting server:", zap.Error(app.Listen(fmt.Sprintf("%s:%s", config.Host, config.Port))))
 
 }

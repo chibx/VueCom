@@ -1,5 +1,7 @@
 package rbac
 
+import "slices"
+
 type Permission string
 type PermissionSet map[Permission]struct{}
 
@@ -77,12 +79,11 @@ var AllPermissions = []Permission{
 	PermMetricsView, PermDeployView, PermDeployExecute, PermSystemConfig,
 }
 
+var DefaultPermissions = []Permission{
+	// Will add permissions that would get added by default or be toggled on
+}
+
 // IsValid checks if permission exists in registry
 func IsValid(p Permission) bool {
-	for _, ap := range AllPermissions {
-		if ap == p {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(AllPermissions, p)
 }

@@ -423,6 +423,7 @@ func RevokeSignupToken(api *types.Api) fiber.Handler {
 	res200 := response.NewResponse(fiber.StatusOK, "Token was revoked successfully.")
 	return func(ctx *fiber.Ctx) error {
 		token := strings.TrimSpace(ctx.FormValue("token"))
+		// TODO: Add authorization checks for token creation roles
 		if token == "" {
 			return response.From(ctx, res200)
 		}

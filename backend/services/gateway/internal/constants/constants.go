@@ -65,6 +65,7 @@ const CustomerRefreshTkDur = 7 * 24 * time.Hour
 const DeviceIDDur = 365 * 24 * time.Hour
 const RegTokenDur = 30 * time.Minute
 const ApiKeyCtxKey = "api_key"
+const RoleCtxKey = "role"
 const BackendUserCtxKey = "backend_user"
 const DeviceIDKey = "device_id"
 const BackendRefreshTkKey = "backend_refresh_token"

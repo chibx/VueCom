@@ -2,7 +2,7 @@ package rbac
 
 import "slices"
 
-type Permission string
+type Permission = string
 type PermissionSet map[Permission]struct{}
 
 const (

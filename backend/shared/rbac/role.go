@@ -3,7 +3,6 @@ package rbac
 type Role struct {
 	UserId      uint
 	Name        string
-	Alt         string // Detailed Meaning to be shown
 	ParentID    *int
 	permissions PermissionSet
 }

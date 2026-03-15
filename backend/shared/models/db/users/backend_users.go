@@ -57,7 +57,7 @@ type BackendOTP struct {
 type BackendRole struct {
 	ID           uint     `gorm:"primarykey" redis:"id"`
 	Name         string   `gorm:"" redis:"name"`
-	ParentID     uint     `gorm:"" redis:"parent_id"`
+	ParentID     *uint    `gorm:"" redis:"parent_id"`
 	AllowedPerms []string `gorm:"column:allowed_permissions;type:text[]" redis:"allowed_permissions"`
 	// ParentRole *BackendRole `gorm:"foreignKey:ParentID" redis:"-"`
 }

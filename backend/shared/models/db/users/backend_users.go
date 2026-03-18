@@ -76,7 +76,8 @@ type BackendUser struct {
 	IsEmailVerified bool                          `gorm:"default:FALSE;not null" redis:"is_email_verified"`
 	RoleID          *uint                         `gorm:"" redis:"role_id"`
 	PasswordHash    string                        `gorm:"not null" redis:"-"`
-	ExcludedPerms   []string                      `gorm:"column:excluded_permission;type:text[]" redis:"excluded_permission"`
+	ExcludedPerms   []string                      `gorm:"column:excluded_permissions;type:text[]" redis:"excluded_permissions"`
+	AdditionalPerms []string                      `gorm:"column:additional_permissions;type:text[]" redis:"additional_permissions"`
 	CreatedBy       *uint                         `gorm:"index" redis:"created_by"`
 	ByApiKey        bool                          `gorm:"-:all" redis:"by_api_key"` // Track if the user is acting through an API key
 	AccountsCreated []BackendUser                 `gorm:"foreignKey:CreatedBy;" redis:"-"`

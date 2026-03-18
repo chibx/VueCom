@@ -5,6 +5,32 @@ import "slices"
 type Permission = string
 type PermissionSet map[Permission]struct{}
 
+func (set PermissionSet) Has(perms ...string) bool {
+	if _, ok := set["*"]; ok {
+		return true
+	}
+
+	if len(perms) == 0 {
+		return false
+	}
+
+	if len(perms) > 1 {
+		hasAll := true
+		for _, v := range perms {
+			if _, ok := set[v]; !ok {
+				hasAll = false
+				break
+			}
+		}
+
+		return hasAll
+	}
+
+	_, ok := set[perms[0]]
+
+	return ok
+}
+
 const (
 	CatUser       = "user_management"
 	CatRole       = "role_management"

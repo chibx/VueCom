@@ -54,3 +54,21 @@ func RoleFromBackend(backendRole *users.BackendRole, userId uint, excludedPerms 
 
 	return role
 }
+
+func MergePermissions(_default, additional, excluded []string) PermissionSet {
+	permMap := make(map[string]struct{})
+
+	for _, v := range _default {
+		permMap[v] = struct{}{}
+	}
+
+	for _, v := range additional {
+		permMap[v] = struct{}{}
+	}
+
+	for _, v := range excluded {
+		delete(permMap, v)
+	}
+
+	return permMap
+}

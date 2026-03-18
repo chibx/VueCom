@@ -16,6 +16,25 @@ type rbacRepository struct {
 	db *gorm.DB
 }
 
+func (rb *rbacRepository) GetUsersWithPermission(ctx context.Context, permission string, pageData ...types.Pagination) ([]users.BackendUser, error) {
+	var users []users.BackendUser
+
+	var limit = -1
+	var offset = -1
+
+	if len(pageData) > 0 {
+		limit = pageData[0].PageSize
+		offset = limit * pageData[0].Page
+	}
+
+	err := rb.db.WithContext(ctx).
+		Where("additional_permissions @> ARRAY[?]", permission).
+		Limit(limit).Offset(offset).
+		Find(&users).Error
+
+	return users, err
+}
+
 func (rb *rbacRepository) GetChildren(ctx context.Context, parentID int) ([]users.BackendUser, error) {
 	var users []users.BackendUser
 

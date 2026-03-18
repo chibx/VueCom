@@ -10,12 +10,12 @@ import (
 func HasPermission(perms ...string) fiber.Handler {
 	err401 := fiber.NewError(fiber.StatusUnauthorized, "You do not have the permission to proceed.")
 	return func(ctx *fiber.Ctx) error {
-		role, _ := ctx.Locals(constants.RoleCtxKey).(*rbac.Role)
-		if role == nil {
+		permSet, _ := ctx.Locals(constants.RoleCtxKey).(rbac.PermissionSet)
+		if permSet == nil {
 			return response.FromFiberError(ctx, err401)
 		}
 
-		if !role.Has(perms...) {
+		if !permSet.Has(perms...) {
 			return response.FromFiberError(ctx, err401)
 		}
 

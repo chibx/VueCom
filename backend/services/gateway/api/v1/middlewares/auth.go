@@ -15,6 +15,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -47,14 +48,14 @@ func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *use
 
 func AuthMiddleware(api *types.Api) fiber.Handler {
 	logger := global.Logger()
-	return func(ctx *fiber.Ctx) error {
+	return func(c *fiber.Ctx) error {
 		// var backendUserSess *userModels.BackendSession
 		var apiKeyData *userModels.ApiKey
 		var backendUser *reqctx.BackendUser
 		// var tokenErr error
-		var authHeader = ctx.Get("Authorization")
+		var authHeader = c.Get("Authorization")
 		var tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
-		var backendToken = strings.TrimSpace(ctx.Cookies(constants.BackendAccessTkKey))
+		var backendToken = strings.TrimSpace(c.Cookies(constants.BackendAccessTkKey))
 		// var tokenGroup = strings.Split(backendToken, ".")
 
 		if tokenStr != "" {
@@ -64,7 +65,7 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 
 			// This should be the api key struct
 			// We will also check for customer login from here
-			ctx.Locals(constants.ApiKeyCtxKey, apiKeyData)
+			c.Locals(constants.ApiKeyCtxKey, apiKeyData)
 		} else if backendToken != "" {
 			//
 
@@ -85,20 +86,28 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			// }
 
 			validJWT, err := auth.ValidateBackendAccessToken(api, backendToken, api.Config.SecretKey)
-			if err != nil {
-				// Dummy Log
+			if err == nil {
+				backendUser = &reqctx.BackendUser{ID: validJWT.UserID}
+				userPerm, ok := global.UserPermCache.Get(validJWT.UserID)
+				if !ok {
+					permSet, err := utils.RefetchRoleCache(c.Context(), api, validJWT.UserID)
+					if err != nil {
+						global.Logger().Error("Failed to refresh role cache", zap.Error(err))
+					}
+					userPerm = permSet
+				}
+
+				c.Locals(constants.RoleCtxKey, userPerm)
+				c.Locals(constants.BackendUserCtxKey, backendUser)
+			} else {
 				logger.Error("Error during authentication", zap.Error(err))
 
 				if errors.Is(err, jwt.ErrTokenExpired) {
-					// Token is either expired or not active yet
-
+					// TODO: Add some kind of warning
 				}
 			}
-
-			backendUser = &reqctx.BackendUser{ID: validJWT.UserID}
-			ctx.Locals(constants.BackendUserCtxKey, backendUser)
 		}
 
-		return ctx.Next()
+		return c.Next()
 	}
 }

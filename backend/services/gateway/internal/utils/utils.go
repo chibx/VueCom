@@ -93,17 +93,17 @@ func WithTrailingSlash(str string) string {
 	return strings.TrimSuffix(str, "/") + "/"
 }
 
-func RefetchRoleCache(ctx context.Context, api *types.Api, userId int) error {
+func RefetchRoleCache(ctx context.Context, api *types.Api, userId int) (rbac.PermissionSet, error) {
 	db := api.Deps.DB
 
 	details, err := db.Rbac().GetUserRoleDetails(ctx, userId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	role, err := db.Rbac().GetRole(ctx, int(details.RoleID))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	perms := rbac.MergePermissions(role.AllowedPerms, details.AdditionalPerms, details.ExcludedPerms)
@@ -111,5 +111,5 @@ func RefetchRoleCache(ctx context.Context, api *types.Api, userId int) error {
 	global.RoleCache.Add(int(role.ID), role.AllowedPerms)
 	global.UserPermCache.Add(userId, perms)
 
-	return nil
+	return perms, nil
 }

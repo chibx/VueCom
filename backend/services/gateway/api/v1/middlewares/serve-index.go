@@ -10,6 +10,7 @@ import (
 	reqctx "github.com/chibx/vuecom/backend/shared/reqctx"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
@@ -17,7 +18,7 @@ import (
 )
 
 func ServeIndex(api *types.Api) fiber.Handler {
-	logger := utils.Logger()
+	logger := global.Logger()
 	return func(ctx *fiber.Ctx) error {
 		absoluteUrl := utils.GetAbsoluteUrl(ctx)
 		path := utils.WithTrailingSlash(ctx.Path())

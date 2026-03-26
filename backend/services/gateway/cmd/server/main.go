@@ -6,9 +6,9 @@ import (
 
 	v1 "github.com/chibx/vuecom/backend/services/gateway/api/v1"
 	"github.com/chibx/vuecom/backend/services/gateway/config"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
@@ -31,7 +31,7 @@ func main() {
 	app.Use(helmet.New())
 	initServer(app, v1_api)
 	stopConns := grpc.InitClients()
-	logger := utils.Logger()
+	logger := global.Logger()
 
 	defer func() {
 		_ = logger.Sync()

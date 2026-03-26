@@ -8,8 +8,8 @@ import (
 	appModels "github.com/chibx/vuecom/backend/shared/models/db/appdata"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/cache/keys"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	// userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
@@ -22,7 +22,7 @@ import (
 func GetAppData(ctx context.Context, api *types.Api) (*appModels.AppData, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	logger := utils.Logger()
+	logger := global.Logger()
 	appData := new(appModels.AppData)
 
 	err := cache.Get(ctx, keys.APP_DATA_KEY).Scan(&appData)

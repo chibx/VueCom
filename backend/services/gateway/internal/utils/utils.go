@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/shared/rbac"
 
@@ -101,10 +102,14 @@ func RefetchRoleCache(ctx context.Context, api *types.Api, userId int) error {
 	}
 
 	role, err := db.Rbac().GetRole(ctx, int(details.RoleID))
+	if err != nil {
+		return err
+	}
 
 	perms := rbac.MergePermissions(role.AllowedPerms, details.AdditionalPerms, details.ExcludedPerms)
 
-	// cache.RoleCache.Add()
+	global.RoleCache.Add(int(role.ID), role.AllowedPerms)
+	global.UserPermCache.Add(userId, perms)
 
 	return nil
 }

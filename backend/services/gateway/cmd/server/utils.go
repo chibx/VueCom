@@ -13,6 +13,7 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/config"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/db/gorm_pg"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
@@ -69,7 +70,7 @@ func plugCloudinary(api *types.Api) {
 }
 
 func plugDB(api *types.Api) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	dsn := loadPostgresDSN()
 	var db *gorm.DB
 	var err error
@@ -96,7 +97,7 @@ func plugDB(api *types.Api) {
 }
 
 func plugRedis(api *types.Api) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	redisUrl := getEnv("APP_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
@@ -147,7 +148,7 @@ func setupLimiter(api *types.Api) {
 // }
 
 func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	appData, err := api.Deps.DB.AppData().GetAppData(context.Background())
 
 	if err != nil {
@@ -164,7 +165,7 @@ func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 }
 
 func checkIfOwnerExists(api *types.Api) (bool, error) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	hasAdmin, err := api.Deps.DB.BackendUsers().HasAdmin(context.Background())
 
 	if err != nil {
@@ -190,7 +191,7 @@ func initLogger() {
 
 	logger := zap.New(core)
 
-	utils.SetLogger(logger)
+	global.SetLogger(logger)
 	// v1_api.Deps.Logger = logger
 }
 

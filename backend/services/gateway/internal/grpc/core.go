@@ -5,7 +5,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
+	gl "github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -40,7 +40,7 @@ func registerServices(registerFns ...func(*grpc.Server)) {
 
 		go func() {
 			if err := global.server.Serve(global.listener); err != nil && err != grpc.ErrServerStopped {
-				utils.Logger().Fatal("", zap.Error(err)) // or use a proper logger.Fatal
+				gl.Logger().Fatal("", zap.Error(err)) // or use a proper logger.Fatal
 			}
 		}()
 
@@ -54,7 +54,7 @@ func clientConn() *grpc.ClientConn {
 	global.mu.Lock()
 	if global.listener == nil {
 		global.mu.Unlock()
-		utils.Logger().Fatal("inproc not started — call RegisterServices first")
+		gl.Logger().Fatal("inproc not started — call RegisterServices first")
 	}
 	lis := global.listener // safe copy under lock
 	global.mu.Unlock()
@@ -68,7 +68,7 @@ func clientConn() *grpc.ClientConn {
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		)
 		if err != nil {
-			utils.Logger().Fatal("", zap.Error(err)) // handle gracefully in real code
+			gl.Logger().Fatal("", zap.Error(err)) // handle gracefully in real code
 		}
 	}
 

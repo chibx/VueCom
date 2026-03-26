@@ -1,36 +1,5 @@
 package rbac
 
-import "slices"
-
-type Permission = string
-type PermissionSet map[Permission]struct{}
-
-func (set PermissionSet) Has(perms ...string) bool {
-	if _, ok := set["*"]; ok {
-		return true
-	}
-
-	if len(perms) == 0 {
-		return false
-	}
-
-	if len(perms) > 1 {
-		hasAll := true
-		for _, v := range perms {
-			if _, ok := set[v]; !ok {
-				hasAll = false
-				break
-			}
-		}
-
-		return hasAll
-	}
-
-	_, ok := set[perms[0]]
-
-	return ok
-}
-
 const (
 	CatUser       = "user_management"
 	CatRole       = "role_management"
@@ -43,11 +12,14 @@ const (
 
 // User Management
 const (
-	PermUserView      Permission = "user:view"
-	PermUserCreate    Permission = "user:create"
-	PermUserEdit      Permission = "user:edit"
-	PermUserDelete    Permission = "user:delete"
-	PermUserDeleteAny Permission = "user:delete:any" // Golden
+	PermUserView       Permission = "user:view"
+	PermUserCreate     Permission = "user:create"
+	PermUserEdit       Permission = "user:edit"
+	PermUserDelete     Permission = "user:delete"
+	PermUserDeleteAny  Permission = "user:delete:any" // Golden
+	PermSignupTokenDel Permission = "user:sgn-tk-del"
+	PermSignupTokenCrt Permission = "user:sgn-tk-crt"
+
 // PermUserImpersonate Permission = "user:impersonate"
 )
 
@@ -107,9 +79,4 @@ var AllPermissions = []Permission{
 
 var DefaultPermissions = []Permission{
 	// Will add permissions that would get added by default or be toggled on
-}
-
-// IsValid checks if permission exists in registry
-func IsValid(p Permission) bool {
-	return slices.Contains(AllPermissions, p)
 }

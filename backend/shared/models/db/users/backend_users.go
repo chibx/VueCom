@@ -74,7 +74,7 @@ type BackendUser struct {
 	CountryId       *uint                         `gorm:"index" redis:"country"`
 	Is2FAEnabled    bool                          `gorm:"column:is_2fa_enabled;default:FALSE;not null" redis:"is_2fa_enabled"`
 	IsEmailVerified bool                          `gorm:"default:FALSE;not null" redis:"is_email_verified"`
-	RoleID          *uint                         `gorm:"" redis:"role_id"`
+	RoleID          uint                          `gorm:"" redis:"role_id"`
 	PasswordHash    string                        `gorm:"not null" redis:"-"`
 	ExcludedPerms   []string                      `gorm:"column:excluded_permissions;type:text[]" redis:"excluded_permissions"`
 	AdditionalPerms []string                      `gorm:"column:additional_permissions;type:text[]" redis:"additional_permissions"`

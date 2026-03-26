@@ -1,35 +1,10 @@
 package rbac
 
-import "github.com/chibx/vuecom/backend/shared/models/db/users"
+import (
+	"slices"
 
-type Role struct {
-	UserId      uint
-	Name        string
-	ParentID    *uint
-	permissions PermissionSet
-}
-
-func (role *Role) Has(perms ...Permission) bool {
-	if len(perms) == 0 {
-		return false
-	}
-
-	if len(perms) > 1 {
-		hasAll := true
-		for _, p := range perms {
-			if _, ok := role.permissions[p]; !ok {
-				hasAll = false
-				break
-			}
-		}
-
-		return hasAll
-	}
-
-	_, ok := role.permissions[perms[0]]
-
-	return ok
-}
+	"github.com/chibx/vuecom/backend/shared/models/db/users"
+)
 
 func RoleFromBackend(backendRole *users.BackendRole, userId uint, excludedPerms ...string) *Role {
 	role := &Role{
@@ -56,7 +31,7 @@ func RoleFromBackend(backendRole *users.BackendRole, userId uint, excludedPerms 
 }
 
 func MergePermissions(_default, additional, excluded []string) PermissionSet {
-	permMap := make(map[string]struct{})
+	permMap := make(PermissionSet)
 
 	for _, v := range _default {
 		permMap[v] = struct{}{}
@@ -71,4 +46,9 @@ func MergePermissions(_default, additional, excluded []string) PermissionSet {
 	}
 
 	return permMap
+}
+
+// IsValid checks if permission exists in registry
+func IsValid(p Permission) bool {
+	return slices.Contains(AllPermissions, p)
 }

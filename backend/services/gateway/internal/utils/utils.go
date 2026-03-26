@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"context"
 	"errors"
 	"io"
 	"os"
@@ -8,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/shared/rbac"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/gofiber/fiber/v2"
@@ -87,4 +90,21 @@ func GetAbsoluteUrl(ctx *fiber.Ctx) string {
 
 func WithTrailingSlash(str string) string {
 	return strings.TrimSuffix(str, "/") + "/"
+}
+
+func RefetchRoleCache(ctx context.Context, api *types.Api, userId int) error {
+	db := api.Deps.DB
+
+	details, err := db.Rbac().GetUserRoleDetails(ctx, userId)
+	if err != nil {
+		return err
+	}
+
+	role, err := db.Rbac().GetRole(ctx, int(details.RoleID))
+
+	perms := rbac.MergePermissions(role.AllowedPerms, details.AdditionalPerms, details.ExcludedPerms)
+
+	// cache.RoleCache.Add()
+
+	return nil
 }

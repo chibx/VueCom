@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func HasPermission(perms ...string) fiber.Handler {
+func HasPermission(perms ...rbac.Permission) fiber.Handler {
 	err401 := fiber.NewError(fiber.StatusUnauthorized, "You do not have the permission to proceed.")
 	return func(ctx *fiber.Ctx) error {
 		permSet, _ := ctx.Locals(constants.RoleCtxKey).(rbac.PermissionSet)

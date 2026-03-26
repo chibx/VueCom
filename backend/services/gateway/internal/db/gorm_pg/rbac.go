@@ -7,6 +7,7 @@ import (
 
 	"github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/chibx/vuecom/backend/shared/models/db/users"
+	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 	"github.com/chibx/vuecom/backend/shared/rbac"
 	"github.com/chibx/vuecom/backend/shared/types"
 	"gorm.io/gorm"
@@ -156,8 +157,8 @@ func (rb *rbacRepository) GetChildrenWithRoleFilter(
 }
 
 // Role operations
-func (rb *rbacRepository) GetRole(ctx context.Context, id int) (*users.BackendRole, error) {
-	role := &users.BackendRole{ID: uint(id)}
+func (rb *rbacRepository) GetRole(ctx context.Context, roleId int) (*users.BackendRole, error) {
+	role := &users.BackendRole{ID: uint(roleId)}
 	err := rb.db.WithContext(ctx).First(role).Error
 
 	if err != nil {
@@ -219,4 +220,15 @@ func (rb *rbacRepository) IsDescendant(ctx context.Context, ancestorID, descenda
 	`, descendantID, ancestorID, descendantID).Scan(&exists).Error
 
 	return exists, err
+}
+
+func (rb *rbacRepository) GetUserRoleDetails(ctx context.Context, userId int) (*rbac.UserRoleFromDB, error) {
+	db := rb.db
+	details := &rbac.UserRoleFromDB{}
+	err := db.Model(&userModels.BackendUser{}).Where("id = ?", userId).First(details).Error
+	if err != nil && !errors.Is(err, server.ErrDBRecordNotFound) {
+		return nil, err
+	}
+
+	return details, nil
 }

@@ -111,7 +111,7 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 		// TODO: I need to have a way to lookup a secure token (sent to the user through email) in the request url
 		// c.Query("login_token"), then delete the token from the database,
 		// instead of this
-		RoleID:          &roleId,
+		RoleID:          roleId,
 		IsEmailVerified: true,
 	}
 

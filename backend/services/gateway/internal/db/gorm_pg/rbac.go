@@ -51,8 +51,6 @@ func (rb *rbacRepository) GetChildren(ctx context.Context, parentID int) ([]user
 	return users, nil
 }
 
-// Permission operations
-func (rb *rbacRepository) GetEffectivePermissions(ctx context.Context, userID int) (rbac.PermissionSet, error)
 func (rb *rbacRepository) GrantIndividualPermission(ctx context.Context, userID int, perm rbac.Permission, grantedBy int) error {
 
 	return nil

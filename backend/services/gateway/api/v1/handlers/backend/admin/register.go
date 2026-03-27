@@ -3,7 +3,6 @@ package admin
 import (
 	"errors"
 
-	"github.com/chibx/vuecom/backend/services/gateway/api/v1/middlewares"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
@@ -14,7 +13,7 @@ import (
 )
 
 func RegisterRoutes(app fiber.Router, api *types.Api) {
-	appGroup := app.Group("/api/app", middlewares.BackendRateLimit(api))
+	appGroup := app.Group("/api/app")
 	appGroup.Post("/initialize", InitializeApp(api))
 	appGroup.Post("/create-owner", RegisterOwner(api))
 

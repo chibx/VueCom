@@ -39,13 +39,13 @@ COPY ./backend/shared ./shared
 
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    cd services/gateway_service && go mod download
+    cd services/gateway && go mod download
 COPY ./backend ./
 
 
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    cd services/gateway_service && CGO_ENABLED=0 GOOS=linux go build -o ./bin/server ./cmd/server
+    cd services/gateway && CGO_ENABLED=0 GOOS=linux go build -o ./bin/server ./cmd/server
 
 FROM gcr.io/distroless/static-debian12:nonroot
 

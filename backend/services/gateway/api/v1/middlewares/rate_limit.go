@@ -57,9 +57,9 @@ func BackendRateLimit(api *types.Api) fiber.Handler {
 		}
 
 		// Optional per-client headers
-		ctx.Set("X-RateLimit-Limit", strconv.Itoa(limit.Rate))
-		ctx.Set("X-RateLimit-Remaining", strconv.Itoa(res.Remaining))
-		ctx.Set("X-RateLimit-Reset", strconv.Itoa(int(res.RetryAfter.Seconds())))
+		ctx.Set("X-Bk-RateLimit-Limit", strconv.Itoa(limit.Rate))
+		ctx.Set("X-Bk-RateLimit-Remaining", strconv.Itoa(res.Remaining))
+		ctx.Set("X-Bk-RateLimit-Reset", strconv.Itoa(int(res.RetryAfter.Seconds())))
 		return ctx.Next()
 	}
 }

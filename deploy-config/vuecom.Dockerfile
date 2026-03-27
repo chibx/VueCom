@@ -24,7 +24,7 @@ COPY ./frontend/ ./
 RUN pnpm build
 
 
-FROM golang:1.25-alpine AS go-builder
+FROM golang:1.26.1-alpine AS go-builder
 
 WORKDIR /app/backend
 

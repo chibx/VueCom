@@ -6,11 +6,17 @@ import (
 
 // CREATE TYPE promo_code_type AS ENUM ('percentage', 'fixed_amount', 'free_shipping')
 type PromoCodeType string
+type MediaType string
 
 const (
 	PromoCodePercent  PromoCodeType = "percentage"
 	PromoCodeFixed    PromoCodeType = "fixed_amount"
 	PromoCodeShipping PromoCodeType = "free_shipping"
+)
+
+const (
+	TYPE_VIDEO MediaType = "vd"
+	TYPE_IMAGE MediaType = "img"
 )
 
 type Attribute struct {
@@ -69,6 +75,26 @@ type ProductTags struct {
 	TagID     uint `gorm:"primaryKey;autoIncrement:false;"`
 }
 
+type MediaFolder struct {
+	ID        uint `gorm:"primaryKey"`
+	ParentId  uint
+	Name      string
+	CreatedAt time.Time
+}
+
+type Media struct {
+	ID           uint
+	FolderId     uint
+	Type         MediaType
+	Url          string
+	ThumbnailUrl string
+	CreatedAt    time.Time
+	ExternalId   string
+	FileName     string
+	MimeType     string
+	SizeBytes    uint
+}
+
 type Product struct {
 	ID               uint       `gorm:"primarykey" redis:"id"`
 	UpdatedAt        time.Time  `gorm:"" redis:"updated_at"`
@@ -77,13 +103,13 @@ type Product struct {
 	SKU              string     `json:"sku" gorm:"not null;index" redis:"sku"`
 	BasePrice        float64    `json:"base_price" gorm:"not null;type:numeric(15, 2)" redis:"price"`
 	SalePrice        float64    `json:"sale_price" gorm:"not null;type:numeric(15, 2)" redis:"price"`
-	DiscountPeriod   *time.Time `json:"discount_period" gorm:""`
+	DiscountStart    *time.Time `json:"discount_start"`
+	DiscountEnd      *time.Time `json:"discount_end"`
 	Enabled          bool       `json:"enabled" gorm:"default:TRUE;not null"`
 	ShortDescription string     `json:"short_description"`
 	FullDescription  string     `json:"full_description"`
 	Slug             string     `json:"slug" redis:"slug"`
 	Weight           *float64   `json:"weight" redis:"weight"`
-	ImageUrl         *string    `json:"image_url,omitempty" gorm:"" redis:"image_url"`
 	MetaTitle        *string    `json:"meta_title,omitempty" redis:"meta_title"`
 	MetaDescription  *string    `json:"meta_description,omitempty" redis:"meta_title"`
 	SearchKeywords   *string    `json:"search_keywords" gorm:"column:search_keywords;" redis:"search_keywords"`
@@ -93,8 +119,14 @@ type Product struct {
 	Preset           *Preset    `json:"-" gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;" redis:"-"`
 	Categories       []Category `json:"-" gorm:"many2many:product_category_values;" redis:"-"`
 	Tags             []Tag      `json:"-" gorm:"many2many:product_tags;" redis:"-"`
-	// DscPercent  float64   `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
 	// Categories  []Category `gorm:"many2many:product_category_values;foreignkey:ID;joinforeignKey:ProductId;References:ID;joinReferences:CategoryId;"`
+}
+
+type ProductMedia struct {
+	ProductId uint
+	MediaId   uint
+	SortOrder uint
+	IsMain    bool
 }
 
 type ProductCategoryValues struct {

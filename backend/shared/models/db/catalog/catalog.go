@@ -122,6 +122,14 @@ type Product struct {
 	// Categories  []Category `gorm:"many2many:product_category_values;foreignkey:ID;joinforeignKey:ProductId;References:ID;joinReferences:CategoryId;"`
 }
 
+type ProductRelation struct {
+	SourceProductID uint64 `gorm:"not null"`
+	TargetProductID uint64 `gorm:"not null"`
+	RelationType    string `gorm:"not null"`
+	SortOrder       int    `gorm:"default:0"`
+	CreatedAt       time.Time
+}
+
 type ProductMedia struct {
 	ProductId uint
 	MediaId   uint

@@ -223,7 +223,7 @@ func (rb *rbacRepository) IsDescendant(ctx context.Context, ancestorID, descenda
 func (rb *rbacRepository) GetUserRoleDetails(ctx context.Context, userId int) (*rbac.UserRoleFromDB, error) {
 	db := rb.db
 	details := &rbac.UserRoleFromDB{}
-	err := db.Model(&userModels.BackendUser{}).Where("id = ?", userId).First(details).Error
+	err := db.WithContext(ctx).Model(&userModels.BackendUser{}).Where("id = ?", userId).First(details).Error
 	if err != nil && !errors.Is(err, server.ErrDBRecordNotFound) {
 		return nil, err
 	}

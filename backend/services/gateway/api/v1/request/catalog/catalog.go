@@ -16,7 +16,7 @@ type CreateProductReq struct {
 	FullDescription  string     `json:"full_description"`
 	Quantity         int        `json:"quantity"`
 	Slug             string     `json:"slug"`
-	Country          uint       `json:"country"`
+	CountryOfManf    uint       `json:"country_of_manufacture"`
 	Weight           *float64   `json:"weight"`
 	BrandId          int        `json:"brand_id"`
 	Color            uint       `json:"color"`
@@ -24,9 +24,9 @@ type CreateProductReq struct {
 	MetaTitle        *string    `json:"meta_title,omitempty"`
 	MetaDescription  *string    `json:"meta_description,omitempty"`
 	SearchKeywords   *string    `json:"search_keywords"`
-	RelatedProducts  []string   `json:"related_products"`
-	UpSellProducts   []string   `json:"upsell"`
-	CrossSell        []uint64   `json:"cross_sell"`
+	RelatedProducts  []uint     `json:"related_products"`
+	UpSellProducts   []uint     `json:"upsell"`
+	CrossSell        []uint     `json:"cross_sell"`
 	ParentID         *uint      `json:"parent_id"`
 	PresetID         *uint      `json:"preset_id"`
 }

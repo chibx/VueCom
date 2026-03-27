@@ -7,6 +7,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	reqctx "github.com/chibx/vuecom/backend/shared/reqctx"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
@@ -37,30 +38,34 @@ func GlobalRateLimit(api *types.Api) fiber.Handler {
 
 func BackendRateLimit(api *types.Api) fiber.Handler {
 	logger := global.Logger()
-	return func(ctx *fiber.Ctx) error {
-		rlKey, _ := ctx.Locals("rl_key").(string)
+	return func(c *fiber.Ctx) error {
+		backendUser, ok := c.Locals(constants.BackendUserCtxKey).(*reqctx.BackendUser)
+		if !ok || backendUser == nil {
+			return response.FromFiberError(c, fiber.ErrUnauthorized)
+		}
+		rlKey := constants.BackendLimitKey + strconv.Itoa(backendUser.ID)
 
 		// Work on a better way to do this
 		var limit = constants.BackendLimit
 
-		res, err := api.Deps.Limiter.Allow(ctx.Context(), rlKey, limit)
+		res, err := api.Deps.Limiter.Allow(c.Context(), rlKey, limit)
 		if err != nil {
 			logger.Error("failed to allow backend rate limit", zap.Error(err))
-			return response.WriteResponse(ctx, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
+			return response.WriteResponse(c, fiber.StatusInternalServerError, "", fiber.Map{"error": "Rate limiter error"})
 		}
 		if res.Allowed == 0 {
 			retryAfter := max(int(res.RetryAfter.Seconds()), 1)
-			ctx.Set("Retry-After", strconv.Itoa(retryAfter))
-			return response.WriteResponse(ctx, fiber.StatusTooManyRequests, "", fiber.Map{
+			c.Set("Retry-After", strconv.Itoa(retryAfter))
+			return response.WriteResponse(c, fiber.StatusTooManyRequests, "", fiber.Map{
 				"error": "Too many requests (backend limit exceeded)",
 			})
 		}
 
 		// Optional per-client headers
-		ctx.Set("X-Bk-RateLimit-Limit", strconv.Itoa(limit.Rate))
-		ctx.Set("X-Bk-RateLimit-Remaining", strconv.Itoa(res.Remaining))
-		ctx.Set("X-Bk-RateLimit-Reset", strconv.Itoa(int(res.RetryAfter.Seconds())))
-		return ctx.Next()
+		c.Set("X-Bk-RateLimit-Limit", strconv.Itoa(limit.Rate))
+		c.Set("X-Bk-RateLimit-Remaining", strconv.Itoa(res.Remaining))
+		c.Set("X-Bk-RateLimit-Reset", strconv.Itoa(int(res.RetryAfter.Seconds())))
+		return c.Next()
 	}
 }
 

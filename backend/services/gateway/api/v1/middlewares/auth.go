@@ -10,6 +10,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 
+	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/cache"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
@@ -56,35 +57,17 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 		var authHeader = c.Get("Authorization")
 		var tokenStr = strings.TrimPrefix(authHeader, "Bearer ")
 		var backendToken = strings.TrimSpace(c.Cookies(constants.BackendAccessTkKey))
+		// var customerToken = strings.TrimSpace(c.Cookies(constants.CustomerAccessTkKey))
 		// var tokenGroup = strings.Split(backendToken, ".")
 
 		if tokenStr != "" {
 			// TODO: Use tokenStr to validate the api (key) token
 			_ = tokenStr
 			_ = apiKeyData
-
-			// This should be the api key struct
-			// We will also check for customer login from here
 			c.Locals(constants.ApiKeyCtxKey, apiKeyData)
-		} else if backendToken != "" {
-			//
+		}
 
-			// if len(tokenGroup) < 2 {
-			// 	// I will just skip
-			// 	return ctx.Next()
-			// }
-			// tokenId := tokenGroup[0]
-			// backendUserSess, tokenErr = auth.GetBackendUserSession(ctx.Context(), tokenId, api)
-			// if tokenErr != nil {
-			// 	logger.Error("failed to get user session from cache", zap.Error(tokenErr))
-			// } else {
-			// 	var authErr error
-			// 	backendUser, authErr = getAuthUserFromSession(ctx, api, backendUserSess)
-			// 	if authErr != nil {
-			// 		logger.Error("failed to get user data from session", zap.Error(authErr))
-			// 	}
-			// }
-
+		if backendToken != "" {
 			validJWT, err := auth.ValidateBackendAccessToken(api, backendToken, api.Config.SecretKey)
 			if err == nil {
 				backendUser = &reqctx.BackendUser{ID: validJWT.UserID}
@@ -110,4 +93,14 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 
 		return c.Next()
 	}
+}
+
+func HardenBackendEndpoint(c *fiber.Ctx) error {
+	backendUser, ok := c.Locals(constants.BackendUserCtxKey).(*reqctx.BackendUser)
+
+	if !ok || backendUser == nil {
+		return response.FromFiberError(c, fiber.ErrUnauthorized, "You need to login.")
+	}
+
+	return c.Next()
 }

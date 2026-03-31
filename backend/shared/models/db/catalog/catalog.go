@@ -105,11 +105,17 @@ type Product struct {
 	SalePrice        float64    `json:"sale_price" gorm:"not null;type:numeric(15, 2)" redis:"price"`
 	DiscountStart    *time.Time `json:"discount_start"`
 	DiscountEnd      *time.Time `json:"discount_end"`
-	Enabled          bool       `json:"enabled" gorm:"default:TRUE;not null"`
-	ShortDescription string     `json:"short_description"`
-	FullDescription  string     `json:"full_description"`
-	Slug             string     `json:"slug" redis:"slug"`
-	Weight           *float64   `json:"weight" redis:"weight"`
+	IsNew            bool
+	NewFrom          *time.Time
+	NewTo            *time.Time
+	CountryOfManf    uint     `gorm:"column:country_of_manufacture;"`
+	Enabled          bool     `json:"enabled" gorm:"default:TRUE;not null"`
+	ShortDescription string   `json:"short_description"`
+	FullDescription  string   `json:"full_description"`
+	Slug             string   `json:"slug" redis:"slug"`
+	Weight           *float64 `json:"weight" redis:"weight"`
+	BrandId          int
+	ColorId          int        `gorm:"" redis:"color_id"`
 	MetaTitle        *string    `json:"meta_title,omitempty" redis:"meta_title"`
 	MetaDescription  *string    `json:"meta_description,omitempty" redis:"meta_title"`
 	SearchKeywords   *string    `json:"search_keywords" gorm:"column:search_keywords;" redis:"search_keywords"`

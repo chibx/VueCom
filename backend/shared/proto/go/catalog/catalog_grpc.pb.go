@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CatalogService_CreateProduct_FullMethodName = "/catalog.CatalogService/CreateProduct"
-	CatalogService_GetProduct_FullMethodName    = "/catalog.CatalogService/GetProduct"
-	CatalogService_GetCategory_FullMethodName   = "/catalog.CatalogService/GetCategory"
+	CatalogService_CreateProduct_FullMethodName = "/catalog.v1.CatalogService/CreateProduct"
+	CatalogService_GetProduct_FullMethodName    = "/catalog.v1.CatalogService/GetProduct"
+	CatalogService_GetCategory_FullMethodName   = "/catalog.v1.CatalogService/GetCategory"
 )
 
 // CatalogServiceClient is the client API for CatalogService service.
@@ -178,7 +178,7 @@ func _CatalogService_GetCategory_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CatalogService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "catalog.CatalogService",
+	ServiceName: "catalog.v1.CatalogService",
 	HandlerType: (*CatalogServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

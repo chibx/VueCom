@@ -40,6 +40,6 @@ type CreateProductReq struct {
 	RelatedProducts  []uint32       `json:"related_products"`
 	UpSellProducts   []uint32       `json:"upsell"`
 	CrossSell        []uint32       `json:"cross_sell"`
-	PresetID         *uint32        `json:"preset_id"`
+	PresetID         *uint32        `json:"preset_id" validate:"omitnil,gte=0"`
 	PresetValues     map[string]any `json:"preset_values"`
 }

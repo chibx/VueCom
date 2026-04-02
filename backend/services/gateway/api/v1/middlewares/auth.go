@@ -1,18 +1,14 @@
 package middlewares
 
 import (
-	"errors"
 	"strings"
 
-	"github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 	reqctx "github.com/chibx/vuecom/backend/shared/reqctx"
-	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/cache"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
@@ -20,32 +16,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 )
-
-func getAuthUserFromSession(ctx *fiber.Ctx, api *types.Api, backendUserSess *userModels.BackendSession) (*userModels.BackendUser, error) {
-	var backendUser *userModels.BackendUser
-	validationErr := auth.ValidateBackendUserSess(ctx, backendUserSess)
-	if validationErr != nil {
-		var sessionErr *server.SessionErr
-
-		if errors.As(validationErr, &sessionErr) {
-			if sessionErr.Type == server.SessionExpired {
-				ctx.ClearCookie(constants.BackendRefreshTkKey)
-				return nil, server.NewServerErr(fiber.StatusBadRequest, "Session token has expired. Please log in again.")
-			}
-		}
-
-		return nil, server.NewServerErr(fiber.StatusUnauthorized, "Invalid session")
-	}
-
-	if backendUserSess != nil {
-		var err error
-		backendUser, err = cache.GetBackendUserById(api, int(backendUserSess.UserId), ctx.Context())
-		if err != nil {
-			return nil, err
-		}
-	}
-	return backendUser, nil
-}
 
 func AuthMiddleware(api *types.Api) fiber.Handler {
 	logger := global.Logger()
@@ -85,9 +55,9 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 			} else {
 				logger.Error("Error during authentication", zap.Error(err))
 
-				if errors.Is(err, jwt.ErrTokenExpired) {
-					// TODO: Add some kind of warning
-				}
+				// TODO: Add some kind of warning for the app or user
+				// if errors.Is(err, jwt.ErrTokenExpired) {
+				// }
 			}
 		}
 

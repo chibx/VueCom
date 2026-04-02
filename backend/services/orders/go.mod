@@ -5,6 +5,7 @@ go 1.25.0
 // replace vuecom/shared => ../../shared
 
 require (
+	github.com/chibx/vuecom/backend/shared v0.0.0-00010101000000-000000000000
 	github.com/goccy/go-json v0.10.6
 	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/redis/go-redis/v9 v9.18.0
@@ -18,7 +19,6 @@ require (
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
@@ -26,7 +26,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/net v0.52.0 // indirect
@@ -37,4 +36,10 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
-replace github.com/chibx/vuecom/backend/shared => ../../shared
+replace (
+	github.com/chibx/vuecom/backend/services/catalog => ../catalog
+	github.com/chibx/vuecom/backend/services/inventory => ../inventory
+	github.com/chibx/vuecom/backend/services/orders => ../orders
+	github.com/chibx/vuecom/backend/services/payment => ../payment
+	github.com/chibx/vuecom/backend/shared => ../../shared
+)

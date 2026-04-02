@@ -1,14 +1,10 @@
 package auth
 
 import (
-	"errors"
-	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
-	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/redis/go-redis/v9"
@@ -70,59 +66,6 @@ func BackendLoginJWT(ctx *fiber.Ctx) error {
 		Secure:   true,
 		SameSite: "Strict",
 	})
-
-	return ctx.JSON(map[string]string{"access_token": accessSigned})
-}
-
-// Refresh handler: Uses refresh to create new access.
-func _RefreshJWT(ctx *fiber.Ctx) error {
-	refresh := ctx.Cookies("refresh_token")
-	if refresh == "" {
-		return ctx.Status(http.StatusUnauthorized).SendString("No refresh token")
-	}
-
-	var userIDStr string
-	var refToken RefreshToken
-
-	// Step 1: Check Redis (cache) for fast validation.
-	userIDStr, err := rdb.Get(ctx.Context(), "refresh:"+refresh).Result()
-	if !errors.Is(err, redis.Nil) {
-		// Cache miss: Fall back to DB.
-		if err := db.Where("token = ? AND expires_at > ?", refresh, time.Now()).First(&refToken).Error; err != nil {
-			if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
-				return ctx.Status(http.StatusUnauthorized).SendString("Invalid or expired refresh token")
-			}
-			return err
-		}
-		// Repopulate Redis.
-		if err := rdb.Set(ctx.Context(), "refresh:"+refresh, refToken.UserID, time.Until(refToken.ExpiresAt)).Err(); err != nil {
-			return err
-		}
-		userIDStr = fmt.Sprintf("%d", refToken.UserID)
-	} else if err != nil {
-		return err
-	}
-
-	// Step 2: Parse userID.
-	userID := uint(0) // Convert string to uint.
-	if _, err := fmt.Sscanf(userIDStr, "%d", &userID); err != nil {
-		return err
-	}
-
-	// Step 3: Generate new short-lived access token using the validated userID.
-	accessClaims := jwt.MapClaims{
-		"sub": userID,
-		"exp": time.Now().Add(15 * time.Minute).Unix(), // Short-lived.
-		// You can add fresh claims here, e.g., updated roles from DB.
-	}
-	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
-	accessSigned, err := accessToken.SignedString(accessSecret)
-	if err != nil {
-		return err
-	}
-
-	// Optional: Rotate refresh for extra security (generate new refresh, delete old).
-	// But for simplicity, we reuse the existing one.
 
 	return ctx.JSON(map[string]string{"access_token": accessSigned})
 }

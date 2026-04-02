@@ -286,13 +286,13 @@ func Refresh(api *types.Api) fiber.Handler {
 		var ipAddr = ctx.IP()
 
 		// TODO: Validate more
-		if deviceId != session.DeviceId {
-			// This was meant to replace fingerprinting (in a way)
-		}
+		// if deviceId != session.DeviceId {
+		// 	// This was meant to replace fingerprinting (in a way)
+		// }
 
-		if ipAddr != session.LastIP {
-			// Do some IP range magic or ignore
-		}
+		// if ipAddr != session.LastIP {
+		// 	// Do some IP range magic or ignore
+		// }
 
 		if deviceId == "" {
 			deviceUUID, err := uuid.NewRandom()

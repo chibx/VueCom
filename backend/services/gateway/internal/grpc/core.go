@@ -83,6 +83,9 @@ func shutdown() {
 		global.server.GracefulStop()
 	}
 	if global.listener != nil {
-		global.listener.Close()
+		err := global.listener.Close()
+		if err != nil {
+			gl.Logger().Error("Error closing gRPC listener", zap.Error(err))
+		}
 	}
 }

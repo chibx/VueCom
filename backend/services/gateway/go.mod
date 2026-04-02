@@ -2,7 +2,18 @@ module github.com/chibx/vuecom/backend/services/gateway
 
 go 1.25.0
 
+// require (
+// github.com/chibx/vuecom/backend/services/catalog v0.0.0
+// github.com/chibx/vuecom/backend/services/orders v0.0.0
+// github.com/chibx/vuecom/backend/services/inventory v0.0.0
+// github.com/chibx/vuecom/backend/services/payment v0.0.0
+// )
+
 require (
+	github.com/chibx/vuecom/backend/services/catalog v0.0.0-00010101000000-000000000000
+	github.com/chibx/vuecom/backend/services/inventory v0.0.0-00010101000000-000000000000
+	github.com/chibx/vuecom/backend/services/orders v0.0.0-00010101000000-000000000000
+	github.com/chibx/vuecom/backend/services/payment v0.0.0-00010101000000-000000000000
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/joho/godotenv v1.5.1
 	github.com/pquerna/otp v1.5.0
@@ -24,11 +35,10 @@ require (
 require (
 	github.com/boombuler/barcode v1.1.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
+	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/net v0.52.0 // indirect
@@ -65,4 +75,10 @@ require (
 	gorm.io/gorm v1.31.1
 )
 
-replace github.com/chibx/vuecom/backend/shared => ../../shared
+replace (
+	github.com/chibx/vuecom/backend/services/catalog => ../catalog
+	github.com/chibx/vuecom/backend/services/inventory => ../inventory
+	github.com/chibx/vuecom/backend/services/orders => ../orders
+	github.com/chibx/vuecom/backend/services/payment => ../payment
+	github.com/chibx/vuecom/backend/shared => ../../shared
+)

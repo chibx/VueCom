@@ -60,7 +60,7 @@ func generateContinents(continents []continent) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(fmt.Sprintf("(%d,'%s')", item.ID, escapeSQL(item.Name)))
+		fmt.Fprintf(&sb, "(%d,'%s')", item.ID, escapeSQL(item.Name))
 	}
 	sb.WriteString(";\n")
 	return sb.String()
@@ -76,14 +76,14 @@ func generateCountries(countries []country) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(fmt.Sprintf("(%d,'%s',%d,'%s','%s','%s')",
+		fmt.Fprintf(&sb, "(%d,'%s',%d,'%s','%s','%s')",
 			item.ID,
 			escapeSQL(item.Code),
 			item.ContinentID,
 			escapeSQL(item.Phone),
 			escapeSQL(item.Currency),
 			escapeSQL(item.Name),
-		))
+		)
 	}
 	sb.WriteString(";\n")
 	return sb.String()
@@ -99,7 +99,7 @@ func generateStates(states []state) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(fmt.Sprintf("(%d,%d,'%s')", item.ID, item.CountryID, escapeSQL(item.Name)))
+		fmt.Fprintf(&sb, "(%d,%d,'%s')", item.ID, item.CountryID, escapeSQL(item.Name))
 	}
 	sb.WriteString(";\n")
 	return sb.String()
@@ -115,7 +115,7 @@ func generateCities(cities []city) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(fmt.Sprintf("(%d,%d,'%s')", item.ID, item.StateID, escapeSQL(item.Name)))
+		fmt.Fprintf(&sb, "(%d,%d,'%s')", item.ID, item.StateID, escapeSQL(item.Name))
 	}
 	sb.WriteString(";\n")
 	return sb.String()

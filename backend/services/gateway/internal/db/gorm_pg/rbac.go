@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/chibx/vuecom/backend/shared/errors/server"
-	"github.com/chibx/vuecom/backend/shared/models/db/users"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 	"github.com/chibx/vuecom/backend/shared/rbac"
 	"github.com/chibx/vuecom/backend/shared/types"
@@ -17,8 +16,8 @@ type rbacRepository struct {
 	db *gorm.DB
 }
 
-func (rb *rbacRepository) GetUsersWithPermission(ctx context.Context, permission string, pageData ...types.Pagination) ([]users.BackendUser, error) {
-	var users []users.BackendUser
+func (rb *rbacRepository) GetUsersWithPermission(ctx context.Context, permission string, pageData ...types.Pagination) ([]userModels.BackendUser, error) {
+	var users []userModels.BackendUser
 
 	var limit = -1
 	var offset = -1
@@ -36,8 +35,8 @@ func (rb *rbacRepository) GetUsersWithPermission(ctx context.Context, permission
 	return users, err
 }
 
-func (rb *rbacRepository) GetChildren(ctx context.Context, parentID int) ([]users.BackendUser, error) {
-	var users []users.BackendUser
+func (rb *rbacRepository) GetChildren(ctx context.Context, parentID int) ([]userModels.BackendUser, error) {
+	var users []userModels.BackendUser
 
 	err := rb.db.WithContext(ctx).
 		Where("created_by = ?", parentID).
@@ -59,8 +58,8 @@ func (rb *rbacRepository) RevokeIndividualPermission(ctx context.Context, userID
 	return nil
 }
 
-func (rb *rbacRepository) GetChildrenRecursive(ctx context.Context, parentID int) ([]users.BackendUser, error) {
-	var users []users.BackendUser
+func (rb *rbacRepository) GetChildrenRecursive(ctx context.Context, parentID int) ([]userModels.BackendUser, error) {
+	var users []userModels.BackendUser
 
 	// Recursive CTE to get all descendants
 	err := rb.db.WithContext(ctx).Raw(`
@@ -92,7 +91,7 @@ func (rb *rbacRepository) GetChildrenRecursive(ctx context.Context, parentID int
 }
 
 type UserNode struct {
-	User     *users.BackendUser
+	User     *userModels.BackendUser
 	Children []*UserNode
 	Depth    int
 }
@@ -100,7 +99,7 @@ type UserNode struct {
 func (rb *rbacRepository) GetChildrenCount(ctx context.Context, parentID int) (int64, error) {
 	var count int64
 	err := rb.db.WithContext(ctx).
-		Model(&users.BackendUser{}).
+		Model(&userModels.BackendUser{}).
 		Where("created_by = ?", parentID).
 		Count(&count).Error
 
@@ -115,11 +114,11 @@ func (rb *rbacRepository) GetChildrenPaginated(
 	ctx context.Context,
 	parentID int,
 	pagination types.Pagination,
-) ([]users.BackendUser, error) {
+) ([]userModels.BackendUser, error) {
 
 	offset := (pagination.Page - 1) * pagination.PageSize
 
-	var gormUsers []users.BackendUser
+	var gormUsers []userModels.BackendUser
 	err := rb.db.WithContext(ctx).
 		Where("created_by = ?", parentID).
 		Order("created_at DESC").
@@ -138,9 +137,9 @@ func (rb *rbacRepository) GetChildrenWithRoleFilter(
 	ctx context.Context,
 	parentID int,
 	roleName string,
-) ([]users.BackendUser, error) {
+) ([]userModels.BackendUser, error) {
 
-	var backendUsers []users.BackendUser
+	var backendUsers []userModels.BackendUser
 
 	err := rb.db.WithContext(ctx).
 		Joins("JOIN backend_roles ON backend_users.role_id = backend_roles.id").
@@ -155,8 +154,8 @@ func (rb *rbacRepository) GetChildrenWithRoleFilter(
 }
 
 // Role operations
-func (rb *rbacRepository) GetRole(ctx context.Context, roleId int) (*users.BackendRole, error) {
-	role := &users.BackendRole{ID: uint(roleId)}
+func (rb *rbacRepository) GetRole(ctx context.Context, roleId int) (*userModels.BackendRole, error) {
+	role := &userModels.BackendRole{ID: uint(roleId)}
 	err := rb.db.WithContext(ctx).First(role).Error
 
 	if err != nil {
@@ -169,8 +168,8 @@ func (rb *rbacRepository) GetRole(ctx context.Context, roleId int) (*users.Backe
 	return role, nil
 }
 
-func (rb *rbacRepository) GetRoleByName(ctx context.Context, name string) (*users.BackendRole, error) {
-	role := &users.BackendRole{Name: name}
+func (rb *rbacRepository) GetRoleByName(ctx context.Context, name string) (*userModels.BackendRole, error) {
+	role := &userModels.BackendRole{Name: name}
 	err := rb.db.WithContext(ctx).First(role).Error
 
 	if err != nil {
@@ -183,14 +182,14 @@ func (rb *rbacRepository) GetRoleByName(ctx context.Context, name string) (*user
 	return role, nil
 }
 
-func (rb *rbacRepository) CreateRole(ctx context.Context, role *users.BackendRole) error {
+func (rb *rbacRepository) CreateRole(ctx context.Context, role *userModels.BackendRole) error {
 	role.ID = 0
 	return rb.db.WithContext(ctx).Create(role).Error
 }
 
 func (rb *rbacRepository) GetRolePermissions(ctx context.Context, roleID int) ([]rbac.Permission, error) {
 	perms := make([]rbac.Permission, 0)
-	role := &users.BackendRole{ID: uint(roleID)}
+	role := &userModels.BackendRole{ID: uint(roleID)}
 	err := rb.db.WithContext(ctx).Select("allowed_permissions").First(role).Error
 
 	if err != nil {

@@ -37,8 +37,9 @@ require (
 	golang.org/x/text v0.33.0 // indirect
 	gorm.io/driver/postgres v1.6.0 // indirect
 	gorm.io/gorm v1.31.1 // indirect
-	// vuecom/shared v1.0.0
-	github.com/chibx/vuecom/backend/shared v0.0.1
+// vuecom/shared v1.0.0
+// github.com/chibx/vuecom/backend/shared v0.0.1
 )
 
 // replace vuecom/shared => ../../shared
+replace github.com/chibx/vuecom/backend/shared => ../../shared

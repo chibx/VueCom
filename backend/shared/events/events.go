@@ -1,5 +1,7 @@
 package events
 
+var Queues = []string{"vuecom" /*, "email" */}
+
 type eventType string
 
 // Catalog

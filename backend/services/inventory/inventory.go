@@ -13,7 +13,6 @@ func Register(s *grpc.Server) {
 }
 
 func Destroy() {
-	global.AmqpChan.Close()
-	global.AmqpConn.Close()
+	pubsub.DefPubSub.Close()
 	global.Redis.Close()
 }

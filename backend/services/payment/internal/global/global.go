@@ -8,7 +8,6 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/payment/internal/db"
 	"github.com/chibx/vuecom/backend/shared/types"
-	amqp "github.com/rabbitmq/amqp091-go"
 
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
@@ -18,8 +17,6 @@ import (
 )
 
 var Logger = newLogger("[Payment]: ")
-var AmqpConn *amqp.Connection
-var AmqpChan *amqp.Channel
 
 var (
 	Repo  = db.NewPaymentDB(newDB())

@@ -16,6 +16,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
+	sharedTypes "github.com/chibx/vuecom/backend/shared/types"
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -177,7 +178,7 @@ func checkIfOwnerExists(api *types.Api) (bool, error) {
 	return hasAdmin, nil
 }
 
-func initLogger() {
+func initLogger(prefix string) {
 	writer := zapcore.AddSync(os.Stdout) // Use standard output as the log target
 	zapPreset := zap.NewProductionEncoderConfig()
 	zapPreset.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -191,12 +192,16 @@ func initLogger() {
 
 	logger := zap.New(core)
 
+	logger = logger.WithOptions(zap.WrapCore(func(c zapcore.Core) zapcore.Core {
+		return sharedTypes.NewZapPrefix(c, prefix)
+	}))
+
 	global.SetLogger(logger)
 	// v1_api.Deps.Logger = logger
 }
 
 func initServer(_ *fiber.App, v1_api *types.Api) {
-	initLogger()
+	initLogger("[Gateway]: ")
 	plugDB(v1_api)
 	plugRedis(v1_api)
 	setupLimiter(v1_api)

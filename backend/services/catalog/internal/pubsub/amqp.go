@@ -22,7 +22,10 @@ func getEnv(env string, sub ...string) string {
 	return val
 }
 
-func InitPubSub() (*amqp.Connection, *amqp.Channel) {
+func InitPubSub() {
+	if global.AmqpChan != nil && global.AmqpChan != nil {
+		return
+	}
 	mqUrl := getEnv("APP_RABBITMQ_URL")
 	queueName := getEnv("APP_RABBITMQ_QUEUE")
 	conn, err := amqp.Dial(mqUrl)
@@ -58,5 +61,6 @@ func InitPubSub() (*amqp.Connection, *amqp.Channel) {
 	utils.FailOnError(err, "Failed to publish a message")
 	global.Logger.Info(" [x] Sent %s\n", zap.String("body", body))
 
-	return conn, ch
+	global.AmqpConn = conn
+	global.AmqpChan = ch
 }

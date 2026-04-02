@@ -1,39 +1,39 @@
 -- Inventory Database
 \c vuecom_inventory;
 
-CREATE TABLE continents (
-    id INT PRIMARY KEY,
-    name TEXT NOT NULL
-);
+-- CREATE TABLE continents (
+--     id INT PRIMARY KEY,
+--     name TEXT NOT NULL
+-- );
 
-CREATE TABLE countries (
-    id INT PRIMARY KEY,
-    name TEXT NOT NULL,
-    -- e.g., 'US', 'NG'
-    code TEXT NOT NULL UNIQUE,
-    phone TEXT NOT NULL,
-    currency TEXT NOT NULL,
-    continent_id INT NOT NULL,
-    FOREIGN KEY (continent_id) REFERENCES continents(id) ON DELETE CASCADE
-);
+-- CREATE TABLE countries (
+--     id INT PRIMARY KEY,
+--     name TEXT NOT NULL,
+--     -- e.g., 'US', 'NG'
+--     code TEXT NOT NULL UNIQUE,
+--     phone TEXT NOT NULL,
+--     currency TEXT NOT NULL,
+--     continent_id INT NOT NULL,
+--     FOREIGN KEY (continent_id) REFERENCES continents(id) ON DELETE CASCADE
+-- );
 
-CREATE INDEX IF NOT EXISTS idx_countries_code ON countries (code);
+-- CREATE INDEX IF NOT EXISTS idx_countries_code ON countries (code);
 
-CREATE TABLE states (
-    id INT PRIMARY KEY,
-    country_id INT NOT NULL,
-    name TEXT NOT NULL,
-    FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE CASCADE
-);
+-- CREATE TABLE states (
+--     id INT PRIMARY KEY,
+--     country_id INT NOT NULL,
+--     name TEXT NOT NULL,
+--     FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE CASCADE
+-- );
 
-CREATE INDEX IF NOT EXISTS idx_states_country_id ON states (country_id);
+-- CREATE INDEX IF NOT EXISTS idx_states_country_id ON states (country_id);
 
-CREATE TABLE cities (
-    id INT PRIMARY KEY,
-    state_id INT NOT NULL,
-    name TEXT NOT NULL,
-    FOREIGN KEY (state_id) REFERENCES states(id) ON DELETE CASCADE
-);
+-- CREATE TABLE cities (
+--     id INT PRIMARY KEY,
+--     state_id INT NOT NULL,
+--     name TEXT NOT NULL,
+--     FOREIGN KEY (state_id) REFERENCES states(id) ON DELETE CASCADE
+-- );
 
 -- Warehouses (Lagos, Abuja, PH, etc.)
 CREATE TABLE warehouses (
@@ -47,9 +47,7 @@ CREATE TABLE warehouses (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     capacity INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (state_id) REFERENCES states(id),
-    FOREIGN KEY (country_id) REFERENCES countries(id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_warehouse_code ON warehouses(code);

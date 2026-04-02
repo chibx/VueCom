@@ -9,6 +9,8 @@ package catalog
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	structpb "google.golang.org/protobuf/types/known/structpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -22,10 +24,40 @@ const (
 )
 
 type CreateProductRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	Price         float64                `protobuf:"fixed64,3,opt,name=price,proto3" json:"price,omitempty"`
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Name      string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Sku       string                 `protobuf:"bytes,2,opt,name=sku,proto3" json:"sku,omitempty"`
+	BasePrice float64                `protobuf:"fixed64,3,opt,name=base_price,json=basePrice,proto3" json:"base_price,omitempty"`
+	SalePrice float64                `protobuf:"fixed64,4,opt,name=sale_price,json=salePrice,proto3" json:"sale_price,omitempty"`
+	InStock   bool                   `protobuf:"varint,5,opt,name=in_stock,json=inStock,proto3" json:"in_stock,omitempty"`
+	// Optional timestamps for nullability
+	DiscountStart    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=discount_start,json=discountStart,proto3" json:"discount_start,omitempty"`
+	DiscountEnd      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=discount_end,json=discountEnd,proto3" json:"discount_end,omitempty"`
+	Categories       []int32                `protobuf:"varint,8,rep,packed,name=categories,proto3" json:"categories,omitempty"`
+	IsNew            bool                   `protobuf:"varint,9,opt,name=is_new,json=isNew,proto3" json:"is_new,omitempty"`
+	NewFrom          *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=new_from,json=newFrom,proto3" json:"new_from,omitempty"`
+	NewTo            *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=new_to,json=newTo,proto3" json:"new_to,omitempty"`
+	Enabled          bool                   `protobuf:"varint,12,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	ShortDescription string                 `protobuf:"bytes,13,opt,name=short_description,json=shortDescription,proto3" json:"short_description,omitempty"`
+	FullDescription  string                 `protobuf:"bytes,14,opt,name=full_description,json=fullDescription,proto3" json:"full_description,omitempty"`
+	Quantity         uint32                 `protobuf:"varint,15,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Slug             string                 `protobuf:"bytes,16,opt,name=slug,proto3" json:"slug,omitempty"`
+	CountryOfManf    uint32                 `protobuf:"varint,17,opt,name=country_of_manf,json=countryOfManf,proto3" json:"country_of_manf,omitempty"`
+	// Handled as optional to represent *float64
+	Weight          *float64 `protobuf:"fixed64,18,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
+	BrandId         uint32   `protobuf:"varint,19,opt,name=brand_id,json=brandId,proto3" json:"brand_id,omitempty"`
+	ColorId         uint32   `protobuf:"varint,20,opt,name=color_id,json=colorId,proto3" json:"color_id,omitempty"`
+	Medias          []uint32 `protobuf:"varint,21,rep,packed,name=medias,proto3" json:"medias,omitempty"`
+	MetaTitle       string   `protobuf:"bytes,22,opt,name=meta_title,json=metaTitle,proto3" json:"meta_title,omitempty"`
+	MetaDescription string   `protobuf:"bytes,23,opt,name=meta_description,json=metaDescription,proto3" json:"meta_description,omitempty"`
+	// Handled as optional to represent *string
+	SearchKeywords  *string  `protobuf:"bytes,24,opt,name=search_keywords,json=searchKeywords,proto3,oneof" json:"search_keywords,omitempty"`
+	RelatedProducts []uint32 `protobuf:"varint,25,rep,packed,name=related_products,json=relatedProducts,proto3" json:"related_products,omitempty"`
+	UpSellProducts  []uint32 `protobuf:"varint,26,rep,packed,name=up_sell_products,json=upSellProducts,proto3" json:"up_sell_products,omitempty"`
+	CrossSell       []uint32 `protobuf:"varint,27,rep,packed,name=cross_sell,json=crossSell,proto3" json:"cross_sell,omitempty"`
+	PresetId        *uint32  `protobuf:"varint,28,opt,name=preset_id,json=presetId,proto3,oneof" json:"preset_id,omitempty"`
+	// google.protobuf.Struct is the best fit for map[string]any
+	PresetValues  *structpb.Struct `protobuf:"bytes,29,opt,name=preset_values,json=presetValues,proto3" json:"preset_values,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -67,23 +99,205 @@ func (x *CreateProductRequest) GetName() string {
 	return ""
 }
 
-func (x *CreateProductRequest) GetDescription() string {
+func (x *CreateProductRequest) GetSku() string {
 	if x != nil {
-		return x.Description
+		return x.Sku
 	}
 	return ""
 }
 
-func (x *CreateProductRequest) GetPrice() float64 {
+func (x *CreateProductRequest) GetBasePrice() float64 {
 	if x != nil {
-		return x.Price
+		return x.BasePrice
 	}
 	return 0
 }
 
+func (x *CreateProductRequest) GetSalePrice() float64 {
+	if x != nil {
+		return x.SalePrice
+	}
+	return 0
+}
+
+func (x *CreateProductRequest) GetInStock() bool {
+	if x != nil {
+		return x.InStock
+	}
+	return false
+}
+
+func (x *CreateProductRequest) GetDiscountStart() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DiscountStart
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetDiscountEnd() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DiscountEnd
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetCategories() []int32 {
+	if x != nil {
+		return x.Categories
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetIsNew() bool {
+	if x != nil {
+		return x.IsNew
+	}
+	return false
+}
+
+func (x *CreateProductRequest) GetNewFrom() *timestamppb.Timestamp {
+	if x != nil {
+		return x.NewFrom
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetNewTo() *timestamppb.Timestamp {
+	if x != nil {
+		return x.NewTo
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *CreateProductRequest) GetShortDescription() string {
+	if x != nil {
+		return x.ShortDescription
+	}
+	return ""
+}
+
+func (x *CreateProductRequest) GetFullDescription() string {
+	if x != nil {
+		return x.FullDescription
+	}
+	return ""
+}
+
+func (x *CreateProductRequest) GetQuantity() uint32 {
+	if x != nil {
+		return x.Quantity
+	}
+	return 0
+}
+
+func (x *CreateProductRequest) GetSlug() string {
+	if x != nil {
+		return x.Slug
+	}
+	return ""
+}
+
+func (x *CreateProductRequest) GetCountryOfManf() uint32 {
+	if x != nil {
+		return x.CountryOfManf
+	}
+	return 0
+}
+
+func (x *CreateProductRequest) GetWeight() float64 {
+	if x != nil && x.Weight != nil {
+		return *x.Weight
+	}
+	return 0
+}
+
+func (x *CreateProductRequest) GetBrandId() uint32 {
+	if x != nil {
+		return x.BrandId
+	}
+	return 0
+}
+
+func (x *CreateProductRequest) GetColorId() uint32 {
+	if x != nil {
+		return x.ColorId
+	}
+	return 0
+}
+
+func (x *CreateProductRequest) GetMedias() []uint32 {
+	if x != nil {
+		return x.Medias
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetMetaTitle() string {
+	if x != nil {
+		return x.MetaTitle
+	}
+	return ""
+}
+
+func (x *CreateProductRequest) GetMetaDescription() string {
+	if x != nil {
+		return x.MetaDescription
+	}
+	return ""
+}
+
+func (x *CreateProductRequest) GetSearchKeywords() string {
+	if x != nil && x.SearchKeywords != nil {
+		return *x.SearchKeywords
+	}
+	return ""
+}
+
+func (x *CreateProductRequest) GetRelatedProducts() []uint32 {
+	if x != nil {
+		return x.RelatedProducts
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetUpSellProducts() []uint32 {
+	if x != nil {
+		return x.UpSellProducts
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetCrossSell() []uint32 {
+	if x != nil {
+		return x.CrossSell
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetPresetId() uint32 {
+	if x != nil && x.PresetId != nil {
+		return *x.PresetId
+	}
+	return 0
+}
+
+func (x *CreateProductRequest) GetPresetValues() *structpb.Struct {
+	if x != nil {
+		return x.PresetValues
+	}
+	return nil
+}
+
 type CreateProductResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -118,7 +332,7 @@ func (*CreateProductResponse) Descriptor() ([]byte, []int) {
 	return file_catalog_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreateProductResponse) GetId() uint64 {
+func (x *CreateProductResponse) GetId() uint32 {
 	if x != nil {
 		return x.Id
 	}
@@ -129,15 +343,53 @@ var File_catalog_proto protoreflect.FileDescriptor
 
 const file_catalog_proto_rawDesc = "" +
 	"\n" +
-	"\rcatalog.proto\x12\acatalog\x1a\x0ecategory.proto\x1a\rproduct.proto\"b\n" +
+	"\rcatalog.proto\x12\n" +
+	"catalog.v1\x1a\x0ecategory.proto\x1a\rproduct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe6\b\n" +
 	"\x14CreateProductRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x14\n" +
-	"\x05price\x18\x03 \x01(\x01R\x05price\"'\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
+	"\x03sku\x18\x02 \x01(\tR\x03sku\x12\x1d\n" +
+	"\n" +
+	"base_price\x18\x03 \x01(\x01R\tbasePrice\x12\x1d\n" +
+	"\n" +
+	"sale_price\x18\x04 \x01(\x01R\tsalePrice\x12\x19\n" +
+	"\bin_stock\x18\x05 \x01(\bR\ainStock\x12A\n" +
+	"\x0ediscount_start\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\rdiscountStart\x12=\n" +
+	"\fdiscount_end\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\vdiscountEnd\x12\x1e\n" +
+	"\n" +
+	"categories\x18\b \x03(\x05R\n" +
+	"categories\x12\x15\n" +
+	"\x06is_new\x18\t \x01(\bR\x05isNew\x125\n" +
+	"\bnew_from\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\anewFrom\x121\n" +
+	"\x06new_to\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\x05newTo\x12\x18\n" +
+	"\aenabled\x18\f \x01(\bR\aenabled\x12+\n" +
+	"\x11short_description\x18\r \x01(\tR\x10shortDescription\x12)\n" +
+	"\x10full_description\x18\x0e \x01(\tR\x0ffullDescription\x12\x1a\n" +
+	"\bquantity\x18\x0f \x01(\rR\bquantity\x12\x12\n" +
+	"\x04slug\x18\x10 \x01(\tR\x04slug\x12&\n" +
+	"\x0fcountry_of_manf\x18\x11 \x01(\rR\rcountryOfManf\x12\x1b\n" +
+	"\x06weight\x18\x12 \x01(\x01H\x00R\x06weight\x88\x01\x01\x12\x19\n" +
+	"\bbrand_id\x18\x13 \x01(\rR\abrandId\x12\x19\n" +
+	"\bcolor_id\x18\x14 \x01(\rR\acolorId\x12\x16\n" +
+	"\x06medias\x18\x15 \x03(\rR\x06medias\x12\x1d\n" +
+	"\n" +
+	"meta_title\x18\x16 \x01(\tR\tmetaTitle\x12)\n" +
+	"\x10meta_description\x18\x17 \x01(\tR\x0fmetaDescription\x12,\n" +
+	"\x0fsearch_keywords\x18\x18 \x01(\tH\x01R\x0esearchKeywords\x88\x01\x01\x12)\n" +
+	"\x10related_products\x18\x19 \x03(\rR\x0frelatedProducts\x12(\n" +
+	"\x10up_sell_products\x18\x1a \x03(\rR\x0eupSellProducts\x12\x1d\n" +
+	"\n" +
+	"cross_sell\x18\x1b \x03(\rR\tcrossSell\x12 \n" +
+	"\tpreset_id\x18\x1c \x01(\rH\x02R\bpresetId\x88\x01\x01\x12<\n" +
+	"\rpreset_values\x18\x1d \x01(\v2\x17.google.protobuf.StructR\fpresetValuesB\t\n" +
+	"\a_weightB\x12\n" +
+	"\x10_search_keywordsB\f\n" +
+	"\n" +
+	"_preset_id\"'\n" +
 	"\x15CreateProductResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id2\xf1\x01\n" +
-	"\x0eCatalogService\x12N\n" +
-	"\rCreateProduct\x12\x1d.catalog.CreateProductRequest\x1a\x1e.catalog.CreateProductResponse\x12E\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id2\xf7\x01\n" +
+	"\x0eCatalogService\x12T\n" +
+	"\rCreateProduct\x12 .catalog.v1.CreateProductRequest\x1a!.catalog.v1.CreateProductResponse\x12E\n" +
 	"\n" +
 	"GetProduct\x12\x1a.catalog.GetProductRequest\x1a\x1b.catalog.GetProductResponse\x12H\n" +
 	"\vGetCategory\x12\x1b.catalog.GetCategoryRequest\x1a\x1c.catalog.GetCategoryResponseB9Z7github.com/chibx/vuecom/backend/shared/proto/go/catalogb\x06proto3"
@@ -156,25 +408,32 @@ func file_catalog_proto_rawDescGZIP() []byte {
 
 var file_catalog_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_catalog_proto_goTypes = []any{
-	(*CreateProductRequest)(nil),  // 0: catalog.CreateProductRequest
-	(*CreateProductResponse)(nil), // 1: catalog.CreateProductResponse
-	(*GetProductRequest)(nil),     // 2: catalog.GetProductRequest
-	(*GetCategoryRequest)(nil),    // 3: catalog.GetCategoryRequest
-	(*GetProductResponse)(nil),    // 4: catalog.GetProductResponse
-	(*GetCategoryResponse)(nil),   // 5: catalog.GetCategoryResponse
+	(*CreateProductRequest)(nil),  // 0: catalog.v1.CreateProductRequest
+	(*CreateProductResponse)(nil), // 1: catalog.v1.CreateProductResponse
+	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),       // 3: google.protobuf.Struct
+	(*GetProductRequest)(nil),     // 4: catalog.GetProductRequest
+	(*GetCategoryRequest)(nil),    // 5: catalog.GetCategoryRequest
+	(*GetProductResponse)(nil),    // 6: catalog.GetProductResponse
+	(*GetCategoryResponse)(nil),   // 7: catalog.GetCategoryResponse
 }
 var file_catalog_proto_depIdxs = []int32{
-	0, // 0: catalog.CatalogService.CreateProduct:input_type -> catalog.CreateProductRequest
-	2, // 1: catalog.CatalogService.GetProduct:input_type -> catalog.GetProductRequest
-	3, // 2: catalog.CatalogService.GetCategory:input_type -> catalog.GetCategoryRequest
-	1, // 3: catalog.CatalogService.CreateProduct:output_type -> catalog.CreateProductResponse
-	4, // 4: catalog.CatalogService.GetProduct:output_type -> catalog.GetProductResponse
-	5, // 5: catalog.CatalogService.GetCategory:output_type -> catalog.GetCategoryResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	2, // 0: catalog.v1.CreateProductRequest.discount_start:type_name -> google.protobuf.Timestamp
+	2, // 1: catalog.v1.CreateProductRequest.discount_end:type_name -> google.protobuf.Timestamp
+	2, // 2: catalog.v1.CreateProductRequest.new_from:type_name -> google.protobuf.Timestamp
+	2, // 3: catalog.v1.CreateProductRequest.new_to:type_name -> google.protobuf.Timestamp
+	3, // 4: catalog.v1.CreateProductRequest.preset_values:type_name -> google.protobuf.Struct
+	0, // 5: catalog.v1.CatalogService.CreateProduct:input_type -> catalog.v1.CreateProductRequest
+	4, // 6: catalog.v1.CatalogService.GetProduct:input_type -> catalog.GetProductRequest
+	5, // 7: catalog.v1.CatalogService.GetCategory:input_type -> catalog.GetCategoryRequest
+	1, // 8: catalog.v1.CatalogService.CreateProduct:output_type -> catalog.v1.CreateProductResponse
+	6, // 9: catalog.v1.CatalogService.GetProduct:output_type -> catalog.GetProductResponse
+	7, // 10: catalog.v1.CatalogService.GetCategory:output_type -> catalog.GetCategoryResponse
+	8, // [8:11] is the sub-list for method output_type
+	5, // [5:8] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_catalog_proto_init() }
@@ -184,6 +443,7 @@ func file_catalog_proto_init() {
 	}
 	file_category_proto_init()
 	file_product_proto_init()
+	file_catalog_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

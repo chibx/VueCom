@@ -3,10 +3,9 @@ package admin
 import (
 	"errors"
 
-	"github.com/chibx/vuecom/backend/services/gateway/api/v1/middlewares"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
@@ -14,12 +13,12 @@ import (
 )
 
 func RegisterRoutes(app fiber.Router, api *types.Api) {
-	appGroup := app.Group("/api/app", middlewares.BackendRateLimit(api))
+	appGroup := app.Group("/api/app")
 	appGroup.Post("/initialize", InitializeApp(api))
 	appGroup.Post("/create-owner", RegisterOwner(api))
 
 	appGroup.Get("/admin-exist", func(ctx *fiber.Ctx) error {
-		logger := utils.Logger()
+		logger := global.Logger()
 		exists, err := DoesOwnerExist(ctx, api)
 
 		if err != nil {

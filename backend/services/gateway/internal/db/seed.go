@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"go.uber.org/zap"
 )
 
@@ -60,7 +60,7 @@ func generateContinents(continents []continent) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(fmt.Sprintf("(%d,'%s')", item.ID, escapeSQL(item.Name)))
+		fmt.Fprintf(&sb, "(%d,'%s')", item.ID, escapeSQL(item.Name))
 	}
 	sb.WriteString(";\n")
 	return sb.String()
@@ -76,14 +76,14 @@ func generateCountries(countries []country) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(fmt.Sprintf("(%d,'%s',%d,'%s','%s','%s')",
+		fmt.Fprintf(&sb, "(%d,'%s',%d,'%s','%s','%s')",
 			item.ID,
 			escapeSQL(item.Code),
 			item.ContinentID,
 			escapeSQL(item.Phone),
 			escapeSQL(item.Currency),
 			escapeSQL(item.Name),
-		))
+		)
 	}
 	sb.WriteString(";\n")
 	return sb.String()
@@ -99,7 +99,7 @@ func generateStates(states []state) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(fmt.Sprintf("(%d,%d,'%s')", item.ID, item.CountryID, escapeSQL(item.Name)))
+		fmt.Fprintf(&sb, "(%d,%d,'%s')", item.ID, item.CountryID, escapeSQL(item.Name))
 	}
 	sb.WriteString(";\n")
 	return sb.String()
@@ -115,7 +115,7 @@ func generateCities(cities []city) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(fmt.Sprintf("(%d,%d,'%s')", item.ID, item.StateID, escapeSQL(item.Name)))
+		fmt.Fprintf(&sb, "(%d,%d,'%s')", item.ID, item.StateID, escapeSQL(item.Name))
 	}
 	sb.WriteString(";\n")
 	return sb.String()
@@ -130,7 +130,7 @@ func SeedWorldData(ctx context.Context, db *sql.DB) error {
     AS all_tables_populated;
     `
 	var allExists bool
-	logger := utils.Logger()
+	logger := global.Logger()
 	row := db.QueryRowContext(ctx, sql)
 	var err = row.Err()
 	if err != nil {
@@ -149,9 +149,9 @@ func SeedWorldData(ctx context.Context, db *sql.DB) error {
 
 	data, err := os.ReadFile("./db-ready-world.json")
 	if err != nil {
-		utils.Logger().Error("Error reading ./db-ready-world.json", zap.Error(err))
+		global.Logger().Error("Error reading ./db-ready-world.json", zap.Error(err))
 		if errors.Is(err, os.ErrNotExist) {
-			utils.Logger().Info("Ensure that the `db-ready-world.json` file is in the same directory as the binary.")
+			global.Logger().Info("Ensure that the `db-ready-world.json` file is in the same directory as the binary.")
 		}
 		return err
 	}

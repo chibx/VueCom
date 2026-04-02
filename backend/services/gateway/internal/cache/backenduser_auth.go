@@ -9,8 +9,8 @@ import (
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
@@ -21,7 +21,7 @@ import (
 func GetBackendUserById(api *types.Api, id int, ctx context.Context) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	logger := utils.Logger()
+	logger := global.Logger()
 	backendUser := &userModels.BackendUser{}
 
 	// Try to get from cache first

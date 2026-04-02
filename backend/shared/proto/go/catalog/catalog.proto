@@ -1,8 +1,10 @@
 syntax = "proto3";
-package catalog;
+package catalog.v1;
 
 import "category.proto";
 import "product.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
 
 // option go_package = ".";
 option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
@@ -16,10 +18,48 @@ service CatalogService {
 
 message CreateProductRequest {
   string name = 1;
-  string description = 2;
-  double price = 3;
+  string sku = 2;
+  double base_price = 3;
+  double sale_price = 4;
+  bool in_stock = 5;
+
+  // Optional timestamps for nullability
+  google.protobuf.Timestamp discount_start = 6;
+  google.protobuf.Timestamp discount_end = 7;
+
+  repeated int32 categories = 8;
+  bool is_new = 9;
+  google.protobuf.Timestamp new_from = 10;
+  google.protobuf.Timestamp new_to = 11;
+  bool enabled = 12;
+  string short_description = 13;
+  string full_description = 14;
+  uint32 quantity = 15;
+  string slug = 16;
+  uint32 country_of_manf = 17;
+
+  // Handled as optional to represent *float64
+  optional double weight = 18;
+
+  uint32 brand_id = 19;
+  uint32 color_id = 20;
+  repeated uint32 medias = 21;
+  string meta_title = 22;
+  string meta_description = 23;
+
+  // Handled as optional to represent *string
+  optional string search_keywords = 24;
+
+  repeated uint32 related_products = 25;
+  repeated uint32 up_sell_products = 26;
+  repeated uint32 cross_sell = 27;
+
+  optional uint32 preset_id = 28;
+
+  // google.protobuf.Struct is the best fit for map[string]any
+  google.protobuf.Struct preset_values = 29;
 }
 
 message CreateProductResponse {
-  uint64 id = 1;
+  uint32 id = 1;
 }

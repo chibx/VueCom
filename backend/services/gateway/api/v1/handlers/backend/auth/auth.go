@@ -14,6 +14,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/dto"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 	"github.com/chibx/vuecom/backend/shared/events"
@@ -29,7 +30,7 @@ import (
 
 // Handles the registration links in the url
 func Register(api *types.Api) fiber.Handler {
-	logger := utils.Logger()
+	logger := global.Logger()
 	db := api.Deps.DB
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating your account, please try again")
 	return func(ctx *fiber.Ctx) error {
@@ -127,7 +128,7 @@ func Register(api *types.Api) fiber.Handler {
 }
 
 func Login(api *types.Api) fiber.Handler {
-	logger := utils.Logger()
+	logger := global.Logger()
 	db := api.Deps.DB
 	errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while logging you in, please try again")
 	return func(ctx *fiber.Ctx) error {
@@ -250,7 +251,7 @@ func Login(api *types.Api) fiber.Handler {
 
 func Refresh(api *types.Api) fiber.Handler {
 	db := api.Deps.DB
-	logger := utils.Logger()
+	logger := global.Logger()
 	errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Couldn't refresh user's session")
 	return func(ctx *fiber.Ctx) error {
 		refreshTk := ctx.Cookies(constants.BackendRefreshTkKey)
@@ -285,13 +286,13 @@ func Refresh(api *types.Api) fiber.Handler {
 		var ipAddr = ctx.IP()
 
 		// TODO: Validate more
-		if deviceId != session.DeviceId {
-			// This was meant to replace fingerprinting (in a way)
-		}
+		// if deviceId != session.DeviceId {
+		// 	// This was meant to replace fingerprinting (in a way)
+		// }
 
-		if ipAddr != session.LastIP {
-			// Do some IP range magic or ignore
-		}
+		// if ipAddr != session.LastIP {
+		// 	// Do some IP range magic or ignore
+		// }
 
 		if deviceId == "" {
 			deviceUUID, err := uuid.NewRandom()
@@ -365,7 +366,7 @@ func Refresh(api *types.Api) fiber.Handler {
 }
 
 func CreateSignupToken(api *types.Api) fiber.Handler {
-	logger := utils.Logger()
+	logger := global.Logger()
 	db := api.Deps.DB
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating signup token, please try again")
 	return func(ctx *fiber.Ctx) error {
@@ -418,11 +419,12 @@ func CreateSignupToken(api *types.Api) fiber.Handler {
 }
 
 func RevokeSignupToken(api *types.Api) fiber.Handler {
-	logger := utils.Logger()
+	logger := global.Logger()
 	db := api.Deps.DB
 	res200 := response.NewResponse(fiber.StatusOK, "Token was revoked successfully.")
 	return func(ctx *fiber.Ctx) error {
 		token := strings.TrimSpace(ctx.FormValue("token"))
+		// TODO: Add authorization checks for token creation roles
 		if token == "" {
 			return response.From(ctx, res200)
 		}

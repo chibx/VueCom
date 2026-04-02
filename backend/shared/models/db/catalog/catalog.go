@@ -6,11 +6,17 @@ import (
 
 // CREATE TYPE promo_code_type AS ENUM ('percentage', 'fixed_amount', 'free_shipping')
 type PromoCodeType string
+type MediaType string
 
 const (
 	PromoCodePercent  PromoCodeType = "percentage"
 	PromoCodeFixed    PromoCodeType = "fixed_amount"
 	PromoCodeShipping PromoCodeType = "free_shipping"
+)
+
+const (
+	TYPE_VIDEO MediaType = "vd"
+	TYPE_IMAGE MediaType = "img"
 )
 
 type Attribute struct {
@@ -69,32 +75,72 @@ type ProductTags struct {
 	TagID     uint `gorm:"primaryKey;autoIncrement:false;"`
 }
 
+type MediaFolder struct {
+	ID        uint `gorm:"primaryKey"`
+	ParentId  uint
+	Name      string
+	CreatedAt time.Time
+}
+
+type Media struct {
+	ID           uint
+	FolderId     uint
+	Type         MediaType
+	Url          string
+	ThumbnailUrl string
+	CreatedAt    time.Time
+	ExternalId   string
+	FileName     string
+	MimeType     string
+	SizeBytes    uint
+}
+
 type Product struct {
-	ID               uint       `gorm:"primarykey" redis:"id"`
+	ID               uint32     `gorm:"primarykey" redis:"id"`
 	UpdatedAt        time.Time  `gorm:"" redis:"updated_at"`
 	CreatedAt        time.Time  `gorm:"" redis:"created_at"`
-	Name             string     `json:"name" gorm:"not null;index;type:text" redis:"name"`
-	SKU              string     `json:"sku" gorm:"not null;index" redis:"sku"`
-	BasePrice        float64    `json:"base_price" gorm:"not null;type:numeric(15, 2)" redis:"price"`
-	SalePrice        float64    `json:"sale_price" gorm:"not null;type:numeric(15, 2)" redis:"price"`
-	DiscountPeriod   *time.Time `json:"discount_period" gorm:""`
-	Enabled          bool       `json:"enabled" gorm:"default:TRUE;not null"`
-	ShortDescription string     `json:"short_description"`
-	FullDescription  string     `json:"full_description"`
-	Slug             string     `json:"slug" redis:"slug"`
-	Weight           *float64   `json:"weight" redis:"weight"`
-	ImageUrl         *string    `json:"image_url,omitempty" gorm:"" redis:"image_url"`
-	MetaTitle        *string    `json:"meta_title,omitempty" redis:"meta_title"`
-	MetaDescription  *string    `json:"meta_description,omitempty" redis:"meta_title"`
-	SearchKeywords   *string    `json:"search_keywords" gorm:"column:search_keywords;" redis:"search_keywords"`
-	ParentID         *uint      `json:"parent_id" redis:"parent_id"`
-	PresetID         *uint      `json:"preset_id" gorm:"index" redis:"preset_id"`
-	Parent           *Product   `json:"-" gorm:"foreignKey:ParentID"`
-	Preset           *Preset    `json:"-" gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;" redis:"-"`
-	Categories       []Category `json:"-" gorm:"many2many:product_category_values;" redis:"-"`
-	Tags             []Tag      `json:"-" gorm:"many2many:product_tags;" redis:"-"`
-	// DscPercent  float64   `json:"dsc_percent" gorm:"type:numeric(5, 2)"`
+	Name             string     `gorm:"not null;index;type:text" redis:"name"`
+	SKU              string     `gorm:"not null;index" redis:"sku"`
+	BasePrice        float64    `redis:"base_price" gorm:"not null;type:numeric(15, 2)"`
+	SalePrice        float64    `redis:"sale_price" gorm:"not null;type:numeric(15, 2)"`
+	DiscountStart    *time.Time `redis:"discount_start"`
+	DiscountEnd      *time.Time `redis:"discount_end"`
+	IsNew            bool       `redis:"is_new"`
+	NewFrom          *time.Time `redis:"new_from"`
+	NewTo            *time.Time `reids:"new_to"`
+	CountryOfManf    uint32     `gorm:"column:country_of_manufacture;" redis:"coun_of_manf"`
+	Enabled          bool       `redis:"enabled" gorm:"default:TRUE;not null"`
+	ShortDescription string     `redis:"short_description"`
+	FullDescription  string     `redis:"full_description"`
+	Slug             string     `redis:"slug"`
+	Weight           *float64   `redis:"weight"`
+	BrandId          uint32     `redis:"brand_id"`
+	ColorId          uint32     `redis:"color_id"`
+	MetaTitle        *string    `redis:"meta_title"`
+	MetaDescription  *string    `redis:"meta_title"`
+	SearchKeywords   *string    `gorm:"column:search_keywords;" redis:"search_keywords"`
+	ParentID         *uint32    `redis:"parent_id"`
+	PresetID         *uint32    `gorm:"index" redis:"preset_id"`
+	Parent           *Product   `gorm:"foreignKey:ParentID"`
+	Preset           *Preset    `gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;" redis:"-"`
+	Categories       []Category `gorm:"many2many:product_category_values;" redis:"-"`
+	Tags             []Tag      `gorm:"many2many:product_tags;" redis:"-"`
 	// Categories  []Category `gorm:"many2many:product_category_values;foreignkey:ID;joinforeignKey:ProductId;References:ID;joinReferences:CategoryId;"`
+}
+
+type ProductRelation struct {
+	SourceProductID uint64 `gorm:"not null"`
+	TargetProductID uint64 `gorm:"not null"`
+	RelationType    string `gorm:"not null"`
+	SortOrder       int32  `gorm:"default:0"`
+	CreatedAt       time.Time
+}
+
+type ProductMedia struct {
+	ProductId uint32
+	MediaId   uint64
+	SortOrder uint32
+	IsMain    bool
 }
 
 type ProductCategoryValues struct {

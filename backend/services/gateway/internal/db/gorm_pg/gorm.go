@@ -11,6 +11,7 @@ var customerR *customerRepository
 var productR *productRepository
 var categoryR *categoryRepository
 var ordersR *orderRepository
+var rbacR *rbacRepository
 var inventoryR *inventoryRepository
 var appdataR *appdataRepository
 
@@ -57,6 +58,13 @@ func (d *GormPGDatabase) Orders() *orderRepository {
 		ordersR = &orderRepository{db: d.db}
 	}
 	return ordersR
+}
+
+func (d *GormPGDatabase) Rbac() *rbacRepository {
+	if rbacR == nil {
+		rbacR = &rbacRepository{db: d.db}
+	}
+	return rbacR
 }
 
 func (d *GormPGDatabase) Inventory() *inventoryRepository {

@@ -9,6 +9,7 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/auth"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
@@ -53,7 +54,7 @@ func (req *CreateOwnerRequest) Validate() error {
 
 func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.Api, c *fiber.Ctx) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
-	logger := utils.Logger()
+	logger := global.Logger()
 
 	passwordHash, err := auth.GenerateHashFromString(req.Password, auth.DefaultHashParams)
 	if err != nil {
@@ -111,7 +112,7 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 		// TODO: I need to have a way to lookup a secure token (sent to the user through email) in the request url
 		// c.Query("login_token"), then delete the token from the database,
 		// instead of this
-		RoleID:          &roleId,
+		RoleID:          roleId,
 		IsEmailVerified: true,
 	}
 
@@ -127,7 +128,7 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 
 func (req *CreateBackendUserRequest) ToDBBackendUser(ctx context.Context, api *types.Api, c *fiber.Ctx) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
-	logger := utils.Logger()
+	logger := global.Logger()
 
 	passwordHash, err := auth.GenerateHashFromString(req.Password, auth.DefaultHashParams)
 	if err != nil {

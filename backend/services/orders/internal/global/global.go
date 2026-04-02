@@ -7,12 +7,20 @@ import (
 	"time"
 
 	"github.com/chibx/vuecom/backend/services/orders/internal/db"
+	"github.com/chibx/vuecom/backend/shared/types"
 
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+)
+
+var Logger = newLogger("[Orders]: ")
+
+var (
+	Repo  = db.NewOrderDB(newDB())
+	Redis = newRedis()
 )
 
 func getEnv(env string, sub ...string) string {
@@ -28,11 +36,11 @@ func getEnv(env string, sub ...string) string {
 
 func loadPostgresDSN() string {
 	// "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable"
-	host := getEnv("ORDER_PG_HOST")
-	user := getEnv("ORDER_PG_USER")
-	passwd := getEnv("ORDER_PG_PASSWD")
+	host := getEnv("APP_PG_HOST")
+	user := getEnv("APP_PG_USER")
+	passwd := getEnv("APP_PG_PASSWORD")
 	dbName := getEnv("ORDER_PG_DBNAME")
-	port := getEnv("ORDER_PG_PORT")
+	port := getEnv("APP_PG_PORT")
 
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
 }
@@ -48,10 +56,10 @@ func newDB() *gorm.DB {
 }
 
 func newRedis() *redis.Client {
-	redisUrl := getEnv("ORDER_REDIS_URL")
+	redisUrl := getEnv("APP_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
-		panic("ORDER_REDIS_URL should be set!!!")
+		panic("APP_REDIS_URL should be set!!!")
 	}
 
 	client := redis.NewClient(opts)
@@ -63,7 +71,7 @@ func newRedis() *redis.Client {
 	return client
 }
 
-func newLogger() *zap.Logger {
+func newLogger(prefix string) *zap.Logger {
 	writer := zapcore.AddSync(os.Stdout) // Use standard output as the log target
 	zapPreset := zap.NewProductionEncoderConfig()
 	zapPreset.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -77,11 +85,9 @@ func newLogger() *zap.Logger {
 
 	logger := zap.New(core)
 
+	logger = logger.WithOptions(zap.WrapCore(func(c zapcore.Core) zapcore.Core {
+		return types.NewZapPrefix(c, prefix)
+	}))
+
 	return logger
 }
-
-var (
-	Repo   = db.NewOrderDB(newDB())
-	Logger = newLogger()
-	Redis  = newRedis()
-)

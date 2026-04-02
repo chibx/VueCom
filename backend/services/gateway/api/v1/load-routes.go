@@ -14,15 +14,15 @@ import (
 
 	// "github.com/chibx/vuecom/backend/services/gateway/internal/constants"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func HandleRegisterRoute(api *types.Api) fiber.Handler {
 	db := api.Deps.DB
-	logger := utils.Logger()
+	logger := global.Logger()
 
 	return func(ctx *fiber.Ctx) error {
 		token := strings.TrimSpace(ctx.Params("token"))

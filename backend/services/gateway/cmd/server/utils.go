@@ -13,8 +13,10 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/config"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/db/gorm_pg"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
+	sharedTypes "github.com/chibx/vuecom/backend/shared/types"
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -69,7 +71,7 @@ func plugCloudinary(api *types.Api) {
 }
 
 func plugDB(api *types.Api) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	dsn := loadPostgresDSN()
 	var db *gorm.DB
 	var err error
@@ -96,7 +98,7 @@ func plugDB(api *types.Api) {
 }
 
 func plugRedis(api *types.Api) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	redisUrl := getEnv("APP_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
@@ -147,7 +149,7 @@ func setupLimiter(api *types.Api) {
 // }
 
 func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	appData, err := api.Deps.DB.AppData().GetAppData(context.Background())
 
 	if err != nil {
@@ -164,7 +166,7 @@ func appIfInitialized(api *types.Api) (*appModels.AppData, error) {
 }
 
 func checkIfOwnerExists(api *types.Api) (bool, error) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	hasAdmin, err := api.Deps.DB.BackendUsers().HasAdmin(context.Background())
 
 	if err != nil {
@@ -176,7 +178,7 @@ func checkIfOwnerExists(api *types.Api) (bool, error) {
 	return hasAdmin, nil
 }
 
-func initLogger() {
+func initLogger(prefix string) {
 	writer := zapcore.AddSync(os.Stdout) // Use standard output as the log target
 	zapPreset := zap.NewProductionEncoderConfig()
 	zapPreset.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -190,12 +192,16 @@ func initLogger() {
 
 	logger := zap.New(core)
 
-	utils.SetLogger(logger)
+	logger = logger.WithOptions(zap.WrapCore(func(c zapcore.Core) zapcore.Core {
+		return sharedTypes.NewZapPrefix(c, prefix)
+	}))
+
+	global.SetLogger(logger)
 	// v1_api.Deps.Logger = logger
 }
 
 func initServer(_ *fiber.App, v1_api *types.Api) {
-	initLogger()
+	initLogger("[Gateway]: ")
 	plugDB(v1_api)
 	plugRedis(v1_api)
 	setupLimiter(v1_api)

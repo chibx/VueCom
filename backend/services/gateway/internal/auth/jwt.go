@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 	"go.uber.org/zap"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -57,7 +57,7 @@ func GenerateCustomerAccessToken(api *types.Api, customerId int) (string, error)
 }
 
 func ValidateBackendAccessToken(api *types.Api, tokenString string, secretKey []byte) (*JWTField, error) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -81,7 +81,7 @@ func ValidateBackendAccessToken(api *types.Api, tokenString string, secretKey []
 }
 
 func ValidateCustomerAccessToken(api *types.Api, tokenString string, secretKey []byte) (*JWTField, error) {
-	logger := utils.Logger()
+	logger := global.Logger()
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

@@ -10,6 +10,7 @@ import (
 	backendusers "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/backend_users"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 
@@ -37,7 +38,7 @@ func DoesOwnerExist(ctx *fiber.Ctx, api *types.Api) (bool, error) {
 // TODO: Validate the business name and the admin route to avoid clashes with url and also storage buckets
 
 func InitializeApp(api *types.Api) fiber.Handler {
-	logger := utils.Logger()
+	logger := global.Logger()
 
 	return func(ctx *fiber.Ctx) error {
 		if api.IsAppInit {
@@ -115,7 +116,7 @@ func InitializeApp(api *types.Api) fiber.Handler {
 }
 
 func RegisterOwner(api *types.Api) fiber.Handler {
-	logger := utils.Logger()
+	logger := global.Logger()
 
 	return func(ctx *fiber.Ctx) error {
 		if api.HasAdmin {

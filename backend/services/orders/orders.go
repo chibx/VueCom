@@ -1,7 +1,24 @@
 package order_service
 
-type catalogService struct{}
+import (
+	"github.com/chibx/vuecom/backend/services/orders/internal/global"
+	"github.com/chibx/vuecom/backend/services/orders/internal/pubsub"
+	ordersPr "github.com/chibx/vuecom/backend/shared/proto/go/orders"
+	"google.golang.org/grpc"
+)
 
-func NewCatalogService() *catalogService {
-	return &catalogService{}
+type orderService struct{}
+
+func NewOrderService() *orderService {
+	return &orderService{}
+}
+
+func Register(s *grpc.Server) {
+	pubsub.InitPubSub()
+	ordersPr.RegisterOrderServiceServer(s, &Service{})
+}
+
+func Destroy() {
+	pubsub.DefPubSub.Close()
+	global.Redis.Close()
 }

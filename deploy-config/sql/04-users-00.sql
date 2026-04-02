@@ -71,12 +71,17 @@ CREATE TABLE backend_users (
     country_id INT,
     is_2fa_enabled BOOLEAN DEFAULT FALSE,
     is_email_verified BOOLEAN DEFAULT FALSE,
+    excluded_permissions TEXT[] DEFAULT '{}',
+    additional_permissions TEXT[] DEFAULT '{}',
     FOREIGN KEY (role_id) REFERENCES backend_roles (id),
     FOREIGN KEY (created_by) REFERENCES backend_users(id),
     FOREIGN KEY (country_id) REFERENCES countries(id)
 );
 
 CREATE INDEX IF NOT EXISTS backend_user_role_idx ON backend_users(role);
+CREATE INDEX IF NOT EXISTS idx_backend_users_additional_perms ON backend_users USING GIN (additional_permissions);
+CREATE INDEX IF NOT EXISTS idx_backend_users_excluded_perms ON backend_users USING GIN (excluded_permissions);
+
 
 CREATE TABLE backend_signup_tokens (
     id SERIAL PRIMARY KEY,

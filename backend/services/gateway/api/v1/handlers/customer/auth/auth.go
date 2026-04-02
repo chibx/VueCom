@@ -3,13 +3,13 @@ package auth
 import (
 	"fmt"
 
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
 func Login(api *types.Api) fiber.Handler {
-	logger := utils.Logger()
+	logger := global.Logger()
 	return func(ctx *fiber.Ctx) error {
 		form, err := ctx.MultipartForm()
 		if err != nil {
@@ -24,7 +24,7 @@ func Login(api *types.Api) fiber.Handler {
 }
 
 func Register(api *types.Api) fiber.Handler {
-	logger := utils.Logger()
+	logger := global.Logger()
 	return func(ctx *fiber.Ctx) error {
 		form, err := ctx.MultipartForm()
 		if err != nil {

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/chibx/vuecom/backend/services/catalog/internal/db"
+	"github.com/chibx/vuecom/backend/shared/types"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/redis/go-redis/v9"
@@ -16,7 +17,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var Logger = newLogger()
+var Logger = newLogger("[Catalog]: ")
 
 var (
 	Repo  = db.NewCatalogDB(newDB())
@@ -113,7 +114,7 @@ func newRedis() *redis.Client {
 	return nil
 }
 
-func newLogger() *zap.Logger {
+func newLogger(prefix string) *zap.Logger {
 	writer := zapcore.AddSync(os.Stdout) // Use standard output as the log target
 	zapPreset := zap.NewProductionEncoderConfig()
 	zapPreset.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -126,6 +127,10 @@ func newLogger() *zap.Logger {
 	core = zapcore.NewSamplerWithOptions(core, time.Second, 10, 5)
 
 	logger := zap.New(core)
+
+	logger = logger.WithOptions(zap.WrapCore(func(c zapcore.Core) zapcore.Core {
+		return types.NewZapPrefix(c, prefix)
+	}))
 
 	return logger
 }

@@ -1,4 +1,4 @@
-package order_service
+package payment_service
 
 import (
 	"context"

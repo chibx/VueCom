@@ -1,4 +1,4 @@
-package order_service
+package inventory_service
 
 import (
 	"context"

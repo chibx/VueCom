@@ -9,6 +9,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/catalog/internal/db"
 
 	"github.com/cloudinary/cloudinary-go/v2"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -17,6 +18,8 @@ import (
 )
 
 var Logger = newLogger()
+var AmqpConn *amqp.Connection
+var AmqpChan *amqp.Channel
 
 var (
 	Repo  = db.NewCatalogDB(newDB())

@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/chibx/vuecom/backend/services/orders/internal/db"
+	"github.com/chibx/vuecom/backend/services/inventory/internal/db"
 	amqp "github.com/rabbitmq/amqp091-go"
 
 	"github.com/redis/go-redis/v9"
@@ -21,7 +21,7 @@ var AmqpConn *amqp.Connection
 var AmqpChan *amqp.Channel
 
 var (
-	Repo  = db.NewOrderDB(newDB())
+	Repo  = db.NewInventoryDB(newDB())
 	Redis = newRedis()
 )
 
@@ -41,7 +41,7 @@ func loadPostgresDSN() string {
 	host := getEnv("APP_PG_HOST")
 	user := getEnv("APP_PG_USER")
 	passwd := getEnv("APP_PG_PASSWORD")
-	dbName := getEnv("ORDER_PG_DBNAME")
+	dbName := getEnv("INVENTORY_PG_DBNAME")
 	port := getEnv("APP_PG_PORT")
 
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", host, user, passwd, dbName, port)
@@ -61,7 +61,7 @@ func newRedis() *redis.Client {
 	redisUrl := getEnv("APP_REDIS_URL")
 	opts, err := redis.ParseURL(redisUrl)
 	if err != nil {
-		panic("APP_REDIS_URL should be set!!!")
+		panic("APP_REDIS_URL should be set correctly!!!")
 	}
 
 	client := redis.NewClient(opts)

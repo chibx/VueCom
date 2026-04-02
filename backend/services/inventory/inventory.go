@@ -1,16 +1,10 @@
-package order_service
+package inventory_service
 
 import (
-	"github.com/chibx/vuecom/backend/services/orders/internal/global"
+	"github.com/chibx/vuecom/backend/services/inventory/internal/global"
 	ordersPr "github.com/chibx/vuecom/backend/shared/proto/go/orders"
 	"google.golang.org/grpc"
 )
-
-type orderService struct{}
-
-func NewOrderService() *orderService {
-	return &orderService{}
-}
 
 func Register(s *grpc.Server) {
 	ordersPr.RegisterOrderServiceServer(s, &Service{})

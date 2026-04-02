@@ -6,6 +6,10 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+func AsPointer[T any](e T) *T {
+	return &e
+}
+
 func NilOrPointer[T any](e *T) *T {
 	if e == nil {
 		return nil

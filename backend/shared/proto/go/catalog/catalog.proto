@@ -34,14 +34,14 @@ message CreateProductRequest {
   bool enabled = 12;
   string short_description = 13;
   string full_description = 14;
-  int32 quantity = 15;
+  uint32 quantity = 15;
   string slug = 16;
   uint32 country_of_manf = 17;
 
   // Handled as optional to represent *float64
   optional double weight = 18;
 
-  int32 brand_id = 19;
+  uint32 brand_id = 19;
   uint32 color_id = 20;
   repeated uint32 medias = 21;
   string meta_title = 22;
@@ -61,5 +61,5 @@ message CreateProductRequest {
 }
 
 message CreateProductResponse {
-  uint64 id = 1;
+  uint32 id = 1;
 }

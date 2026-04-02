@@ -96,7 +96,7 @@ type Media struct {
 }
 
 type Product struct {
-	ID               uint       `gorm:"primarykey" redis:"id"`
+	ID               uint32     `gorm:"primarykey" redis:"id"`
 	UpdatedAt        time.Time  `gorm:"" redis:"updated_at"`
 	CreatedAt        time.Time  `gorm:"" redis:"created_at"`
 	Name             string     `gorm:"not null;index;type:text" redis:"name"`
@@ -108,19 +108,19 @@ type Product struct {
 	IsNew            bool       `redis:"is_new"`
 	NewFrom          *time.Time `redis:"new_from"`
 	NewTo            *time.Time `reids:"new_to"`
-	CountryOfManf    uint       `gorm:"column:country_of_manufacture;" redis:"coun_of_manf"`
+	CountryOfManf    uint32     `gorm:"column:country_of_manufacture;" redis:"coun_of_manf"`
 	Enabled          bool       `redis:"enabled" gorm:"default:TRUE;not null"`
 	ShortDescription string     `redis:"short_description"`
 	FullDescription  string     `redis:"full_description"`
 	Slug             string     `redis:"slug"`
 	Weight           *float64   `redis:"weight"`
-	BrandId          int        `redis:"brand_id"`
-	ColorId          int        `redis:"color_id"`
+	BrandId          uint32     `redis:"brand_id"`
+	ColorId          uint32     `redis:"color_id"`
 	MetaTitle        *string    `redis:"meta_title"`
 	MetaDescription  *string    `redis:"meta_title"`
 	SearchKeywords   *string    `gorm:"column:search_keywords;" redis:"search_keywords"`
-	ParentID         *uint      `redis:"parent_id"`
-	PresetID         *uint      `gorm:"index" redis:"preset_id"`
+	ParentID         *uint32    `redis:"parent_id"`
+	PresetID         *uint32    `gorm:"index" redis:"preset_id"`
 	Parent           *Product   `gorm:"foreignKey:ParentID"`
 	Preset           *Preset    `gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;" redis:"-"`
 	Categories       []Category `gorm:"many2many:product_category_values;" redis:"-"`
@@ -132,14 +132,14 @@ type ProductRelation struct {
 	SourceProductID uint64 `gorm:"not null"`
 	TargetProductID uint64 `gorm:"not null"`
 	RelationType    string `gorm:"not null"`
-	SortOrder       int    `gorm:"default:0"`
+	SortOrder       int32  `gorm:"default:0"`
 	CreatedAt       time.Time
 }
 
 type ProductMedia struct {
-	ProductId uint
-	MediaId   uint
-	SortOrder uint
+	ProductId uint32
+	MediaId   uint64
+	SortOrder uint32
 	IsMain    bool
 }
 

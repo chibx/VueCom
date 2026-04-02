@@ -40,12 +40,12 @@ type CreateProductRequest struct {
 	Enabled          bool                   `protobuf:"varint,12,opt,name=enabled,proto3" json:"enabled,omitempty"`
 	ShortDescription string                 `protobuf:"bytes,13,opt,name=short_description,json=shortDescription,proto3" json:"short_description,omitempty"`
 	FullDescription  string                 `protobuf:"bytes,14,opt,name=full_description,json=fullDescription,proto3" json:"full_description,omitempty"`
-	Quantity         int32                  `protobuf:"varint,15,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Quantity         uint32                 `protobuf:"varint,15,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	Slug             string                 `protobuf:"bytes,16,opt,name=slug,proto3" json:"slug,omitempty"`
 	CountryOfManf    uint32                 `protobuf:"varint,17,opt,name=country_of_manf,json=countryOfManf,proto3" json:"country_of_manf,omitempty"`
 	// Handled as optional to represent *float64
 	Weight          *float64 `protobuf:"fixed64,18,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
-	BrandId         int32    `protobuf:"varint,19,opt,name=brand_id,json=brandId,proto3" json:"brand_id,omitempty"`
+	BrandId         uint32   `protobuf:"varint,19,opt,name=brand_id,json=brandId,proto3" json:"brand_id,omitempty"`
 	ColorId         uint32   `protobuf:"varint,20,opt,name=color_id,json=colorId,proto3" json:"color_id,omitempty"`
 	Medias          []uint32 `protobuf:"varint,21,rep,packed,name=medias,proto3" json:"medias,omitempty"`
 	MetaTitle       string   `protobuf:"bytes,22,opt,name=meta_title,json=metaTitle,proto3" json:"meta_title,omitempty"`
@@ -190,7 +190,7 @@ func (x *CreateProductRequest) GetFullDescription() string {
 	return ""
 }
 
-func (x *CreateProductRequest) GetQuantity() int32 {
+func (x *CreateProductRequest) GetQuantity() uint32 {
 	if x != nil {
 		return x.Quantity
 	}
@@ -218,7 +218,7 @@ func (x *CreateProductRequest) GetWeight() float64 {
 	return 0
 }
 
-func (x *CreateProductRequest) GetBrandId() int32 {
+func (x *CreateProductRequest) GetBrandId() uint32 {
 	if x != nil {
 		return x.BrandId
 	}
@@ -297,7 +297,7 @@ func (x *CreateProductRequest) GetPresetValues() *structpb.Struct {
 
 type CreateProductResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -332,7 +332,7 @@ func (*CreateProductResponse) Descriptor() ([]byte, []int) {
 	return file_catalog_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreateProductResponse) GetId() uint64 {
+func (x *CreateProductResponse) GetId() uint32 {
 	if x != nil {
 		return x.Id
 	}
@@ -365,11 +365,11 @@ const file_catalog_proto_rawDesc = "" +
 	"\aenabled\x18\f \x01(\bR\aenabled\x12+\n" +
 	"\x11short_description\x18\r \x01(\tR\x10shortDescription\x12)\n" +
 	"\x10full_description\x18\x0e \x01(\tR\x0ffullDescription\x12\x1a\n" +
-	"\bquantity\x18\x0f \x01(\x05R\bquantity\x12\x12\n" +
+	"\bquantity\x18\x0f \x01(\rR\bquantity\x12\x12\n" +
 	"\x04slug\x18\x10 \x01(\tR\x04slug\x12&\n" +
 	"\x0fcountry_of_manf\x18\x11 \x01(\rR\rcountryOfManf\x12\x1b\n" +
 	"\x06weight\x18\x12 \x01(\x01H\x00R\x06weight\x88\x01\x01\x12\x19\n" +
-	"\bbrand_id\x18\x13 \x01(\x05R\abrandId\x12\x19\n" +
+	"\bbrand_id\x18\x13 \x01(\rR\abrandId\x12\x19\n" +
 	"\bcolor_id\x18\x14 \x01(\rR\acolorId\x12\x16\n" +
 	"\x06medias\x18\x15 \x03(\rR\x06medias\x12\x1d\n" +
 	"\n" +
@@ -387,7 +387,7 @@ const file_catalog_proto_rawDesc = "" +
 	"\n" +
 	"_preset_id\"'\n" +
 	"\x15CreateProductResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id2\xf7\x01\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id2\xf7\x01\n" +
 	"\x0eCatalogService\x12T\n" +
 	"\rCreateProduct\x12 .catalog.v1.CreateProductRequest\x1a!.catalog.v1.CreateProductResponse\x12E\n" +
 	"\n" +

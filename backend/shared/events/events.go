@@ -4,6 +4,15 @@ var Queues = []string{"vuecom" /*, "email" */}
 
 type eventType string
 
+const (
+	INVENTORY_QUEUE    = "q_inventory"
+	CATALOG_QUEUE      = "q_catalog"
+	NOTIFICATION_QUEUE = "q_notifications"
+	ORDERS_QUEUE       = "q_orders"
+	PAYMENT_QUEUE      = "q_payment"
+	WEBHOOKS_QUEUE     = "q_webhooks"
+)
+
 // Catalog
 const (
 	PRODUCT_CREATION eventType = "product:creation"

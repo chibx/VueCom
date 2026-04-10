@@ -148,6 +148,10 @@ type ProductCategoryValues struct {
 	CategoryID uint `gorm:"primaryKey;autoIncrement:false;"`
 }
 
+func (p *ProductCategoryValues) TableName() string {
+	return "product_category_values"
+}
+
 type PromoCode struct {
 	ID                 uint             `json:"id" gorm:"primarykey" redis:"id"`
 	Name               string           `json:"name" gorm:"not null;index;type:text" redis:"name"`

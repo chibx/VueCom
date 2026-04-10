@@ -32,6 +32,18 @@ func (s *Service) CreateProduct(ctx context.Context, req *catalogPr.CreateProduc
 			return err
 		}
 
+		err = c.CreateProductRelation(
+			ctx,
+			product.ID,
+			req.RelatedProducts,
+			req.UpSellProducts,
+			req.CrossSell,
+		)
+		if err != nil {
+			global.Logger.Error("Failed to insert product to product relationship [Tx 3]", zap.Error(err))
+			return err
+		}
+
 		return nil
 	})
 	if err != nil {

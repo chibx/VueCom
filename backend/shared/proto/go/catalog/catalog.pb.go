@@ -58,6 +58,7 @@ type CreateProductRequest struct {
 	PresetId        *uint32  `protobuf:"varint,28,opt,name=preset_id,json=presetId,proto3,oneof" json:"preset_id,omitempty"`
 	// google.protobuf.Struct is the best fit for map[string]any
 	PresetValues  *structpb.Struct `protobuf:"bytes,29,opt,name=preset_values,json=presetValues,proto3" json:"preset_values,omitempty"`
+	ParentId      *uint32          `protobuf:"varint,30,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -295,6 +296,13 @@ func (x *CreateProductRequest) GetPresetValues() *structpb.Struct {
 	return nil
 }
 
+func (x *CreateProductRequest) GetParentId() uint32 {
+	if x != nil && x.ParentId != nil {
+		return *x.ParentId
+	}
+	return 0
+}
+
 type CreateProductResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -344,7 +352,7 @@ var File_catalog_proto protoreflect.FileDescriptor
 const file_catalog_proto_rawDesc = "" +
 	"\n" +
 	"\rcatalog.proto\x12\n" +
-	"catalog.v1\x1a\x0ecategory.proto\x1a\rproduct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe6\b\n" +
+	"catalog.v1\x1a\x0ecategory.proto\x1a\rproduct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x96\t\n" +
 	"\x14CreateProductRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
 	"\x03sku\x18\x02 \x01(\tR\x03sku\x12\x1d\n" +
@@ -381,11 +389,14 @@ const file_catalog_proto_rawDesc = "" +
 	"\n" +
 	"cross_sell\x18\x1b \x03(\rR\tcrossSell\x12 \n" +
 	"\tpreset_id\x18\x1c \x01(\rH\x02R\bpresetId\x88\x01\x01\x12<\n" +
-	"\rpreset_values\x18\x1d \x01(\v2\x17.google.protobuf.StructR\fpresetValuesB\t\n" +
+	"\rpreset_values\x18\x1d \x01(\v2\x17.google.protobuf.StructR\fpresetValues\x12 \n" +
+	"\tparent_id\x18\x1e \x01(\rH\x03R\bparentId\x88\x01\x01B\t\n" +
 	"\a_weightB\x12\n" +
 	"\x10_search_keywordsB\f\n" +
 	"\n" +
-	"_preset_id\"'\n" +
+	"_preset_idB\f\n" +
+	"\n" +
+	"_parent_id\"'\n" +
 	"\x15CreateProductResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\rR\x02id2\xf7\x01\n" +
 	"\x0eCatalogService\x12T\n" +

@@ -58,6 +58,7 @@ message CreateProductRequest {
 
   // google.protobuf.Struct is the best fit for map[string]any
   google.protobuf.Struct preset_values = 29;
+  optional uint32 parent_id = 30;
 }
 
 message CreateProductResponse {

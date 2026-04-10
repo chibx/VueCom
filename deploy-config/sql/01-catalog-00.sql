@@ -115,9 +115,8 @@ CREATE TYPE product_relation_type AS ENUM ('related', 'upsell', 'cross_sell');
 CREATE TABLE product_relations (
     source_product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     target_product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-    relation_type      product_relation_type NOT NULL,
+    relation_type      SMALLINT NOT NULL,
     sort_order         INTEGER DEFAULT 0,
-    created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT unique_relation UNIQUE (source_product_id, target_product_id, relation_type)
 );
 

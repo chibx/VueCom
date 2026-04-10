@@ -133,7 +133,6 @@ type ProductRelation struct {
 	TargetProductID uint64 `gorm:"not null"`
 	RelationType    string `gorm:"not null"`
 	SortOrder       int32  `gorm:"default:0"`
-	CreatedAt       time.Time
 }
 
 type ProductMedia struct {

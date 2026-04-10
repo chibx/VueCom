@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync/atomic"
 
+	"github.com/chibx/vuecom/backend/services/catalog/internal/db"
 	"github.com/chibx/vuecom/backend/services/catalog/internal/global"
 	"github.com/chibx/vuecom/backend/services/catalog/internal/utils"
 	catalogPr "github.com/chibx/vuecom/backend/shared/proto/go/catalog"
@@ -19,7 +20,15 @@ type Service struct {
 func (s *Service) CreateProduct(ctx context.Context, req *catalogPr.CreateProductRequest) (*catalogPr.CreateProductResponse, error) {
 	product := utils.CreateProdRpcToDBModel(req)
 
-	err := global.Repo.CreateProduct(ctx, product)
+	err := global.Repo.RunInTx(func(c *db.CatalogDB) error {
+		err := c.CreateProduct(ctx, product)
+		if err != nil {
+			global.Logger.Error("Failed to create product [Tx 1]", zap.Error(err))
+			return err
+		}
+		// Add the preset values
+		return nil
+	})
 	if err != nil {
 		global.Logger.Error("Failed to create product", zap.Error(err))
 		return nil, err

@@ -26,7 +26,12 @@ func (s *Service) CreateProduct(ctx context.Context, req *catalogPr.CreateProduc
 			global.Logger.Error("Failed to create product [Tx 1]", zap.Error(err))
 			return err
 		}
-		// Add the preset values
+		err = c.CreateProductToCategory(ctx, product.ID, req.PresetValues)
+		if err != nil {
+			global.Logger.Error("Failed to insert product category relationship [Tx 2]", zap.Error(err))
+			return err
+		}
+
 		return nil
 	})
 	if err != nil {

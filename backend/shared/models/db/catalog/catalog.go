@@ -130,11 +130,11 @@ type Product struct {
 
 type ProductRelation struct {
 	/** From ID */
-	SourceProductID uint64 `gorm:"not null"`
+	SourceProductID uint32 `gorm:"not null"`
 	/** To ID */
-	TargetProductID uint64 `gorm:"not null"`
-	RelationType    string `gorm:"not null"`
-	SortOrder       int32  `gorm:"default:0"`
+	TargetProductID uint32 `gorm:"not null"`
+	RelationType    uint8  `gorm:"not null"`
+	SortOrder       uint16 `gorm:"default:0"`
 }
 
 type ProductMedia struct {

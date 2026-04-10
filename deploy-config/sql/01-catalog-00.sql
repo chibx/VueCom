@@ -111,7 +111,6 @@ CREATE INDEX idx_sku ON products (sku);
 CREATE INDEX idx_slug ON products (slug);
 
 
-CREATE TYPE product_relation_type AS ENUM ('related', 'upsell', 'cross_sell');
 CREATE TABLE product_relations (
     source_product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE, -- From
     target_product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE, -- To

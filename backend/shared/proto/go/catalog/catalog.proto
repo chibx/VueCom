@@ -2,9 +2,9 @@ syntax = "proto3";
 package catalog.v1;
 
 import "category.proto";
-import "product.proto";
+// import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/struct.proto";
+import "product.proto";
 
 // option go_package = ".";
 option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
@@ -55,11 +55,15 @@ message CreateProductRequest {
   repeated uint32 cross_sell = 27;
 
   optional uint32 preset_id = 28;
-
   // google.protobuf.Struct is the best fit for map[string]any
-  google.protobuf.Struct preset_values = 29;
+  // google.protobuf.Struct preset_values = 29;
+  repeated uint32 preset_values = 29;
   optional uint32 parent_id = 30;
 }
+
+// message UintList {
+//      repeated uint32 list = 1;
+// }
 
 message CreateProductResponse {
   uint32 id = 1;

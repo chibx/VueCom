@@ -25,7 +25,7 @@ func normalizeProdReq(prod *sharedReq.CreateProductReq) {
 
 }
 
-func productToRpc(s *sharedReq.CreateProductReq, parentId ...*uint32) (*catalog.CreateProductRequest, error) {
+func createProductToRpc(s *sharedReq.CreateProductReq, parentId ...*uint32) (*catalog.CreateProductRequest, error) {
 	// presetVal, err := structpb.NewStruct(s.PresetValues)
 	// if err != nil {
 	// 	return nil, err
@@ -66,5 +66,43 @@ func productToRpc(s *sharedReq.CreateProductReq, parentId ...*uint32) (*catalog.
 		ShortDescription: s.ShortDescription,
 		FullDescription:  s.FullDescription,
 		ParentId:         p_id,
+	}, nil
+}
+
+func getProductFromRpc(s *catalog.GetProductResponse) (*sharedReq.CreateProductReq, error) {
+	// var p_id *uint32
+	// if len(parentId) > 0 {
+	// 	p_id = parentId[0]
+	// }
+
+	return &sharedReq.CreateProductReq{
+		Name:             s.Name,
+		SKU:              s.Sku,
+		BasePrice:        s.BasePrice,
+		SalePrice:        s.SalePrice,
+		DiscountStart:    utils.AsPointer(s.DiscountStart.AsTime()),
+		DiscountEnd:      utils.AsPointer(s.DiscountEnd.AsTime()),
+		NewFrom:          utils.AsPointer(s.NewFrom.AsTime()),
+		NewTo:            utils.AsPointer(s.NewTo.AsTime()),
+		Weight:           s.Weight,
+		Quantity:         s.Quantity,
+		CountryOfManf:    s.CountryOfManf,
+		Slug:             s.Slug,
+		BrandId:          s.BrandId,
+		ColorId:          s.ColorId,
+		MetaTitle:        s.MetaTitle,
+		MetaDescription:  s.MetaDescription,
+		SearchKeywords:   s.SearchKeywords,
+		RelatedProducts:  s.RelatedProducts,
+		UpSellProducts:   s.UpSellProducts,
+		CrossSell:        s.CrossSell,
+		PresetID:         s.PresetId,
+		PresetValues:     s.PresetValues,
+		InStock:          s.InStock,
+		Categories:       s.Categories,
+		IsNew:            s.IsNew,
+		Enabled:          s.Enabled,
+		ShortDescription: s.ShortDescription,
+		FullDescription:  s.FullDescription,
 	}, nil
 }

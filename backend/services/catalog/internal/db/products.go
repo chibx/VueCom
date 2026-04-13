@@ -92,7 +92,7 @@ func (c *CatalogDB) CreateProductRelation(ctx context.Context, productId uint32,
 	return c.db.WithContext(ctx).Exec(finalSQL).Error
 }
 
-func (c *CatalogDB) GetProductById(ctx context.Context, id int) (*catModels.Product, error) {
+func (c *CatalogDB) GetProductById(ctx context.Context, id uint32) (*catModels.Product, error) {
 	product := &catModels.Product{}
 
 	err := c.db.WithContext(ctx).Where("id = ?", id).First(product).Error

@@ -17,7 +17,7 @@ func (c *customerRepository) CreateUser(ctx context.Context, user *userModels.Cu
 	return c.db.WithContext(ctx).Create(user).Error
 }
 
-func (c *customerRepository) GetUserById(ctx context.Context, id int) (*userModels.Customer, error) {
+func (c *customerRepository) GetUserById(ctx context.Context, id uint32) (*userModels.Customer, error) {
 	customer := &userModels.Customer{}
 	err := c.db.WithContext(ctx).First(customer, "id = ?", id).Error
 	if err != nil {

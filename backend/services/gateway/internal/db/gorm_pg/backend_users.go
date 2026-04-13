@@ -95,7 +95,7 @@ func (br *backendUserRepository) GetUserByNameForLogin(ctx context.Context, user
 	return user, nil
 }
 
-func (br *backendUserRepository) GetUserById(ctx context.Context, id int) (*userModels.BackendUser, error) {
+func (br *backendUserRepository) GetUserById(ctx context.Context, id uint32) (*userModels.BackendUser, error) {
 	backendUser := &userModels.BackendUser{}
 	err := br.db.WithContext(ctx).First(backendUser, "id = ?", id).Error
 	if err != nil {

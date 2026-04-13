@@ -25,7 +25,7 @@ func GetAppData(ctx context.Context, api *types.Api) (*appModels.AppData, error)
 	logger := global.Logger()
 	appData := new(appModels.AppData)
 
-	err := cache.Get(ctx, keys.APP_DATA_KEY).Scan(&appData)
+	err := cache.HGetAll(ctx, keys.APP_DATA_KEY).Scan(&appData)
 	if err != nil {
 		if !errors.Is(err, redis.Nil) {
 			logger.Error("Error fetching app data from redis", zap.Error(err))

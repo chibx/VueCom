@@ -8,7 +8,7 @@ import (
 
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
-	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/cache/keys"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
@@ -18,14 +18,14 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetBackendUserById(api *types.Api, id int, ctx context.Context) (*userModels.BackendUser, error) {
+func GetBackendUserById(api *types.Api, id uint32, ctx context.Context) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
 	logger := global.Logger()
 	backendUser := &userModels.BackendUser{}
 
 	// Try to get from cache first
-	err := cache.HGetAll(ctx, constants.BU_KEY+strconv.Itoa(id)).Scan(backendUser)
+	err := cache.HGetAll(ctx, keys.BackendUserKey(id)).Scan(backendUser)
 	notExist := backendUser.ID == 0
 
 	if err != nil || notExist {
@@ -38,8 +38,8 @@ func GetBackendUserById(api *types.Api, id int, ctx context.Context) (*userModel
 		backendUser, err = db.BackendUsers().GetUserById(ctx, id)
 
 		if errors.Is(err, serverErrors.ErrDBRecordNotFound) {
-			logger.Error("backend user" + strconv.Itoa(id) + "not found in db")
-			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User ID "+strconv.Itoa(id)+" not found. Consider logging in again")
+			logger.Error("backend user" + strconv.Itoa(int(id)) + "not found in db")
+			return nil, serverErrors.NewServerErr(fiber.StatusUnauthorized, "User ID "+strconv.Itoa(int(id))+" not found. Consider logging in again")
 		}
 
 		if err != nil {
@@ -51,9 +51,13 @@ func GetBackendUserById(api *types.Api, id int, ctx context.Context) (*userModel
 		go func() {
 			logger.Info("caching backend user")
 			_, err := cache.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
-				pipe.HSet(ctx, constants.BU_KEY+strconv.Itoa(id), backendUser)
-				pipe.Expire(ctx, constants.BU_KEY+strconv.Itoa(id), 5*time.Minute) // Global expiry on the key.
-				return nil
+				var err error
+				err = pipe.HSet(ctx, keys.BackendUserKey(id), backendUser).Err()
+				if err != nil {
+					return err
+				}
+				err = pipe.Expire(ctx, keys.BackendUserKey(id), 5*time.Minute).Err() // Global expiry on the key.
+				return err
 			})
 
 			if err != nil {

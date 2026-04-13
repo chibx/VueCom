@@ -7,7 +7,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
+	igrpc "github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 	"go.uber.org/zap"
@@ -47,10 +47,8 @@ func CreateProduct(api *types.Api) fiber.Handler {
 		if err != nil {
 			return response.FromFiberError(c, err500)
 		}
-		prodRpcResp, err := grpc.CatalogClient.CreateProduct(c.Context(), prodRpc)
+		prodRpcResp, err := igrpc.CatalogClient.CreateProduct(c.Context(), prodRpc)
 		_ = prodRpcResp.Id
-
-		// err = db.Products().CreateProduct(ctx.Context(), &product)
 
 		if err != nil {
 			return response.WriteResponse(c, fiber.StatusInternalServerError, "Error occurred creating product")

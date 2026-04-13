@@ -1,4 +1,4 @@
-package grpc
+package igrpc
 
 import (
 	catalog_service "github.com/chibx/vuecom/backend/services/catalog"

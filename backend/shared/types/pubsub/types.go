@@ -1,6 +1,6 @@
 package pubsub
 
-type CreateInventoryRec struct {
+type CreateInventoryReq struct {
 	ProductId uint32
 	Quantity  uint32
 }

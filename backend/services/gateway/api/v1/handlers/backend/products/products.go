@@ -6,31 +6,58 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
+	"go.uber.org/zap"
 
-	catModels "github.com/chibx/vuecom/backend/shared/models/db/catalog"
+	sharedReq "github.com/chibx/vuecom/backend/shared/types/request"
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
 )
 
-func CreateProduct(ctx *fiber.Ctx, api *types.Api) error {
-	db := api.Deps.DB
-	product := catModels.Product{}
+func CreateProduct(api *types.Api) fiber.Handler {
+	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating product, please try again.")
+	logger := global.Logger()
+	return func(c *fiber.Ctx) error {
+		var err error
 
-	err := ctx.BodyParser(&product)
+		reqBody := sharedReq.CreateProductReq{}
 
-	if err != nil {
-		return response.WriteResponse(ctx, fiber.StatusBadRequest, "Validation error")
+		err = c.BodyParser(&reqBody)
+		if err != nil {
+			return response.WriteResponse(c, fiber.StatusBadRequest, "Validation error")
+		}
+
+		err = utils.Validator().Struct(reqBody)
+		isFatal, errorBag := serverErrors.HandleValidationError(err)
+		if isFatal {
+			logger.Error("InvalidValidationError while creating a signup token", zap.Error(err))
+			return response.WriteResponse(c, fiber.ErrBadRequest.Code, err500.Message)
+		}
+		if len(errorBag) > 0 {
+			return response.WriteResponse(c, fiber.StatusBadRequest, "One or more fields are invalid", errorBag)
+		}
+
+		normalizeProdReq(&reqBody)
+
+		prodRpc, err := productToRpc(&reqBody)
+		if err != nil {
+			return response.FromFiberError(c, err500)
+		}
+		prodRpcResp, err := grpc.CatalogClient.CreateProduct(c.Context(), prodRpc)
+		_ = prodRpcResp.Id
+
+		// err = db.Products().CreateProduct(ctx.Context(), &product)
+
+		if err != nil {
+			return response.WriteResponse(c, fiber.StatusInternalServerError, "Error occurred creating product")
+		}
+
+		return response.WriteResponse(c, fiber.StatusCreated, "Product Created Succesfully")
 	}
-
-	err = db.Products().CreateProduct(ctx.Context(), &product)
-
-	if err != nil {
-		return response.WriteResponse(ctx, fiber.StatusInternalServerError, "Error occurred creating product")
-	}
-
-	return response.WriteResponse(ctx, fiber.StatusCreated, "Product Created Succesfully")
 }
 
 func UpdateProduct(ctx *fiber.Ctx) error {

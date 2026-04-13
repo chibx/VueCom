@@ -6,8 +6,11 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/catalog/internal/db"
 	"github.com/chibx/vuecom/backend/services/catalog/internal/global"
+	"github.com/chibx/vuecom/backend/services/catalog/internal/pubsub"
 	"github.com/chibx/vuecom/backend/services/catalog/internal/utils"
+	"github.com/chibx/vuecom/backend/shared/events"
 	catalogPr "github.com/chibx/vuecom/backend/shared/proto/go/catalog"
+	pubTypes "github.com/chibx/vuecom/backend/shared/types/pubsub"
 	"go.uber.org/zap"
 )
 
@@ -48,6 +51,14 @@ func (s *Service) CreateProduct(ctx context.Context, req *catalogPr.CreateProduc
 	})
 	if err != nil {
 		global.Logger.Error("Failed to create product", zap.Error(err))
+		return nil, err
+	}
+	err = pubsub.DefPubSub.Publish(events.INVENTORY_QUEUE, string(events.PRODUCT_CREATION), pubTypes.CreateInventoryReq{
+		ProductId: product.ID,
+		Quantity:  req.Quantity,
+	})
+	if err != nil {
+		global.Logger.Error("Failed to publish event", zap.Error(err), zap.String("event", string(events.PRODUCT_CREATION)))
 		return nil, err
 	}
 	return &catalogPr.CreateProductResponse{Id: product.ID}, nil

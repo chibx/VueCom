@@ -43,7 +43,7 @@ func CreateProduct(api *types.Api) fiber.Handler {
 
 		normalizeProdReq(&reqBody)
 
-		prodRpc, err := productToRpc(&reqBody)
+		prodRpc, err := createProductToRpc(&reqBody)
 		if err != nil {
 			return response.FromFiberError(c, err500)
 		}

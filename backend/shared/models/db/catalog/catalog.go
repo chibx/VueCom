@@ -107,7 +107,7 @@ type Product struct {
 	DiscountEnd      *time.Time `redis:"discount_end"`
 	IsNew            bool       `redis:"is_new"`
 	NewFrom          *time.Time `redis:"new_from"`
-	NewTo            *time.Time `reids:"new_to"`
+	NewTo            *time.Time `redis:"new_to"`
 	CountryOfManf    uint32     `gorm:"column:country_of_manufacture;" redis:"coun_of_manf"`
 	Enabled          bool       `redis:"enabled" gorm:"default:TRUE;not null"`
 	ShortDescription string     `redis:"short_description"`
@@ -121,7 +121,7 @@ type Product struct {
 	SearchKeywords   *string    `gorm:"column:search_keywords;" redis:"search_keywords"`
 	ParentID         *uint32    `redis:"parent_id"`
 	PresetID         *uint32    `gorm:"index" redis:"preset_id"`
-	Parent           *Product   `gorm:"foreignKey:ParentID"`
+	Parent           *Product   `gorm:"foreignKey:ParentID" redis:"-"`
 	Preset           *Preset    `gorm:"foreignKey:PresetID;constraint:OnUpdate:SET NULL,OnDelete:SET NULL;" redis:"-"`
 	Categories       []Category `gorm:"many2many:product_category_values;" redis:"-"`
 	Tags             []Tag      `gorm:"many2many:product_tags;" redis:"-"`

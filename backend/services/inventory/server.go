@@ -4,17 +4,17 @@ import (
 	"context"
 	"sync/atomic"
 
-	ordersPr "github.com/chibx/vuecom/backend/shared/proto/go/orders"
+	inventoryPr "github.com/chibx/vuecom/backend/shared/proto/go/inventory"
 )
 
 type Service struct {
-	ordersPr.UnimplementedOrderServiceServer
+	inventoryPr.UnimplementedInventoryServiceServer
 	nextID atomic.Uint64
 	// ...
 }
 
-func (s *Service) CreateOrder(ctx context.Context, req *ordersPr.CreateOrderRequest) (*ordersPr.CreateOrderResponse, error) {
+func (s *Service) CreateProductRecord(ctx context.Context, req *inventoryPr.AddProductRequest) (*inventoryPr.AddProductResponse, error) {
 	// your logic + possibly publish event
-	id := s.nextID.Add(1)
-	return &ordersPr.CreateOrderResponse{Id: id}, nil
+	// id := s.nextID.Add(1)
+	return &inventoryPr.AddProductResponse{}, nil
 }

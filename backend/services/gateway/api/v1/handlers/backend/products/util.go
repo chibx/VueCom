@@ -1,12 +1,13 @@
 package products
 
 import (
-	reqTypes "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/catalog"
+	catReq "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/catalog"
+	catRes "github.com/chibx/vuecom/backend/services/gateway/api/v1/response/catalog"
 	"github.com/chibx/vuecom/backend/shared/proto/go/catalog"
 	"github.com/chibx/vuecom/backend/shared/utils"
 )
 
-func normalizeProdReq(prod *reqTypes.CreateProductReq) {
+func normalizeProdReq(prod *catReq.CreateProductReq) {
 	if prod.SalePrice > prod.BasePrice {
 		prod.SalePrice = prod.BasePrice
 	}
@@ -25,7 +26,7 @@ func normalizeProdReq(prod *reqTypes.CreateProductReq) {
 
 }
 
-func createProductToRpc(s *reqTypes.CreateProductReq, parentId ...*uint32) (*catalog.CreateProductRequest, error) {
+func CreateProductToRpc(s *catReq.CreateProductReq, parentId ...*uint32) (*catalog.CreateProductRequest, error) {
 	// presetVal, err := structpb.NewStruct(s.PresetValues)
 	// if err != nil {
 	// 	return nil, err
@@ -69,13 +70,49 @@ func createProductToRpc(s *reqTypes.CreateProductReq, parentId ...*uint32) (*cat
 	}, nil
 }
 
-func getProductFromRpc(s *catalog.GetProductResponse) (*reqTypes.CreateProductReq, error) {
+func CreateProdToGetResp(s *catReq.CreateProductReq, productId uint32) *catRes.GetProductResp {
+	return &catRes.GetProductResp{
+		ID:               productId,
+		Name:             s.Name,
+		SKU:              s.SKU,
+		BasePrice:        s.BasePrice,
+		SalePrice:        s.SalePrice,
+		DiscountStart:    s.DiscountStart,
+		DiscountEnd:      s.DiscountEnd,
+		NewFrom:          s.NewFrom,
+		NewTo:            s.NewTo,
+		Weight:           s.Weight,
+		Quantity:         s.Quantity,
+		CountryOfManf:    s.CountryOfManf,
+		Slug:             s.Slug,
+		Medias:           s.Medias,
+		BrandId:          s.BrandId,
+		ColorId:          s.ColorId,
+		MetaTitle:        s.MetaTitle,
+		MetaDescription:  s.MetaDescription,
+		SearchKeywords:   s.SearchKeywords,
+		RelatedProducts:  s.RelatedProducts,
+		UpSellProducts:   s.UpSellProducts,
+		CrossSell:        s.CrossSell,
+		PresetID:         s.PresetID,
+		PresetValues:     s.PresetValues,
+		InStock:          s.InStock,
+		Categories:       s.Categories,
+		IsNew:            s.IsNew,
+		Enabled:          s.Enabled,
+		ShortDescription: s.ShortDescription,
+		FullDescription:  s.FullDescription,
+	}
+}
+
+func GetProductFromRpc(s *catalog.GetProductResponse) (*catRes.GetProductResp, error) {
 	// var p_id *uint32
 	// if len(parentId) > 0 {
 	// 	p_id = parentId[0]
 	// }
 
-	return &reqTypes.CreateProductReq{
+	return &catRes.GetProductResp{
+		ID:               s.Id,
 		Name:             s.Name,
 		SKU:              s.Sku,
 		BasePrice:        s.BasePrice,
@@ -88,6 +125,7 @@ func getProductFromRpc(s *catalog.GetProductResponse) (*reqTypes.CreateProductRe
 		Quantity:         s.Quantity,
 		CountryOfManf:    s.CountryOfManf,
 		Slug:             s.Slug,
+		Medias:           s.Medias,
 		BrandId:          s.BrandId,
 		ColorId:          s.ColorId,
 		MetaTitle:        s.MetaTitle,

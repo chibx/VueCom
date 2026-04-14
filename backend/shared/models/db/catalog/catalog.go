@@ -108,7 +108,7 @@ type Product struct {
 	IsNew            bool       `redis:"is_new"`
 	NewFrom          *time.Time `redis:"new_from"`
 	NewTo            *time.Time `redis:"new_to"`
-	CountryOfManf    uint32     `gorm:"column:country_of_manufacture;" redis:"coun_of_manf"`
+	CountryOfManf    uint32     `gorm:"column:country_of_manufacture;" redis:"cty_manf"`
 	Enabled          bool       `redis:"enabled" gorm:"default:TRUE;not null"`
 	ShortDescription string     `redis:"short_description"`
 	FullDescription  string     `redis:"full_description"`

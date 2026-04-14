@@ -28,6 +28,12 @@ import (
 	"go.uber.org/zap"
 )
 
+func clearAuthCookies(ctx *fiber.Ctx, cookies ...string) {
+	for _, v := range cookies {
+		ctx.ClearCookie(v)
+	}
+}
+
 // Handles the registration links in the url
 func Register(api *types.Api) fiber.Handler {
 	logger := global.Logger()
@@ -363,6 +369,39 @@ func Refresh(api *types.Api) fiber.Handler {
 		return response.WriteResponse(ctx, fiber.StatusOK, "", backendResp.RefreshResp{
 			AccessToken: accessToken,
 		})
+	}
+}
+
+func Logout(api *types.Api) fiber.Handler {
+	logger := global.Logger()
+	db := api.Deps.DB
+	// err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating signup token, please try again")
+	return func(ctx *fiber.Ctx) error {
+		refreshToken := strings.TrimSpace(ctx.Cookies(constants.BackendRefreshTkKey))
+		deviceId := strings.TrimSpace(ctx.Cookies(constants.DeviceIDKey))
+		if refreshToken != "" && deviceId != "" {
+			// rdb.Del(ctx.Context(), "refresh:"+refresh)
+			// db.Where("token = ?", refresh).Delete(&RefreshToken{})
+			tokenHash, err := auth.GenerateHashFromString(refreshToken, auth.DefaultHashParams)
+			if err != nil {
+				logger.Error("Failed to generate refresh token hash for logout", zap.Error(err))
+				clearAuthCookies(ctx, constants.BackendAccessTkKey, constants.BackendRefreshTkKey)
+				return nil
+			}
+			// TODO: Implement retry logic or use some package
+			err = db.BackendUsers().DeleteSession(ctx.Context(), &userModels.BackendSession{
+				RefreshTokenHash: tokenHash,
+				DeviceId:         deviceId,
+			})
+
+			if err != nil {
+				logger.Error("Failed to generate refresh token hash for logout", zap.Error(err))
+				clearAuthCookies(ctx, constants.BackendAccessTkKey, constants.BackendRefreshTkKey)
+				return nil
+			}
+		}
+		clearAuthCookies(ctx, constants.BackendAccessTkKey, constants.BackendRefreshTkKey)
+		return nil
 	}
 }
 

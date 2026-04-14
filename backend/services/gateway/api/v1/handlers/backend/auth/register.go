@@ -15,5 +15,7 @@ func RegisterRoutes(app fiber.Router, api *types.Api) {
 	auth.Post("/create-signup-token", middlewares.HasPermission(rbac.PermSignupTokenCrt), CreateSignupToken(api))
 	auth.Post("/revoke-signup-token", middlewares.HasPermission(rbac.PermSignupTokenDel), RevokeSignupToken(api))
 	auth.Post("/register", Register(api))
+	auth.Post("/refresh", Refresh(api))
 	auth.Post("/login", Login(api))
+	auth.Post("/logout", Logout(api))
 }

@@ -55,8 +55,6 @@ message CreateProductRequest {
   repeated uint32 cross_sell = 27;
 
   optional uint32 preset_id = 28;
-  // google.protobuf.Struct is the best fit for map[string]any
-  // google.protobuf.Struct preset_values = 29;
   repeated uint32 preset_values = 29;
   optional uint32 parent_id = 30;
 }

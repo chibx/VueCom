@@ -55,12 +55,10 @@ type CreateProductRequest struct {
 	UpSellProducts  []uint32 `protobuf:"varint,26,rep,packed,name=up_sell_products,json=upSellProducts,proto3" json:"up_sell_products,omitempty"`
 	CrossSell       []uint32 `protobuf:"varint,27,rep,packed,name=cross_sell,json=crossSell,proto3" json:"cross_sell,omitempty"`
 	PresetId        *uint32  `protobuf:"varint,28,opt,name=preset_id,json=presetId,proto3,oneof" json:"preset_id,omitempty"`
-	// google.protobuf.Struct is the best fit for map[string]any
-	// google.protobuf.Struct preset_values = 29;
-	PresetValues  []uint32 `protobuf:"varint,29,rep,packed,name=preset_values,json=presetValues,proto3" json:"preset_values,omitempty"`
-	ParentId      *uint32  `protobuf:"varint,30,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	PresetValues    []uint32 `protobuf:"varint,29,rep,packed,name=preset_values,json=presetValues,proto3" json:"preset_values,omitempty"`
+	ParentId        *uint32  `protobuf:"varint,30,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *CreateProductRequest) Reset() {

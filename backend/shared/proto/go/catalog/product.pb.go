@@ -144,41 +144,42 @@ func (x *GetProductRequest) GetId() uint64 {
 
 type GetProductResponse struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
-	Name      string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Sku       string                 `protobuf:"bytes,2,opt,name=sku,proto3" json:"sku,omitempty"`
-	BasePrice float64                `protobuf:"fixed64,3,opt,name=base_price,json=basePrice,proto3" json:"base_price,omitempty"`
-	SalePrice float64                `protobuf:"fixed64,4,opt,name=sale_price,json=salePrice,proto3" json:"sale_price,omitempty"`
-	InStock   bool                   `protobuf:"varint,5,opt,name=in_stock,json=inStock,proto3" json:"in_stock,omitempty"`
-	Quantity  uint32                 `protobuf:"varint,6,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Id        uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name      string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Sku       string                 `protobuf:"bytes,3,opt,name=sku,proto3" json:"sku,omitempty"`
+	BasePrice float64                `protobuf:"fixed64,4,opt,name=base_price,json=basePrice,proto3" json:"base_price,omitempty"`
+	SalePrice float64                `protobuf:"fixed64,5,opt,name=sale_price,json=salePrice,proto3" json:"sale_price,omitempty"`
+	InStock   bool                   `protobuf:"varint,6,opt,name=in_stock,json=inStock,proto3" json:"in_stock,omitempty"`
+	Quantity  uint32                 `protobuf:"varint,7,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	// Optional timestamps for nullability
-	DiscountStart    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=discount_start,json=discountStart,proto3" json:"discount_start,omitempty"`
-	DiscountEnd      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=discount_end,json=discountEnd,proto3" json:"discount_end,omitempty"`
-	Categories       []int32                `protobuf:"varint,9,rep,packed,name=categories,proto3" json:"categories,omitempty"`
-	IsNew            bool                   `protobuf:"varint,10,opt,name=is_new,json=isNew,proto3" json:"is_new,omitempty"`
-	NewFrom          *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=new_from,json=newFrom,proto3" json:"new_from,omitempty"`
-	NewTo            *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=new_to,json=newTo,proto3" json:"new_to,omitempty"`
-	Enabled          bool                   `protobuf:"varint,13,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	ShortDescription string                 `protobuf:"bytes,14,opt,name=short_description,json=shortDescription,proto3" json:"short_description,omitempty"`
-	FullDescription  string                 `protobuf:"bytes,15,opt,name=full_description,json=fullDescription,proto3" json:"full_description,omitempty"`
-	Slug             string                 `protobuf:"bytes,16,opt,name=slug,proto3" json:"slug,omitempty"`
-	CountryOfManf    uint32                 `protobuf:"varint,17,opt,name=country_of_manf,json=countryOfManf,proto3" json:"country_of_manf,omitempty"`
+	DiscountStart    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=discount_start,json=discountStart,proto3" json:"discount_start,omitempty"`
+	DiscountEnd      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=discount_end,json=discountEnd,proto3" json:"discount_end,omitempty"`
+	Categories       []int32                `protobuf:"varint,10,rep,packed,name=categories,proto3" json:"categories,omitempty"`
+	IsNew            bool                   `protobuf:"varint,11,opt,name=is_new,json=isNew,proto3" json:"is_new,omitempty"`
+	NewFrom          *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=new_from,json=newFrom,proto3" json:"new_from,omitempty"`
+	NewTo            *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=new_to,json=newTo,proto3" json:"new_to,omitempty"`
+	Enabled          bool                   `protobuf:"varint,14,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	ShortDescription string                 `protobuf:"bytes,15,opt,name=short_description,json=shortDescription,proto3" json:"short_description,omitempty"`
+	FullDescription  string                 `protobuf:"bytes,16,opt,name=full_description,json=fullDescription,proto3" json:"full_description,omitempty"`
+	Slug             string                 `protobuf:"bytes,17,opt,name=slug,proto3" json:"slug,omitempty"`
+	CountryOfManf    uint32                 `protobuf:"varint,18,opt,name=country_of_manf,json=countryOfManf,proto3" json:"country_of_manf,omitempty"`
 	// Handled as optional to represent *float64
-	Weight          *float64 `protobuf:"fixed64,18,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
-	BrandId         uint32   `protobuf:"varint,19,opt,name=brand_id,json=brandId,proto3" json:"brand_id,omitempty"`
-	ColorId         uint32   `protobuf:"varint,20,opt,name=color_id,json=colorId,proto3" json:"color_id,omitempty"`
-	Medias          []uint32 `protobuf:"varint,21,rep,packed,name=medias,proto3" json:"medias,omitempty"`
-	MetaTitle       string   `protobuf:"bytes,22,opt,name=meta_title,json=metaTitle,proto3" json:"meta_title,omitempty"`
-	MetaDescription string   `protobuf:"bytes,23,opt,name=meta_description,json=metaDescription,proto3" json:"meta_description,omitempty"`
+	Weight          *float64 `protobuf:"fixed64,19,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
+	BrandId         uint32   `protobuf:"varint,20,opt,name=brand_id,json=brandId,proto3" json:"brand_id,omitempty"`
+	ColorId         uint32   `protobuf:"varint,21,opt,name=color_id,json=colorId,proto3" json:"color_id,omitempty"`
+	Medias          []uint32 `protobuf:"varint,22,rep,packed,name=medias,proto3" json:"medias,omitempty"`
+	MetaTitle       string   `protobuf:"bytes,23,opt,name=meta_title,json=metaTitle,proto3" json:"meta_title,omitempty"`
+	MetaDescription string   `protobuf:"bytes,24,opt,name=meta_description,json=metaDescription,proto3" json:"meta_description,omitempty"`
 	// Handled as optional to represent *string
-	SearchKeywords  *string  `protobuf:"bytes,24,opt,name=search_keywords,json=searchKeywords,proto3,oneof" json:"search_keywords,omitempty"`
-	RelatedProducts []uint32 `protobuf:"varint,25,rep,packed,name=related_products,json=relatedProducts,proto3" json:"related_products,omitempty"`
-	UpSellProducts  []uint32 `protobuf:"varint,26,rep,packed,name=up_sell_products,json=upSellProducts,proto3" json:"up_sell_products,omitempty"`
-	CrossSell       []uint32 `protobuf:"varint,27,rep,packed,name=cross_sell,json=crossSell,proto3" json:"cross_sell,omitempty"`
-	PresetId        *uint32  `protobuf:"varint,28,opt,name=preset_id,json=presetId,proto3,oneof" json:"preset_id,omitempty"`
+	SearchKeywords  *string  `protobuf:"bytes,25,opt,name=search_keywords,json=searchKeywords,proto3,oneof" json:"search_keywords,omitempty"`
+	RelatedProducts []uint32 `protobuf:"varint,26,rep,packed,name=related_products,json=relatedProducts,proto3" json:"related_products,omitempty"`
+	UpSellProducts  []uint32 `protobuf:"varint,27,rep,packed,name=up_sell_products,json=upSellProducts,proto3" json:"up_sell_products,omitempty"`
+	CrossSell       []uint32 `protobuf:"varint,28,rep,packed,name=cross_sell,json=crossSell,proto3" json:"cross_sell,omitempty"`
+	PresetId        *uint32  `protobuf:"varint,29,opt,name=preset_id,json=presetId,proto3,oneof" json:"preset_id,omitempty"`
 	// google.protobuf.Struct is the best fit for map[string]any
-	// google.protobuf.Struct preset_values = 29;
-	PresetValues  []uint32 `protobuf:"varint,29,rep,packed,name=preset_values,json=presetValues,proto3" json:"preset_values,omitempty"`
-	ParentId      *uint32  `protobuf:"varint,30,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
+	// google.protobuf.Struct preset_values = 30;
+	PresetValues  []uint32 `protobuf:"varint,30,rep,packed,name=preset_values,json=presetValues,proto3" json:"preset_values,omitempty"`
+	ParentId      *uint32  `protobuf:"varint,31,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -211,6 +212,13 @@ func (x *GetProductResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetProductResponse.ProtoReflect.Descriptor instead.
 func (*GetProductResponse) Descriptor() ([]byte, []int) {
 	return file_product_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GetProductResponse) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
 }
 
 func (x *GetProductResponse) GetName() string {
@@ -436,45 +444,46 @@ const file_product_proto_rawDesc = "" +
 	"\vcategory_id\x18\x05 \x01(\x04R\n" +
 	"categoryId\"#\n" +
 	"\x11GetProductRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\"\xfb\b\n" +
-	"\x12GetProductResponse\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
-	"\x03sku\x18\x02 \x01(\tR\x03sku\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\"\x8b\t\n" +
+	"\x12GetProductResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x10\n" +
+	"\x03sku\x18\x03 \x01(\tR\x03sku\x12\x1d\n" +
 	"\n" +
-	"base_price\x18\x03 \x01(\x01R\tbasePrice\x12\x1d\n" +
+	"base_price\x18\x04 \x01(\x01R\tbasePrice\x12\x1d\n" +
 	"\n" +
-	"sale_price\x18\x04 \x01(\x01R\tsalePrice\x12\x19\n" +
-	"\bin_stock\x18\x05 \x01(\bR\ainStock\x12\x1a\n" +
-	"\bquantity\x18\x06 \x01(\rR\bquantity\x12A\n" +
-	"\x0ediscount_start\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\rdiscountStart\x12=\n" +
-	"\fdiscount_end\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\vdiscountEnd\x12\x1e\n" +
+	"sale_price\x18\x05 \x01(\x01R\tsalePrice\x12\x19\n" +
+	"\bin_stock\x18\x06 \x01(\bR\ainStock\x12\x1a\n" +
+	"\bquantity\x18\a \x01(\rR\bquantity\x12A\n" +
+	"\x0ediscount_start\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\rdiscountStart\x12=\n" +
+	"\fdiscount_end\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\vdiscountEnd\x12\x1e\n" +
 	"\n" +
-	"categories\x18\t \x03(\x05R\n" +
+	"categories\x18\n" +
+	" \x03(\x05R\n" +
 	"categories\x12\x15\n" +
-	"\x06is_new\x18\n" +
-	" \x01(\bR\x05isNew\x125\n" +
-	"\bnew_from\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\anewFrom\x121\n" +
-	"\x06new_to\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\x05newTo\x12\x18\n" +
-	"\aenabled\x18\r \x01(\bR\aenabled\x12+\n" +
-	"\x11short_description\x18\x0e \x01(\tR\x10shortDescription\x12)\n" +
-	"\x10full_description\x18\x0f \x01(\tR\x0ffullDescription\x12\x12\n" +
-	"\x04slug\x18\x10 \x01(\tR\x04slug\x12&\n" +
-	"\x0fcountry_of_manf\x18\x11 \x01(\rR\rcountryOfManf\x12\x1b\n" +
-	"\x06weight\x18\x12 \x01(\x01H\x00R\x06weight\x88\x01\x01\x12\x19\n" +
-	"\bbrand_id\x18\x13 \x01(\rR\abrandId\x12\x19\n" +
-	"\bcolor_id\x18\x14 \x01(\rR\acolorId\x12\x16\n" +
-	"\x06medias\x18\x15 \x03(\rR\x06medias\x12\x1d\n" +
+	"\x06is_new\x18\v \x01(\bR\x05isNew\x125\n" +
+	"\bnew_from\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\anewFrom\x121\n" +
+	"\x06new_to\x18\r \x01(\v2\x1a.google.protobuf.TimestampR\x05newTo\x12\x18\n" +
+	"\aenabled\x18\x0e \x01(\bR\aenabled\x12+\n" +
+	"\x11short_description\x18\x0f \x01(\tR\x10shortDescription\x12)\n" +
+	"\x10full_description\x18\x10 \x01(\tR\x0ffullDescription\x12\x12\n" +
+	"\x04slug\x18\x11 \x01(\tR\x04slug\x12&\n" +
+	"\x0fcountry_of_manf\x18\x12 \x01(\rR\rcountryOfManf\x12\x1b\n" +
+	"\x06weight\x18\x13 \x01(\x01H\x00R\x06weight\x88\x01\x01\x12\x19\n" +
+	"\bbrand_id\x18\x14 \x01(\rR\abrandId\x12\x19\n" +
+	"\bcolor_id\x18\x15 \x01(\rR\acolorId\x12\x16\n" +
+	"\x06medias\x18\x16 \x03(\rR\x06medias\x12\x1d\n" +
 	"\n" +
-	"meta_title\x18\x16 \x01(\tR\tmetaTitle\x12)\n" +
-	"\x10meta_description\x18\x17 \x01(\tR\x0fmetaDescription\x12,\n" +
-	"\x0fsearch_keywords\x18\x18 \x01(\tH\x01R\x0esearchKeywords\x88\x01\x01\x12)\n" +
-	"\x10related_products\x18\x19 \x03(\rR\x0frelatedProducts\x12(\n" +
-	"\x10up_sell_products\x18\x1a \x03(\rR\x0eupSellProducts\x12\x1d\n" +
+	"meta_title\x18\x17 \x01(\tR\tmetaTitle\x12)\n" +
+	"\x10meta_description\x18\x18 \x01(\tR\x0fmetaDescription\x12,\n" +
+	"\x0fsearch_keywords\x18\x19 \x01(\tH\x01R\x0esearchKeywords\x88\x01\x01\x12)\n" +
+	"\x10related_products\x18\x1a \x03(\rR\x0frelatedProducts\x12(\n" +
+	"\x10up_sell_products\x18\x1b \x03(\rR\x0eupSellProducts\x12\x1d\n" +
 	"\n" +
-	"cross_sell\x18\x1b \x03(\rR\tcrossSell\x12 \n" +
-	"\tpreset_id\x18\x1c \x01(\rH\x02R\bpresetId\x88\x01\x01\x12#\n" +
-	"\rpreset_values\x18\x1d \x03(\rR\fpresetValues\x12 \n" +
-	"\tparent_id\x18\x1e \x01(\rH\x03R\bparentId\x88\x01\x01B\t\n" +
+	"cross_sell\x18\x1c \x03(\rR\tcrossSell\x12 \n" +
+	"\tpreset_id\x18\x1d \x01(\rH\x02R\bpresetId\x88\x01\x01\x12#\n" +
+	"\rpreset_values\x18\x1e \x03(\rR\fpresetValues\x12 \n" +
+	"\tparent_id\x18\x1f \x01(\rH\x03R\bparentId\x88\x01\x01B\t\n" +
 	"\a_weightB\x12\n" +
 	"\x10_search_keywordsB\f\n" +
 	"\n" +

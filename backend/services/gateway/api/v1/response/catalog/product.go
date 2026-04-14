@@ -5,35 +5,35 @@ import (
 )
 
 type GetProductResp struct {
-	ID               uint32     ``
-	Name             string     `json:"name" validate:"required" name:"Product Name"`
-	SKU              string     `json:"sku" validate:"required" name:"Product SKU"`
-	BasePrice        float64    `json:"base_price" validate:"required" name:"Base Price"`
-	SalePrice        float64    `json:"sale_price" validate:"required" name:"Discount Price"`
-	InStock          bool       `json:"in_stock"`
-	DiscountStart    *time.Time `json:"discount_start"`
-	DiscountEnd      *time.Time `json:"discount_end"`
-	Categories       []int32    `json:"categories"`
-	IsNew            bool       `json:"is_new"`
-	NewFrom          *time.Time `json:"new_from"`
-	NewTo            *time.Time `json:"new_to"`
-	Enabled          bool       `json:"enabled"`
-	ShortDescription string     `json:"short_description"`
-	FullDescription  string     `json:"full_description"`
-	Quantity         uint32     `json:"quantity"`
-	Slug             string     `json:"slug" validate:"required" name:"Product Slug"`
-	CountryOfManf    uint32     `json:"country_of_manufacture" validate:"required" name:"Country of Manufacture"`
-	Weight           *float64   `json:"weight"`
-	BrandId          uint32     `json:"brand_id"`
-	ColorId          uint32     `json:"color_id"`
-	Medias           []uint32   `json:"medias"`
-	MetaTitle        string     `json:"meta_title,omitempty" validate:"required" name:"Meta Title"`
-	MetaDescription  string     `json:"meta_description,omitempty" validate:"required,maxlength=150" name:"Meta Description"`
-	SearchKeywords   *string    `json:"search_keywords"`
-	RelatedProducts  []uint32   `json:"related_products"`
-	UpSellProducts   []uint32   `json:"upsell"`
-	CrossSell        []uint32   `json:"cross_sell"`
-	PresetID         *uint32    `json:"preset_id" validate:"omitnil,gte=0" name:"Product Preset"`
+	ID               uint32     `json:"id" redis:"id"`
+	Name             string     `json:"name" redis:"name"`
+	SKU              string     `json:"sku" redis:"sku"`
+	BasePrice        float64    `json:"base_price" redis:"base_price"`
+	SalePrice        float64    `json:"sale_price" redis:"sale_price"`
+	InStock          bool       `json:"in_stock" redis:"in_stock"`
+	DiscountStart    *time.Time `json:"discount_start" redis:"discount_start"`
+	DiscountEnd      *time.Time `json:"discount_end" redis:"discount_end"`
+	Categories       []int32    `json:"categories" redis:"categories"`
+	IsNew            bool       `json:"is_new" redis:"is_new"`
+	NewFrom          *time.Time `json:"new_from" redis:"new_from"`
+	NewTo            *time.Time `json:"new_to" redis:"new_to"`
+	Enabled          bool       `json:"enabled" redis:"enabled"`
+	ShortDescription string     `json:"short_description" redis:"short_description"`
+	FullDescription  string     `json:"full_description" redis:"full_description"`
+	Quantity         uint32     `json:"quantity" redis:"quantity"`
+	Slug             string     `json:"slug" redis:"slug"`
+	CountryOfManf    uint32     `json:"country_of_manufacture" redis:"cty_manf"`
+	Weight           *float64   `json:"weight" redis:"weight"`
+	BrandId          uint32     `json:"brand_id" redis:"brand_id"`
+	ColorId          uint32     `json:"color_id" redis:"color_id"`
+	Medias           []uint32   `json:"medias" redis:"medias"`
+	MetaTitle        string     `json:"meta_title,omitempty" redis:"meta_title"`
+	MetaDescription  string     `json:"meta_description,omitempty" redis:"meta_description"`
+	SearchKeywords   *string    `json:"search_keywords" redis:"search_keywords"`
+	RelatedProducts  []uint32   `json:"related_products" redis:"related_products"`
+	UpSellProducts   []uint32   `json:"upsell" redis:"upsell"`
+	CrossSell        []uint32   `json:"cross_sell" redis:"cross_sell"`
+	PresetID         *uint32    `json:"preset_id" redis:"preset_id"`
 	/** List of category_id */
-	PresetValues []uint32 `json:"preset_values"`
+	PresetValues []uint32 `json:"preset_values" redis:"preset_values"`
 }

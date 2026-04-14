@@ -11,7 +11,7 @@ A deployable binary that help developers set up any e-commerce application.
 
 ## Overview
 
-VueCom is an e-commerce platform designed to provide a comprehensive and modular solution for building scalable online stores. It aims to offer parity with established platforms like Magento and Shopify while leveraging modern technologies and a microservices architecture.
+VueCom is an e-commerce platform designed to provide a comprehensive and modular solution for building scalable online stores. It aims to offer parity with established platforms like Magento and Shopify while leveraging modern technologies and a microservices (modular monolith) architecture.
 
 ## Features
 

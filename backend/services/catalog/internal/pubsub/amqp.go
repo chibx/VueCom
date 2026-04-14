@@ -3,6 +3,7 @@ package pubsub
 import (
 	"os"
 
+	"github.com/chibx/vuecom/backend/services/catalog/internal/global"
 	"github.com/chibx/vuecom/backend/services/catalog/internal/utils"
 	"github.com/chibx/vuecom/backend/shared/events"
 )
@@ -30,5 +31,5 @@ func InitPubSub() {
 		err = DefPubSub.CreateQueue(v)
 		utils.FailOnError(err, "Failed to create queue")
 	}
-
+	global.Logger.Info("RabbitMQ instance connected")
 }

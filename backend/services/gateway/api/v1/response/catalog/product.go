@@ -1,18 +1,11 @@
-package request
+package catalog
 
 import (
 	"time"
 )
 
-type ProductVisibility int
-
-const (
-	VisibilityCatalog ProductVisibility = 0
-	VisibilitySearch  ProductVisibility = 1
-	VisibilityBoth    ProductVisibility = 2
-)
-
-type CreateProductReq struct {
+type GetProductResp struct {
+	ID               uint32     ``
 	Name             string     `json:"name" validate:"required" name:"Product Name"`
 	SKU              string     `json:"sku" validate:"required" name:"Product SKU"`
 	BasePrice        float64    `json:"base_price" validate:"required" name:"Base Price"`

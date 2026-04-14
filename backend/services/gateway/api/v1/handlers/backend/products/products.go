@@ -12,7 +12,7 @@ import (
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 	"go.uber.org/zap"
 
-	sharedReq "github.com/chibx/vuecom/backend/shared/types/request"
+	reqTypes "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/catalog"
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/gofiber/fiber/v2"
@@ -24,7 +24,7 @@ func CreateProduct(api *types.Api) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var err error
 
-		reqBody := sharedReq.CreateProductReq{}
+		reqBody := reqTypes.CreateProductReq{}
 
 		err = c.BodyParser(&reqBody)
 		if err != nil {

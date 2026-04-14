@@ -1,12 +1,12 @@
 package products
 
 import (
+	reqTypes "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/catalog"
 	"github.com/chibx/vuecom/backend/shared/proto/go/catalog"
-	sharedReq "github.com/chibx/vuecom/backend/shared/types/request"
 	"github.com/chibx/vuecom/backend/shared/utils"
 )
 
-func normalizeProdReq(prod *sharedReq.CreateProductReq) {
+func normalizeProdReq(prod *reqTypes.CreateProductReq) {
 	if prod.SalePrice > prod.BasePrice {
 		prod.SalePrice = prod.BasePrice
 	}
@@ -25,7 +25,7 @@ func normalizeProdReq(prod *sharedReq.CreateProductReq) {
 
 }
 
-func createProductToRpc(s *sharedReq.CreateProductReq, parentId ...*uint32) (*catalog.CreateProductRequest, error) {
+func createProductToRpc(s *reqTypes.CreateProductReq, parentId ...*uint32) (*catalog.CreateProductRequest, error) {
 	// presetVal, err := structpb.NewStruct(s.PresetValues)
 	// if err != nil {
 	// 	return nil, err
@@ -69,13 +69,13 @@ func createProductToRpc(s *sharedReq.CreateProductReq, parentId ...*uint32) (*ca
 	}, nil
 }
 
-func getProductFromRpc(s *catalog.GetProductResponse) (*sharedReq.CreateProductReq, error) {
+func getProductFromRpc(s *catalog.GetProductResponse) (*reqTypes.CreateProductReq, error) {
 	// var p_id *uint32
 	// if len(parentId) > 0 {
 	// 	p_id = parentId[0]
 	// }
 
-	return &sharedReq.CreateProductReq{
+	return &reqTypes.CreateProductReq{
 		Name:             s.Name,
 		SKU:              s.Sku,
 		BasePrice:        s.BasePrice,

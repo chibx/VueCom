@@ -249,6 +249,7 @@ func Login(api *types.Api) fiber.Handler {
 	}
 }
 
+// TODO: Rate Limit this route
 func Refresh(api *types.Api) fiber.Handler {
 	db := api.Deps.DB
 	logger := global.Logger()

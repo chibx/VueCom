@@ -1,22 +1,59 @@
 syntax = "proto3";
+package catalog.v1;
 
-package catalog;
+import "google/protobuf/timestamp.proto";
+import "shared.proto";
 
-// option go_package = ".";
 option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
 
-message Product {
-  uint64 id = 1;
-  string name = 2;
-  string description = 3;
-  double price = 4;
-  uint64 category_id = 5;
-}
 
 message GetProductRequest {
   uint64 id = 1;
 }
 
 message GetProductResponse {
-  Product product = 1;
+    uint32 id = 1;
+    string name = 2;
+    string sku = 3;
+    double base_price = 4;
+    double sale_price = 5;
+    bool in_stock = 6;
+    uint32 quantity = 7;
+
+    // Optional timestamps for nullability
+    google.protobuf.Timestamp discount_start = 8;
+    google.protobuf.Timestamp discount_end = 9;
+
+    repeated int32 categories = 10;
+    bool is_new = 11;
+    google.protobuf.Timestamp new_from = 12;
+    google.protobuf.Timestamp new_to = 13;
+    bool enabled = 14;
+    string short_description = 15;
+    string full_description = 16;
+    string slug = 17;
+    uint32 country_of_manf = 18;
+
+    // Handled as optional to represent *float64
+    optional double weight = 19;
+
+    uint32 brand_id = 20;
+    uint32 color_id = 21;
+    repeated uint32 medias = 22;
+    string meta_title = 23;
+    string meta_description = 24;
+
+    // Handled as optional to represent *string
+    optional string search_keywords = 25;
+
+    repeated uint32 related_products = 26;
+    repeated uint32 up_sell_products = 27;
+    repeated uint32 cross_sell = 28;
+
+    optional uint32 preset_id = 29;
+    // google.protobuf.Struct is the best fit for map[string]any
+    // google.protobuf.Struct preset_values = 30;
+    repeated uint32 preset_values = 30;
+    optional uint32 parent_id = 31;
+    repeated WarehouseInfo warehouses = 32;
 }

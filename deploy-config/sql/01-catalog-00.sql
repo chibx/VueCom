@@ -111,13 +111,11 @@ CREATE INDEX idx_sku ON products (sku);
 CREATE INDEX idx_slug ON products (slug);
 
 
-CREATE TYPE product_relation_type AS ENUM ('related', 'upsell', 'cross_sell');
 CREATE TABLE product_relations (
-    source_product_id  BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-    target_product_id  BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-    relation_type      product_relation_type NOT NULL,
+    source_product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE, -- From
+    target_product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE, -- To
+    relation_type      SMALLINT NOT NULL,
     sort_order         INTEGER DEFAULT 0,
-    created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT unique_relation UNIQUE (source_product_id, target_product_id, relation_type)
 );
 
@@ -126,7 +124,7 @@ CREATE INDEX idx_product_relations_target ON product_relations(target_product_id
 
 -- This is what makes the popup "select image/video for product"
 CREATE TABLE product_medias (
-    product_id  BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,  -- product gone → links gone
+    product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,  -- product gone → links gone
     media_id    BIGINT NOT NULL REFERENCES medias(id) ON DELETE CASCADE,    -- media deleted → removed from all products
     sort_order  INTEGER DEFAULT 0,
     is_main     BOOLEAN DEFAULT false

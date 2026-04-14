@@ -7,7 +7,7 @@ import (
 	v1 "github.com/chibx/vuecom/backend/services/gateway/api/v1"
 	"github.com/chibx/vuecom/backend/services/gateway/config"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
-	"github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
+	igrpc "github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
 	"github.com/goccy/go-json"
@@ -30,7 +30,7 @@ func main() {
 
 	app.Use(helmet.New())
 	initServer(app, v1_api)
-	stopConns := grpc.InitClients()
+	stopConns := igrpc.InitClients()
 	logger := global.Logger()
 
 	defer func() {

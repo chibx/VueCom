@@ -4,9 +4,13 @@ import (
 	"context"
 	"sync/atomic"
 
+	"github.com/chibx/vuecom/backend/services/catalog/internal/db"
 	"github.com/chibx/vuecom/backend/services/catalog/internal/global"
+	"github.com/chibx/vuecom/backend/services/catalog/internal/pubsub"
 	"github.com/chibx/vuecom/backend/services/catalog/internal/utils"
+	"github.com/chibx/vuecom/backend/shared/events"
 	catalogPr "github.com/chibx/vuecom/backend/shared/proto/go/catalog"
+	pubTypes "github.com/chibx/vuecom/backend/shared/types/pubsub"
 	"go.uber.org/zap"
 )
 
@@ -19,9 +23,42 @@ type Service struct {
 func (s *Service) CreateProduct(ctx context.Context, req *catalogPr.CreateProductRequest) (*catalogPr.CreateProductResponse, error) {
 	product := utils.CreateProdRpcToDBModel(req)
 
-	err := global.Repo.CreateProduct(ctx, product)
+	err := global.Repo.RunInTx(func(c *db.CatalogDB) error {
+		err := c.CreateProduct(ctx, product)
+		if err != nil {
+			global.Logger.Error("Failed to create product [Tx 1]", zap.Error(err))
+			return err
+		}
+		err = c.CreateProductToCategory(ctx, product.ID, req.PresetValues)
+		if err != nil {
+			global.Logger.Error("Failed to insert product category relationship [Tx 2]", zap.Error(err))
+			return err
+		}
+
+		err = c.CreateProductRelation(
+			ctx,
+			product.ID,
+			req.RelatedProducts,
+			req.UpSellProducts,
+			req.CrossSell,
+		)
+		if err != nil {
+			global.Logger.Error("Failed to insert product to product relationship [Tx 3]", zap.Error(err))
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
 		global.Logger.Error("Failed to create product", zap.Error(err))
+		return nil, err
+	}
+	err = pubsub.DefPubSub.Publish(events.INVENTORY_QUEUE, string(events.PRODUCT_CREATION), pubTypes.CreateInventoryReq{
+		ProductId: product.ID,
+		Quantity:  req.Quantity,
+	})
+	if err != nil {
+		global.Logger.Error("Failed to publish event", zap.Error(err), zap.String("event", string(events.PRODUCT_CREATION)))
 		return nil, err
 	}
 	return &catalogPr.CreateProductResponse{Id: product.ID}, nil

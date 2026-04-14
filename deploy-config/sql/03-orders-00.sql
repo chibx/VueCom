@@ -46,6 +46,7 @@ CREATE TABLE order_items (
     name TEXT NOT NULL,
     price DECIMAL(12, 2) NOT NULL,
     quantity INTEGER NOT NULL DEFAULT 1,
+    warehouse_id INTEGER NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 

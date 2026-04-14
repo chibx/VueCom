@@ -1,0 +1,19 @@
+syntax = "proto3";
+package inventory.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// option go_package = ".";
+option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/inventory";
+
+service InventoryService {
+  // Add your service methods here
+  rpc CreateProductRecord(AddProductRequest) returns (AddProductResponse);
+}
+
+message AddProductRequest {
+    uint32 product_id = 1;
+    uint32 quantity = 2;
+}
+
+message AddProductResponse {}

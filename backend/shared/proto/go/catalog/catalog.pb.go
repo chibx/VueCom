@@ -9,7 +9,6 @@ package catalog
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -51,15 +50,16 @@ type CreateProductRequest struct {
 	MetaTitle       string   `protobuf:"bytes,22,opt,name=meta_title,json=metaTitle,proto3" json:"meta_title,omitempty"`
 	MetaDescription string   `protobuf:"bytes,23,opt,name=meta_description,json=metaDescription,proto3" json:"meta_description,omitempty"`
 	// Handled as optional to represent *string
-	SearchKeywords  *string  `protobuf:"bytes,24,opt,name=search_keywords,json=searchKeywords,proto3,oneof" json:"search_keywords,omitempty"`
-	RelatedProducts []uint32 `protobuf:"varint,25,rep,packed,name=related_products,json=relatedProducts,proto3" json:"related_products,omitempty"`
-	UpSellProducts  []uint32 `protobuf:"varint,26,rep,packed,name=up_sell_products,json=upSellProducts,proto3" json:"up_sell_products,omitempty"`
-	CrossSell       []uint32 `protobuf:"varint,27,rep,packed,name=cross_sell,json=crossSell,proto3" json:"cross_sell,omitempty"`
-	PresetId        *uint32  `protobuf:"varint,28,opt,name=preset_id,json=presetId,proto3,oneof" json:"preset_id,omitempty"`
-	// google.protobuf.Struct is the best fit for map[string]any
-	PresetValues  *structpb.Struct `protobuf:"bytes,29,opt,name=preset_values,json=presetValues,proto3" json:"preset_values,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	SearchKeywords  *string          `protobuf:"bytes,24,opt,name=search_keywords,json=searchKeywords,proto3,oneof" json:"search_keywords,omitempty"`
+	RelatedProducts []uint32         `protobuf:"varint,25,rep,packed,name=related_products,json=relatedProducts,proto3" json:"related_products,omitempty"`
+	UpSellProducts  []uint32         `protobuf:"varint,26,rep,packed,name=up_sell_products,json=upSellProducts,proto3" json:"up_sell_products,omitempty"`
+	CrossSell       []uint32         `protobuf:"varint,27,rep,packed,name=cross_sell,json=crossSell,proto3" json:"cross_sell,omitempty"`
+	PresetId        *uint32          `protobuf:"varint,28,opt,name=preset_id,json=presetId,proto3,oneof" json:"preset_id,omitempty"`
+	PresetValues    []uint32         `protobuf:"varint,29,rep,packed,name=preset_values,json=presetValues,proto3" json:"preset_values,omitempty"`
+	ParentId        *uint32          `protobuf:"varint,30,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
+	Warehouses      []*WarehouseInfo `protobuf:"bytes,31,rep,name=warehouses,proto3" json:"warehouses,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *CreateProductRequest) Reset() {
@@ -288,9 +288,23 @@ func (x *CreateProductRequest) GetPresetId() uint32 {
 	return 0
 }
 
-func (x *CreateProductRequest) GetPresetValues() *structpb.Struct {
+func (x *CreateProductRequest) GetPresetValues() []uint32 {
 	if x != nil {
 		return x.PresetValues
+	}
+	return nil
+}
+
+func (x *CreateProductRequest) GetParentId() uint32 {
+	if x != nil && x.ParentId != nil {
+		return *x.ParentId
+	}
+	return 0
+}
+
+func (x *CreateProductRequest) GetWarehouses() []*WarehouseInfo {
+	if x != nil {
+		return x.Warehouses
 	}
 	return nil
 }
@@ -344,7 +358,7 @@ var File_catalog_proto protoreflect.FileDescriptor
 const file_catalog_proto_rawDesc = "" +
 	"\n" +
 	"\rcatalog.proto\x12\n" +
-	"catalog.v1\x1a\x0ecategory.proto\x1a\rproduct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe6\b\n" +
+	"catalog.v1\x1a\x0ecategory.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\rproduct.proto\x1a\fshared.proto\"\xb8\t\n" +
 	"\x14CreateProductRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
 	"\x03sku\x18\x02 \x01(\tR\x03sku\x12\x1d\n" +
@@ -380,19 +394,25 @@ const file_catalog_proto_rawDesc = "" +
 	"\x10up_sell_products\x18\x1a \x03(\rR\x0eupSellProducts\x12\x1d\n" +
 	"\n" +
 	"cross_sell\x18\x1b \x03(\rR\tcrossSell\x12 \n" +
-	"\tpreset_id\x18\x1c \x01(\rH\x02R\bpresetId\x88\x01\x01\x12<\n" +
-	"\rpreset_values\x18\x1d \x01(\v2\x17.google.protobuf.StructR\fpresetValuesB\t\n" +
+	"\tpreset_id\x18\x1c \x01(\rH\x02R\bpresetId\x88\x01\x01\x12#\n" +
+	"\rpreset_values\x18\x1d \x03(\rR\fpresetValues\x12 \n" +
+	"\tparent_id\x18\x1e \x01(\rH\x03R\bparentId\x88\x01\x01\x129\n" +
+	"\n" +
+	"warehouses\x18\x1f \x03(\v2\x19.catalog.v1.WarehouseInfoR\n" +
+	"warehousesB\t\n" +
 	"\a_weightB\x12\n" +
 	"\x10_search_keywordsB\f\n" +
 	"\n" +
-	"_preset_id\"'\n" +
-	"\x15CreateProductResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id2\xf7\x01\n" +
-	"\x0eCatalogService\x12T\n" +
-	"\rCreateProduct\x12 .catalog.v1.CreateProductRequest\x1a!.catalog.v1.CreateProductResponse\x12E\n" +
+	"_preset_idB\f\n" +
 	"\n" +
-	"GetProduct\x12\x1a.catalog.GetProductRequest\x1a\x1b.catalog.GetProductResponse\x12H\n" +
-	"\vGetCategory\x12\x1b.catalog.GetCategoryRequest\x1a\x1c.catalog.GetCategoryResponseB9Z7github.com/chibx/vuecom/backend/shared/proto/go/catalogb\x06proto3"
+	"_parent_id\"'\n" +
+	"\x15CreateProductResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id2\x83\x02\n" +
+	"\x0eCatalogService\x12T\n" +
+	"\rCreateProduct\x12 .catalog.v1.CreateProductRequest\x1a!.catalog.v1.CreateProductResponse\x12K\n" +
+	"\n" +
+	"GetProduct\x12\x1d.catalog.v1.GetProductRequest\x1a\x1e.catalog.v1.GetProductResponse\x12N\n" +
+	"\vGetCategory\x12\x1e.catalog.v1.GetCategoryRequest\x1a\x1f.catalog.v1.GetCategoryResponseB9Z7github.com/chibx/vuecom/backend/shared/proto/go/catalogb\x06proto3"
 
 var (
 	file_catalog_proto_rawDescOnce sync.Once
@@ -411,24 +431,24 @@ var file_catalog_proto_goTypes = []any{
 	(*CreateProductRequest)(nil),  // 0: catalog.v1.CreateProductRequest
 	(*CreateProductResponse)(nil), // 1: catalog.v1.CreateProductResponse
 	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),       // 3: google.protobuf.Struct
-	(*GetProductRequest)(nil),     // 4: catalog.GetProductRequest
-	(*GetCategoryRequest)(nil),    // 5: catalog.GetCategoryRequest
-	(*GetProductResponse)(nil),    // 6: catalog.GetProductResponse
-	(*GetCategoryResponse)(nil),   // 7: catalog.GetCategoryResponse
+	(*WarehouseInfo)(nil),         // 3: catalog.v1.WarehouseInfo
+	(*GetProductRequest)(nil),     // 4: catalog.v1.GetProductRequest
+	(*GetCategoryRequest)(nil),    // 5: catalog.v1.GetCategoryRequest
+	(*GetProductResponse)(nil),    // 6: catalog.v1.GetProductResponse
+	(*GetCategoryResponse)(nil),   // 7: catalog.v1.GetCategoryResponse
 }
 var file_catalog_proto_depIdxs = []int32{
 	2, // 0: catalog.v1.CreateProductRequest.discount_start:type_name -> google.protobuf.Timestamp
 	2, // 1: catalog.v1.CreateProductRequest.discount_end:type_name -> google.protobuf.Timestamp
 	2, // 2: catalog.v1.CreateProductRequest.new_from:type_name -> google.protobuf.Timestamp
 	2, // 3: catalog.v1.CreateProductRequest.new_to:type_name -> google.protobuf.Timestamp
-	3, // 4: catalog.v1.CreateProductRequest.preset_values:type_name -> google.protobuf.Struct
+	3, // 4: catalog.v1.CreateProductRequest.warehouses:type_name -> catalog.v1.WarehouseInfo
 	0, // 5: catalog.v1.CatalogService.CreateProduct:input_type -> catalog.v1.CreateProductRequest
-	4, // 6: catalog.v1.CatalogService.GetProduct:input_type -> catalog.GetProductRequest
-	5, // 7: catalog.v1.CatalogService.GetCategory:input_type -> catalog.GetCategoryRequest
+	4, // 6: catalog.v1.CatalogService.GetProduct:input_type -> catalog.v1.GetProductRequest
+	5, // 7: catalog.v1.CatalogService.GetCategory:input_type -> catalog.v1.GetCategoryRequest
 	1, // 8: catalog.v1.CatalogService.CreateProduct:output_type -> catalog.v1.CreateProductResponse
-	6, // 9: catalog.v1.CatalogService.GetProduct:output_type -> catalog.GetProductResponse
-	7, // 10: catalog.v1.CatalogService.GetCategory:output_type -> catalog.GetCategoryResponse
+	6, // 9: catalog.v1.CatalogService.GetProduct:output_type -> catalog.v1.GetProductResponse
+	7, // 10: catalog.v1.CatalogService.GetCategory:output_type -> catalog.v1.GetCategoryResponse
 	8, // [8:11] is the sub-list for method output_type
 	5, // [5:8] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
@@ -443,6 +463,7 @@ func file_catalog_proto_init() {
 	}
 	file_category_proto_init()
 	file_product_proto_init()
+	file_shared_proto_init()
 	file_catalog_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

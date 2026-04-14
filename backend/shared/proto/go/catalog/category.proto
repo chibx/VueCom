@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package catalog;
+package catalog.v1;
 
 // option go_package = ".";
 option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";

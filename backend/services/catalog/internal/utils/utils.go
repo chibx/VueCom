@@ -37,5 +37,6 @@ func CreateProdRpcToDBModel(req *catalogPr.CreateProductRequest) *catalog.Produc
 		MetaDescription:  &req.MetaDescription,
 		SearchKeywords:   req.SearchKeywords,
 		PresetID:         req.PresetId,
+		ParentID:         req.ParentId,
 	}
 }

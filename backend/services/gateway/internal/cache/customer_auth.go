@@ -3,13 +3,12 @@ package cache
 import (
 	"context"
 	"errors"
-	"strconv"
 	"time"
 
 	serverErrors "github.com/chibx/vuecom/backend/shared/errors/server"
 	userModels "github.com/chibx/vuecom/backend/shared/models/db/users"
 
-	"github.com/chibx/vuecom/backend/services/gateway/internal/constants"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/cache/keys"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 
@@ -18,14 +17,14 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetCustomerById(api *types.Api, id int, ctx context.Context) (*userModels.Customer, error) {
+func GetCustomerById(api *types.Api, id uint32, ctx context.Context) (*userModels.Customer, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
 	logger := global.Logger()
 	customer := &userModels.Customer{}
 
 	// Try to get from cache first
-	err := cache.HGetAll(ctx, constants.CUST_KEY+strconv.Itoa(id)).Scan(customer)
+	err := cache.HGetAll(ctx, keys.CustomerKey(id)).Scan(customer)
 	notExist := customer.ID == 0
 
 	if err != nil || notExist {
@@ -51,9 +50,13 @@ func GetCustomerById(api *types.Api, id int, ctx context.Context) (*userModels.C
 		go func() {
 			logger.Info("caching customer")
 			_, err := cache.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
-				pipe.HSet(ctx, constants.CUST_KEY+strconv.Itoa(id), customer)
-				pipe.Expire(ctx, constants.CUST_KEY+strconv.Itoa(id), 5*time.Minute) // Global expiry on the key.
-				return nil
+				var err error
+				err = pipe.HSet(ctx, keys.CustomerKey(id), customer).Err()
+				if err != nil {
+					return err
+				}
+				err = pipe.Expire(ctx, keys.CustomerKey(id), 5*time.Minute).Err() // Global expiry on the key.
+				return err
 			})
 
 			if err != nil {

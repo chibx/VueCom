@@ -44,3 +44,8 @@ type Api struct {
 	AdminSlug   string
 	AppSettings models.AppSettings
 }
+
+type WarehouseInput struct {
+	ID       uint32 `json:"id"`
+	Quantity uint32 `json:"quantity"`
+}

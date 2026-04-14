@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/chibx/vuecom/backend/services/gateway/api/v1/handlers/backend/products"
 	catRes "github.com/chibx/vuecom/backend/services/gateway/api/v1/response/catalog"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/cache/keys"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	igrpc "github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
 	"github.com/chibx/vuecom/backend/shared/errors/server"
 	"github.com/chibx/vuecom/backend/shared/proto/go/catalog"
 	"github.com/redis/go-redis/v9"
@@ -28,7 +28,7 @@ func GetProduct(ctx context.Context, api *types.Api, productId uint32) (*catRes.
 		resp, err := igrpc.CatalogClient.GetProduct(ctx, &catalog.GetProductRequest{
 			Id: uint64(productId),
 		})
-		product, err = products.GetProductFromRpc(resp)
+		product, err = utils.GetProductFromRpc(resp)
 
 		if err != nil {
 			if err.Error() == server.ErrDBRecordNotFound.Error() {
@@ -39,21 +39,21 @@ func GetProduct(ctx context.Context, api *types.Api, productId uint32) (*catRes.
 			return nil, err
 		}
 
-		go SetProduct(ctx, api, resp)
+		go SetProduct(ctx, api, product)
 	}
 
 	return product, nil
 }
 
-func SetProduct(ctx context.Context, api *types.Api, data *catalog.GetProductResponse) error {
+func SetProduct(ctx context.Context, api *types.Api, data *catRes.GetProductResp) error {
 	rds := api.Deps.Redis
 	_, err := rds.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
 		var err error
-		err = pipe.HSet(ctx, keys.ProductKey(data.Id), data /* resp to product */).Err()
+		err = pipe.HSet(ctx, keys.ProductKey(data.ID), data /* resp to product */).Err()
 		if err != nil {
 			return err
 		}
-		err = pipe.Expire(ctx, keys.ProductKey(data.Id), 10*time.Minute).Err() // Global expiry on the key.
+		err = pipe.Expire(ctx, keys.ProductKey(data.ID), 10*time.Minute).Err() // Global expiry on the key.
 		return err
 	})
 	if err != nil {

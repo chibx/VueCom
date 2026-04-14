@@ -6,6 +6,7 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/request"
 	"github.com/chibx/vuecom/backend/services/gateway/api/v1/response"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/cache"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/global"
 	igrpc "github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
@@ -43,16 +44,17 @@ func CreateProduct(api *types.Api) fiber.Handler {
 
 		normalizeProdReq(&reqBody)
 
-		prodRpc, err := createProductToRpc(&reqBody)
+		prodRpc, err := utils.CreateProductToRpc(&reqBody)
 		if err != nil {
 			return response.FromFiberError(c, err500)
 		}
 		prodRpcResp, err := igrpc.CatalogClient.CreateProduct(c.Context(), prodRpc)
-		_ = prodRpcResp.Id
-
 		if err != nil {
 			return response.WriteResponse(c, fiber.StatusInternalServerError, "Error occurred creating product")
 		}
+
+		productId := prodRpcResp.Id
+		go cache.SetProduct(c.Context(), api, utils.CreateProdToGetResp(&reqBody, productId))
 
 		return response.WriteResponse(c, fiber.StatusCreated, "Product Created Succesfully")
 	}

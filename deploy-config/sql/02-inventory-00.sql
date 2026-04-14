@@ -45,7 +45,6 @@ CREATE TABLE warehouses (
     state_id INT,
     country_id INT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    capacity INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

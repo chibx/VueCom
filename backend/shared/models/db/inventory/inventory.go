@@ -49,7 +49,6 @@ type Warehouse struct {
 	StateID   *uint     `gorm:"index" redis:"state"`
 	CountryID *uint     `gorm:"index" redis:"country"`
 	IsActive  bool      `gorm:"default:TRUE;not null" redis:"is_active"`
-	Capacity  int       `gorm:"default:0" redis:"capacity"`
 	CreatedAt time.Time `gorm:"" redis:"created_at"`
 	UpdatedAt time.Time `gorm:"" redis:"updated_at"`
 

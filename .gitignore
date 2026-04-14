@@ -17,7 +17,7 @@ coverage
 *.local
 vuecom-server*
 .env*
-!.env.*.example
+!.env.example
 secrets.conf
 .data
 .nuxt
@@ -47,8 +47,6 @@ test-results/
 playwright-report/
 
 # binaries
-gateway
-!gateway/
 backend/**/bin/
 
 # Miscellaneous

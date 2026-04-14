@@ -14,6 +14,15 @@ const (
 	MovementOther      StockMovementType = "other"
 )
 
+/**
+ * available_qty	Real-time stock ready for a new customer to buy.
+ * reserved_qty	Stock "claimed" by an open order/checkout but still in the warehouse.
+ * on_hold_qty	Stock set aside for quality issues, damaged items, or VIP/Marketing holds.
+ * safety_stock	Your "buffer." If this is 5, you might show "Out of Stock" to customers when you actually have 5 left, just to be safe.
+ *
+ * Might not use all of these, just as mental notes
+ */
+
 type Inventory struct {
 	ID              uint      `gorm:"primarykey" redis:"id"`
 	UpdatedAt       time.Time `gorm:"" redis:"updated_at"`

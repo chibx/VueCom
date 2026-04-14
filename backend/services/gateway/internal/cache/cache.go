@@ -39,21 +39,21 @@ func GetProduct(ctx context.Context, api *types.Api, productId uint32) (*catRes.
 			return nil, err
 		}
 
-		go SetProduct(ctx, api, productId, resp)
+		go SetProduct(ctx, api, resp)
 	}
 
 	return product, nil
 }
 
-func SetProduct(ctx context.Context, api *types.Api, productId uint32, data *catalog.GetProductResponse) error {
+func SetProduct(ctx context.Context, api *types.Api, data *catalog.GetProductResponse) error {
 	rds := api.Deps.Redis
 	_, err := rds.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
 		var err error
-		err = pipe.HSet(ctx, keys.ProductKey(productId), data /* resp to product */).Err()
+		err = pipe.HSet(ctx, keys.ProductKey(data.Id), data /* resp to product */).Err()
 		if err != nil {
 			return err
 		}
-		err = pipe.Expire(ctx, keys.ProductKey(productId), 10*time.Minute).Err() // Global expiry on the key.
+		err = pipe.Expire(ctx, keys.ProductKey(data.Id), 10*time.Minute).Err() // Global expiry on the key.
 		return err
 	})
 	if err != nil {

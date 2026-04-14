@@ -147,7 +147,8 @@ func (br *backendUserRepository) CreateSession(ctx context.Context, session *use
 }
 
 func (br *backendUserRepository) DeleteSession(ctx context.Context, session *userModels.BackendSession) error {
-	err := br.db.WithContext(ctx).Delete(&userModels.BackendSession{}, "refresh_token_hash = ? AND device_id = ?", session.RefreshTokenHash, session.DeviceId).Error
+	// err := br.db.WithContext(ctx).Delete(&userModels.BackendSession{}, "refresh_token_hash = ? AND device_id = ?", session.RefreshTokenHash, session.DeviceId).Error
+	err := br.db.WithContext(ctx).Where(session).Delete(&userModels.BackendSession{}).Error
 	if err != nil {
 		return err
 	}

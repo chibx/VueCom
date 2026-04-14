@@ -3,6 +3,7 @@ package utils
 import (
 	catReq "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/catalog"
 	catRes "github.com/chibx/vuecom/backend/services/gateway/api/v1/response/catalog"
+	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/shared/proto/go/catalog"
 	"github.com/chibx/vuecom/backend/shared/utils"
 )
@@ -15,6 +16,14 @@ func CreateProductToRpc(s *catReq.CreateProductReq, parentId ...*uint32) (*catal
 	var p_id *uint32
 	if len(parentId) > 0 {
 		p_id = parentId[0]
+	}
+
+	var warehouseInfos = make([]*catalog.WarehouseInfo, 0, len(s.Warehouses))
+	for _, v := range s.Warehouses {
+		warehouseInfos = append(warehouseInfos, &catalog.WarehouseInfo{
+			Id:       v.ID,
+			Quantity: v.Quantity,
+		})
 	}
 
 	return &catalog.CreateProductRequest{
@@ -47,6 +56,7 @@ func CreateProductToRpc(s *catReq.CreateProductReq, parentId ...*uint32) (*catal
 		Enabled:          s.Enabled,
 		ShortDescription: s.ShortDescription,
 		FullDescription:  s.FullDescription,
+		Warehouses:       warehouseInfos,
 		ParentId:         p_id,
 	}, nil
 }
@@ -64,6 +74,7 @@ func CreateProdToGetResp(s *catReq.CreateProductReq, productId uint32) *catRes.G
 		NewTo:            s.NewTo,
 		Weight:           s.Weight,
 		Quantity:         s.Quantity,
+		Warehouses:       s.Warehouses,
 		CountryOfManf:    s.CountryOfManf,
 		Slug:             s.Slug,
 		Medias:           s.Medias,
@@ -92,6 +103,14 @@ func GetProductFromRpc(s *catalog.GetProductResponse) (*catRes.GetProductResp, e
 	// 	p_id = parentId[0]
 	// }
 
+	var warehouseInputs = make([]types.WarehouseInput, 0, len(s.Warehouses))
+	for _, v := range s.Warehouses {
+		warehouseInputs = append(warehouseInputs, types.WarehouseInput{
+			ID:       v.Id,
+			Quantity: v.Quantity,
+		})
+	}
+
 	return &catRes.GetProductResp{
 		ID:               s.Id,
 		Name:             s.Name,
@@ -104,6 +123,7 @@ func GetProductFromRpc(s *catalog.GetProductResponse) (*catRes.GetProductResp, e
 		NewTo:            utils.AsPointer(s.NewTo.AsTime()),
 		Weight:           s.Weight,
 		Quantity:         s.Quantity,
+		Warehouses:       warehouseInputs,
 		CountryOfManf:    s.CountryOfManf,
 		Slug:             s.Slug,
 		Medias:           s.Medias,

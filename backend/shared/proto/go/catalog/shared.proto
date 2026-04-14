@@ -1,0 +1,9 @@
+syntax = "proto3";
+package catalog.v1;
+
+option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
+
+message WarehouseInfo {
+    uint32 id = 1;
+    uint32 quantity = 2;
+}

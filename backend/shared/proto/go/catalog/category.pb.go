@@ -165,14 +165,15 @@ var File_category_proto protoreflect.FileDescriptor
 
 const file_category_proto_rawDesc = "" +
 	"\n" +
-	"\x0ecategory.proto\x12\acatalog\".\n" +
+	"\x0ecategory.proto\x12\n" +
+	"catalog.v1\".\n" +
 	"\bCategory\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x04R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\"$\n" +
 	"\x12GetCategoryRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\"D\n" +
-	"\x13GetCategoryResponse\x12-\n" +
-	"\bcategory\x18\x01 \x01(\v2\x11.catalog.CategoryR\bcategoryB9Z7github.com/chibx/vuecom/backend/shared/proto/go/catalogb\x06proto3"
+	"\x02id\x18\x01 \x01(\x04R\x02id\"G\n" +
+	"\x13GetCategoryResponse\x120\n" +
+	"\bcategory\x18\x01 \x01(\v2\x14.catalog.v1.CategoryR\bcategoryB9Z7github.com/chibx/vuecom/backend/shared/proto/go/catalogb\x06proto3"
 
 var (
 	file_category_proto_rawDescOnce sync.Once
@@ -188,12 +189,12 @@ func file_category_proto_rawDescGZIP() []byte {
 
 var file_category_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_category_proto_goTypes = []any{
-	(*Category)(nil),            // 0: catalog.Category
-	(*GetCategoryRequest)(nil),  // 1: catalog.GetCategoryRequest
-	(*GetCategoryResponse)(nil), // 2: catalog.GetCategoryResponse
+	(*Category)(nil),            // 0: catalog.v1.Category
+	(*GetCategoryRequest)(nil),  // 1: catalog.v1.GetCategoryRequest
+	(*GetCategoryResponse)(nil), // 2: catalog.v1.GetCategoryResponse
 }
 var file_category_proto_depIdxs = []int32{
-	0, // 0: catalog.GetCategoryResponse.category:type_name -> catalog.Category
+	0, // 0: catalog.v1.GetCategoryResponse.category:type_name -> catalog.v1.Category
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

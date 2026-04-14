@@ -1,18 +1,11 @@
 syntax = "proto3";
-package catalog;
+package catalog.v1;
 
 import "google/protobuf/timestamp.proto";
+import "shared.proto";
 
 option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
 
-
-message Product {
-  uint64 id = 1;
-  string name = 2;
-  string description = 3;
-  double price = 4;
-  uint64 category_id = 5;
-}
 
 message GetProductRequest {
   uint64 id = 1;
@@ -62,4 +55,5 @@ message GetProductResponse {
     // google.protobuf.Struct preset_values = 30;
     repeated uint32 preset_values = 30;
     optional uint32 parent_id = 31;
+    repeated WarehouseInfo warehouses = 32;
 }

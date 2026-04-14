@@ -5,6 +5,7 @@ import "category.proto";
 // import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "product.proto";
+import "shared.proto";
 
 // option go_package = ".";
 option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/catalog";
@@ -57,11 +58,8 @@ message CreateProductRequest {
   optional uint32 preset_id = 28;
   repeated uint32 preset_values = 29;
   optional uint32 parent_id = 30;
+  repeated WarehouseInfo warehouses = 31;
 }
-
-// message UintList {
-//      repeated uint32 list = 1;
-// }
 
 message CreateProductResponse {
   uint32 id = 1;

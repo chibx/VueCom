@@ -5,7 +5,11 @@ go 1.25.0
 // replace vuecom/shared => ../../shared
 
 require (
-	github.com/chibx/vuecom/backend/shared v0.0.0-00010101000000-000000000000
+	github.com/chibx/vuecom/backend/shared v0.0.0
+	github.com/chibx/vuecom/backend/services/catalog v0.0.0
+	github.com/chibx/vuecom/backend/services/inventory v0.0.0
+	github.com/chibx/vuecom/backend/services/orders v0.0.0
+	github.com/chibx/vuecom/backend/services/payment v0.0.0
 	github.com/goccy/go-json v0.10.6
 	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/redis/go-redis/v9 v9.18.0

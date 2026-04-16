@@ -2,28 +2,22 @@ module github.com/chibx/vuecom/backend/services/gateway
 
 go 1.25.0
 
-// require (
-// github.com/chibx/vuecom/backend/services/catalog v0.0.0
-// github.com/chibx/vuecom/backend/services/orders v0.0.0
-// github.com/chibx/vuecom/backend/services/inventory v0.0.0
-// github.com/chibx/vuecom/backend/services/payment v0.0.0
-// )
+require (
+	github.com/chibx/vuecom/backend/shared v0.0.0
+	github.com/chibx/vuecom/backend/services/catalog v0.0.0
+	github.com/chibx/vuecom/backend/services/inventory v0.0.0
+	github.com/chibx/vuecom/backend/services/orders v0.0.0
+	github.com/chibx/vuecom/backend/services/payment v0.0.0
+)
 
 require (
-	github.com/chibx/vuecom/backend/services/catalog v0.0.0-00010101000000-000000000000
-	github.com/chibx/vuecom/backend/services/inventory v0.0.0-00010101000000-000000000000
-	github.com/chibx/vuecom/backend/services/orders v0.0.0-00010101000000-000000000000
-	github.com/chibx/vuecom/backend/services/payment v0.0.0-00010101000000-000000000000
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/joho/godotenv v1.5.1
 	github.com/pquerna/otp v1.5.0
 	google.golang.org/grpc v1.80.0
-	google.golang.org/protobuf v1.36.11
 )
 
 require (
-	// vuecom/shared v0.0.1
-	github.com/chibx/vuecom/backend/shared v0.0.1
 	github.com/gabriel-vasile/mimetype v1.4.13
 	github.com/go-playground/validator/v10 v10.30.2
 	github.com/go-redis/redis_rate/v10 v10.0.1
@@ -43,6 +37,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/net v0.52.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 )
 
 require (

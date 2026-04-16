@@ -12,7 +12,11 @@ require (
 )
 
 require (
-	github.com/chibx/vuecom/backend/shared v0.0.0-00010101000000-000000000000
+	github.com/chibx/vuecom/backend/shared v0.0.0
+	github.com/chibx/vuecom/backend/services/catalog v0.0.0
+	github.com/chibx/vuecom/backend/services/inventory v0.0.0
+	github.com/chibx/vuecom/backend/services/orders v0.0.0
+	github.com/chibx/vuecom/backend/services/payment v0.0.0
 	github.com/goccy/go-json v0.10.6
 )
 

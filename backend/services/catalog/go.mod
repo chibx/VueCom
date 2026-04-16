@@ -3,7 +3,6 @@ module github.com/chibx/vuecom/backend/services/catalog
 go 1.25.0
 
 require (
-	github.com/chibx/vuecom/backend/shared v0.0.0-00010101000000-000000000000
 	github.com/goccy/go-json v0.10.6
 	github.com/joho/godotenv v1.5.1
 	github.com/rabbitmq/amqp091-go v1.10.0
@@ -44,6 +43,14 @@ require (
 	go.uber.org/zap v1.27.1
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
+)
+
+require (
+	github.com/chibx/vuecom/backend/shared v0.0.0
+	github.com/chibx/vuecom/backend/services/catalog v0.0.0
+	github.com/chibx/vuecom/backend/services/inventory v0.0.0
+	github.com/chibx/vuecom/backend/services/orders v0.0.0
+	github.com/chibx/vuecom/backend/services/payment v0.0.0
 )
 
 replace (

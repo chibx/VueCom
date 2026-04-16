@@ -22,7 +22,7 @@ import (
 
 func HandleRegisterRoute(api *types.Api) fiber.Handler {
 	db := api.Deps.DB
-	logger := global.Logger()
+	logger := global.Logger
 
 	return func(ctx *fiber.Ctx) error {
 		token := strings.TrimSpace(ctx.Params("token"))

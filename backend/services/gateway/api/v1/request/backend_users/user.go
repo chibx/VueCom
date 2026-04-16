@@ -54,7 +54,7 @@ func (req *CreateOwnerRequest) Validate() error {
 
 func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.Api, c *fiber.Ctx) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
-	logger := global.Logger()
+	logger := global.Logger
 
 	passwordHash, err := auth.GenerateHashFromString(req.Password, auth.DefaultHashParams)
 	if err != nil {
@@ -128,7 +128,7 @@ func (req *CreateOwnerRequest) ToDBBackendUser(ctx context.Context, api *types.A
 
 func (req *CreateBackendUserRequest) ToDBBackendUser(ctx context.Context, api *types.Api, c *fiber.Ctx) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
-	logger := global.Logger()
+	logger := global.Logger
 
 	passwordHash, err := auth.GenerateHashFromString(req.Password, auth.DefaultHashParams)
 	if err != nil {

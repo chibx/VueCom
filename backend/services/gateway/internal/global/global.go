@@ -6,14 +6,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var logger *zap.Logger
+var Logger *zap.Logger
 
 func SetLogger(l *zap.Logger) {
-	logger = l
-}
-
-func Logger() *zap.Logger {
-	return logger
+	Logger = l
 }
 
 // user_id -> permission[]
@@ -24,10 +20,10 @@ func InitInMemCache() {
 	var err error
 	RoleCache, err = lru.New[int, []string](1000)
 	if err != nil {
-		logger.Fatal("Couldn't initialize role and permission in-memory cache")
+		Logger.Fatal("Couldn't initialize role and permission in-memory cache")
 	}
 	UserPermCache, err = lru.New[int, rbac.PermissionSet](1000)
 	if err != nil {
-		logger.Fatal("Couldn't initialize role and permission in-memory cache")
+		Logger.Fatal("Couldn't initialize role and permission in-memory cache")
 	}
 }

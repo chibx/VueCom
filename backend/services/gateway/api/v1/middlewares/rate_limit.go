@@ -14,7 +14,7 @@ import (
 )
 
 func GlobalRateLimit(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	return func(ctx *fiber.Ctx) error {
 		res, err := api.Deps.Limiter.Allow(ctx.UserContext(), constants.GlobalLimitKey, constants.GlobalLimit)
 		if err != nil {
@@ -37,7 +37,7 @@ func GlobalRateLimit(api *types.Api) fiber.Handler {
 }
 
 func BackendRateLimit(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	return func(c *fiber.Ctx) error {
 		backendUser, ok := c.Locals(constants.BackendUserCtxKey).(*reqctx.BackendUser)
 		if !ok || backendUser == nil {
@@ -70,7 +70,7 @@ func BackendRateLimit(api *types.Api) fiber.Handler {
 }
 
 func CustomerRateLimit(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	return func(ctx *fiber.Ctx) error {
 		customerID := ctx.Get(constants.CustomerHeaderKey)
 		var limit = constants.CustomerLimit // Could maybe add a fallback for anonymous users but it aint compulsory

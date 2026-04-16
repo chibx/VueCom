@@ -73,7 +73,7 @@ func ValidateBackendUserSess(ctx *fiber.Ctx, session *userModels.BackendSession)
 func CreateBackendSession(ctx context.Context, session *userModels.BackendSession, api *types.Api) error {
 	db := api.Deps.DB
 	var err error
-	logger := global.Logger()
+	logger := global.Logger
 	err = db.BackendUsers().CreateSession(ctx, session)
 	if err != nil {
 		logger.Error("Failed to create backend session", zap.Error(err))
@@ -84,7 +84,7 @@ func CreateBackendSession(ctx context.Context, session *userModels.BackendSessio
 
 func GetBackendUserSession(ctx context.Context, tokenHash string, api *types.Api) (*userModels.BackendSession, error) {
 	db := api.Deps.DB
-	logger := global.Logger()
+	logger := global.Logger
 
 	var backend_session *userModels.BackendSession
 
@@ -104,7 +104,7 @@ func GetBackendUserSession(ctx context.Context, tokenHash string, api *types.Api
 
 func GetCustomerSession(ctx context.Context, tokenId string, api *types.Api) (*userModels.CustomerSession, error) {
 	db := api.Deps.DB
-	logger := global.Logger()
+	logger := global.Logger
 
 	var backend_session *userModels.CustomerSession
 

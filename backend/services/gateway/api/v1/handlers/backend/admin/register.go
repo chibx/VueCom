@@ -18,7 +18,7 @@ func RegisterRoutes(app fiber.Router, api *types.Api) {
 	appGroup.Post("/create-owner", RegisterOwner(api))
 
 	appGroup.Get("/admin-exist", func(ctx *fiber.Ctx) error {
-		logger := global.Logger()
+		logger := global.Logger
 		exists, err := DoesOwnerExist(ctx, api)
 
 		if err != nil {

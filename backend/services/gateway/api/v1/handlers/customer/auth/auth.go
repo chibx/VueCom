@@ -9,7 +9,7 @@ import (
 )
 
 func Login(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	return func(ctx *fiber.Ctx) error {
 		form, err := ctx.MultipartForm()
 		if err != nil {
@@ -24,7 +24,7 @@ func Login(api *types.Api) fiber.Handler {
 }
 
 func Register(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	return func(ctx *fiber.Ctx) error {
 		form, err := ctx.MultipartForm()
 		if err != nil {

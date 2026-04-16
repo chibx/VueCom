@@ -31,7 +31,7 @@ func main() {
 	app.Use(helmet.New())
 	initServer(app, v1_api)
 	stopConns := igrpc.InitClients()
-	logger := global.Logger()
+	logger := global.Logger
 
 	defer func() {
 		_ = logger.Sync()

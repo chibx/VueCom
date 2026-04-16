@@ -39,7 +39,7 @@ func InitClients() func() {
 		inventory_service.Destroy()
 		err := conn.Close()
 		if err != nil {
-			gl.Logger().Error("Error closing gRPC listener", zap.Error(err))
+			gl.Logger.Error("Error closing gRPC listener", zap.Error(err))
 		}
 		shutdown()
 	}

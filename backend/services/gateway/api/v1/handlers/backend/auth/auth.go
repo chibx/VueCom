@@ -36,7 +36,7 @@ func clearAuthCookies(ctx *fiber.Ctx, cookies ...string) {
 
 // Handles the registration links in the url
 func Register(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	db := api.Deps.DB
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating your account, please try again")
 	return func(ctx *fiber.Ctx) error {
@@ -134,7 +134,7 @@ func Register(api *types.Api) fiber.Handler {
 }
 
 func Login(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	db := api.Deps.DB
 	errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while logging you in, please try again")
 	return func(ctx *fiber.Ctx) error {
@@ -258,7 +258,7 @@ func Login(api *types.Api) fiber.Handler {
 // TODO: Rate Limit this route
 func Refresh(api *types.Api) fiber.Handler {
 	db := api.Deps.DB
-	logger := global.Logger()
+	logger := global.Logger
 	errLogin500 := fiber.NewError(fiber.StatusInternalServerError, "Couldn't refresh user's session")
 	return func(ctx *fiber.Ctx) error {
 		refreshTk := ctx.Cookies(constants.BackendRefreshTkKey)
@@ -373,7 +373,7 @@ func Refresh(api *types.Api) fiber.Handler {
 }
 
 func Logout(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	db := api.Deps.DB
 	// err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating signup token, please try again")
 	return func(ctx *fiber.Ctx) error {
@@ -406,7 +406,7 @@ func Logout(api *types.Api) fiber.Handler {
 }
 
 func CreateSignupToken(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	db := api.Deps.DB
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating signup token, please try again")
 	return func(ctx *fiber.Ctx) error {
@@ -459,7 +459,7 @@ func CreateSignupToken(api *types.Api) fiber.Handler {
 }
 
 func RevokeSignupToken(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	db := api.Deps.DB
 	res200 := response.NewResponse(fiber.StatusOK, "Token was revoked successfully.")
 	return func(ctx *fiber.Ctx) error {

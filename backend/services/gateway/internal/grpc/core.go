@@ -40,7 +40,7 @@ func registerServices(registerFns ...func(*grpc.Server)) {
 
 		go func() {
 			if err := global.server.Serve(global.listener); err != nil && err != grpc.ErrServerStopped {
-				gl.Logger().Fatal("", zap.Error(err)) // or use a proper logger.Fatal
+				gl.Logger.Fatal("", zap.Error(err)) // or use a proper logger.Fatal
 			}
 		}()
 
@@ -54,7 +54,7 @@ func clientConn() *grpc.ClientConn {
 	global.mu.Lock()
 	if global.listener == nil {
 		global.mu.Unlock()
-		gl.Logger().Fatal("inproc not started — call RegisterServices first")
+		gl.Logger.Fatal("inproc not started — call RegisterServices first")
 	}
 	lis := global.listener // safe copy under lock
 	global.mu.Unlock()
@@ -68,7 +68,7 @@ func clientConn() *grpc.ClientConn {
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		)
 		if err != nil {
-			gl.Logger().Fatal("", zap.Error(err)) // handle gracefully in real code
+			gl.Logger.Fatal("", zap.Error(err)) // handle gracefully in real code
 		}
 	}
 
@@ -85,7 +85,7 @@ func shutdown() {
 	if global.listener != nil {
 		err := global.listener.Close()
 		if err != nil {
-			gl.Logger().Error("Error closing gRPC listener", zap.Error(err))
+			gl.Logger.Error("Error closing gRPC listener", zap.Error(err))
 		}
 	}
 }

@@ -21,7 +21,7 @@ import (
 
 func CreateProduct(api *types.Api) fiber.Handler {
 	err500 := fiber.NewError(fiber.StatusInternalServerError, "Error occurred while creating product, please try again.")
-	logger := global.Logger()
+	logger := global.Logger
 	return func(c *fiber.Ctx) error {
 		var err error
 

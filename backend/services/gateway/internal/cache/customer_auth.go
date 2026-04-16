@@ -20,7 +20,7 @@ import (
 func GetCustomerById(api *types.Api, id uint32, ctx context.Context) (*userModels.Customer, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	logger := global.Logger()
+	logger := global.Logger
 	customer := &userModels.Customer{}
 
 	// Try to get from cache first

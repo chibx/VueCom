@@ -24,7 +24,7 @@ func GetProduct(ctx context.Context, api *types.Api, productId uint32) (*catRes.
 	err = rds.HGetAll(ctx, keys.ProductKey(productId)).Scan(product)
 	// notExist := product.ID == 0
 	if err != nil {
-		global.Logger().Error("Error getting product data from cache", zap.Error(err))
+		global.Logger.Error("Error getting product data from cache", zap.Error(err))
 		resp, err := igrpc.CatalogClient.GetProduct(ctx, &catalog.GetProductRequest{
 			Id: uint64(productId),
 		})
@@ -35,7 +35,7 @@ func GetProduct(ctx context.Context, api *types.Api, productId uint32) (*catRes.
 				return nil, server.ErrDBRecordNotFound
 			}
 
-			global.Logger().Error("Error getting product data from catalog service", zap.Error(err))
+			global.Logger.Error("Error getting product data from catalog service", zap.Error(err))
 			return nil, err
 		}
 
@@ -57,7 +57,7 @@ func SetProduct(ctx context.Context, api *types.Api, data *catRes.GetProductResp
 		return err
 	})
 	if err != nil {
-		global.Logger().Error("Error setting product cache", zap.Error(err))
+		global.Logger.Error("Error setting product cache", zap.Error(err))
 	}
 	return err
 }

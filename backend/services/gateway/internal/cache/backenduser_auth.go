@@ -21,7 +21,7 @@ import (
 func GetBackendUserById(api *types.Api, id uint32, ctx context.Context) (*userModels.BackendUser, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	logger := global.Logger()
+	logger := global.Logger
 	backendUser := &userModels.BackendUser{}
 
 	// Try to get from cache first

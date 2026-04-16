@@ -18,7 +18,7 @@ import (
 )
 
 func AuthMiddleware(api *types.Api) fiber.Handler {
-	logger := global.Logger()
+	logger := global.Logger
 	return func(c *fiber.Ctx) error {
 		// var backendUserSess *userModels.BackendSession
 		var apiKeyData *userModels.ApiKey
@@ -45,7 +45,7 @@ func AuthMiddleware(api *types.Api) fiber.Handler {
 				if !ok {
 					permSet, err := utils.RefetchRoleCache(c.Context(), api, validJWT.UserID)
 					if err != nil {
-						global.Logger().Error("Failed to refresh role cache", zap.Error(err))
+						global.Logger.Error("Failed to refresh role cache", zap.Error(err))
 					}
 					userPerm = permSet
 				}

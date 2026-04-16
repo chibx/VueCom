@@ -17,7 +17,7 @@ const BACKEND_USER_KEY_PATTERN = "backend_user:*"
 // TODO: I believe this simple function could be better optimized later
 
 func InvalidateCache(ctx context.Context, api *types.Api, pattern string) {
-	logger := global.Logger()
+	logger := global.Logger
 	rdb := api.Deps.Redis
 	go func() {
 		var cursor uint64

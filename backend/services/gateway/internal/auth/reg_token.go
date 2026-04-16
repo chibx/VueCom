@@ -36,7 +36,7 @@ func GenerateRegToken(api *types.Api, regToken *RegTokenField) (string, error) {
 }
 
 func ValidateRegToken(api *types.Api, tokenString string, secretKey []byte) (RegTokenField, error) {
-	logger := global.Logger()
+	logger := global.Logger
 	var regToken = RegTokenField{}
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

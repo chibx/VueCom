@@ -22,7 +22,7 @@ import (
 func GetAppData(ctx context.Context, api *types.Api) (*appModels.AppData, error) {
 	db := api.Deps.DB
 	cache := api.Deps.Redis
-	logger := global.Logger()
+	logger := global.Logger
 	appData := new(appModels.AppData)
 
 	err := cache.HGetAll(ctx, keys.APP_DATA_KEY).Scan(&appData)

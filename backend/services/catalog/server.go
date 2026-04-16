@@ -6,17 +6,17 @@ import (
 
 	"github.com/chibx/vuecom/backend/services/catalog/internal/db"
 	"github.com/chibx/vuecom/backend/services/catalog/internal/global"
-	"github.com/chibx/vuecom/backend/services/catalog/internal/pubsub"
+	igrpc "github.com/chibx/vuecom/backend/services/catalog/internal/grpc"
 	"github.com/chibx/vuecom/backend/services/catalog/internal/utils"
 	"github.com/chibx/vuecom/backend/shared/events"
 	catalogPr "github.com/chibx/vuecom/backend/shared/proto/go/catalog"
-	pubTypes "github.com/chibx/vuecom/backend/shared/types/pubsub"
+	"github.com/chibx/vuecom/backend/shared/proto/go/inventory"
 	"go.uber.org/zap"
 )
 
 type Service struct {
 	catalogPr.UnimplementedCatalogServiceServer
-	nextID atomic.Uint64
+	nextID atomic.Uint32
 	// ...
 }
 
@@ -53,12 +53,27 @@ func (s *Service) CreateProduct(ctx context.Context, req *catalogPr.CreateProduc
 		global.Logger.Error("Failed to create product", zap.Error(err))
 		return nil, err
 	}
-	err = pubsub.DefPubSub.Publish(events.INVENTORY_QUEUE, string(events.PRODUCT_CREATION), pubTypes.CreateInventoryReq{
-		ProductId: product.ID,
-		Quantity:  req.Quantity,
+
+	// err = pubsub.DefPubSub.Publish(events.INVENTORY_QUEUE, string(events.PRODUCT_CREATION), pubTypes.CreateInventoryReq{
+	// 	ProductId: product.ID,
+	// 	Quantity:  req.Quantity,
+	// })
+
+	var inventoryWarehouses = make([]*inventory.WarehouseInfo, 0, len(req.Warehouses))
+	for _, v := range req.Warehouses {
+		inventoryWarehouses = append(inventoryWarehouses, &inventory.WarehouseInfo{
+			Id: v.Id, Quantity: v.Quantity,
+		})
+	}
+
+	_, err = igrpc.InventoryClient.CreateProductRecord(ctx, &inventory.AddProductRequest{
+		ProductId:     product.ID,
+		WarehouseInfo: inventoryWarehouses,
 	})
+
 	if err != nil {
-		global.Logger.Error("Failed to publish event", zap.Error(err), zap.String("event", string(events.PRODUCT_CREATION)))
+		// global.Logger.Error("Failed to publish event", zap.Error(err), zap.String("event", string(events.PRODUCT_CREATION)))
+		global.Logger.Error("Failed to create inventory record", zap.Error(err), zap.String("event", string(events.PRODUCT_CREATION)))
 		return nil, err
 	}
 	return &catalogPr.CreateProductResponse{Id: product.ID}, nil
@@ -67,11 +82,11 @@ func (s *Service) CreateProduct(ctx context.Context, req *catalogPr.CreateProduc
 func (s *Service) GetProduct(ctx context.Context, req *catalogPr.GetProductRequest) (*catalogPr.GetProductResponse, error) {
 	// your logic + possibly publish event
 	id := s.nextID.Add(1)
-	return &catalogPr.GetProductResponse{Product: &catalogPr.Product{Id: id, Name: "Sport Max", Description: "Pro sport", Price: 40000, CategoryId: 1}}, nil
+	return &catalogPr.GetProductResponse{Id: id}, nil
 }
 
 func (s *Service) GetCategory(ctx context.Context, req *catalogPr.GetCategoryRequest) (*catalogPr.GetCategoryResponse, error) {
 	// your logic + possibly publish event
 	id := s.nextID.Add(1)
-	return &catalogPr.GetCategoryResponse{Category: &catalogPr.Category{Id: id, Name: "1234"}}, nil
+	return &catalogPr.GetCategoryResponse{Category: &catalogPr.Category{Id: uint64(id), Name: "1234"}}, nil
 }

@@ -40,8 +40,8 @@ CREATE TABLE warehouses (
     id SERIAL PRIMARY KEY,
     code TEXT UNIQUE NOT NULL, -- e.g., LOS1, ABJ1
     name TEXT NOT NULL,
-    address TEXT,
-    city TEXT,
+    address TEXT NOT NULL,
+    city TEXT NOT NULL,
     state_id INT,
     country_id INT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,

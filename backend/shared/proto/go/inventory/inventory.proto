@@ -10,6 +10,7 @@ service InventoryService {
   // Add your service methods here
   rpc CreateProductRecord(AddProductRequest) returns (AddProductResponse);
   rpc HasAnyWarehouse(WarehouseExistReq) returns (WarehouseExistResp);
+  rpc ListWarehouses(ListWarehousesReq) returns (ListWarehousesResp);
 }
 
 message WarehouseInfo {
@@ -29,4 +30,23 @@ message WarehouseExistReq {}
 
 message WarehouseExistResp {
   bool exists = 1;
+}
+
+message ListWarehousesReq {}
+
+message ListWarehousesResp {
+  repeated Warehouse warehouses = 1;
+}
+
+message Warehouse {
+  uint32 id = 1;
+  string code = 2;
+  string name = 3;
+  string address = 4;
+  string city = 5;
+  uint32 state_id = 6;
+  uint32 country_id = 7;
+  bool is_active = 8;
+  string created_at = 9;
+  string updated_at = 10;
 }

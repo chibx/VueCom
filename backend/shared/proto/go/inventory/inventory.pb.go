@@ -77,6 +77,7 @@ type AddProductRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProductId     uint32                 `protobuf:"varint,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
 	WarehouseInfo []*WarehouseInfo       `protobuf:"bytes,2,rep,name=warehouse_info,json=warehouseInfo,proto3" json:"warehouse_info,omitempty"`
+	Sku           string                 `protobuf:"bytes,3,opt,name=sku,proto3" json:"sku,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -125,6 +126,13 @@ func (x *AddProductRequest) GetWarehouseInfo() []*WarehouseInfo {
 	return nil
 }
 
+func (x *AddProductRequest) GetSku() string {
+	if x != nil {
+		return x.Sku
+	}
+	return ""
+}
+
 type AddProductResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -168,11 +176,12 @@ const file_inventory_proto_rawDesc = "" +
 	"\x0finventory.proto\x12\finventory.v1\";\n" +
 	"\rWarehouseInfo\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\rR\x02id\x12\x1a\n" +
-	"\bquantity\x18\x02 \x01(\rR\bquantity\"v\n" +
+	"\bquantity\x18\x02 \x01(\rR\bquantity\"\x88\x01\n" +
 	"\x11AddProductRequest\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\rR\tproductId\x12B\n" +
-	"\x0ewarehouse_info\x18\x02 \x03(\v2\x1b.inventory.v1.WarehouseInfoR\rwarehouseInfo\"\x14\n" +
+	"\x0ewarehouse_info\x18\x02 \x03(\v2\x1b.inventory.v1.WarehouseInfoR\rwarehouseInfo\x12\x10\n" +
+	"\x03sku\x18\x03 \x01(\tR\x03sku\"\x14\n" +
 	"\x12AddProductResponse2l\n" +
 	"\x10InventoryService\x12X\n" +
 	"\x13CreateProductRecord\x12\x1f.inventory.v1.AddProductRequest\x1a .inventory.v1.AddProductResponseB;Z9github.com/chibx/vuecom/backend/shared/proto/go/inventoryb\x06proto3"

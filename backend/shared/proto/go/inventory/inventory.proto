@@ -19,6 +19,7 @@ message WarehouseInfo {
 message AddProductRequest {
     uint32 product_id = 1;
     repeated WarehouseInfo warehouse_info = 2;
+    string sku = 3;
 }
 
 message AddProductResponse {}

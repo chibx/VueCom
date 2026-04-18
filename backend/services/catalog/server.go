@@ -68,6 +68,7 @@ func (s *Service) CreateProduct(ctx context.Context, req *catalogPr.CreateProduc
 
 	_, err = igrpc.InventoryClient.CreateProductRecord(ctx, &inventory.AddProductRequest{
 		ProductId:     product.ID,
+		Sku:           product.SKU,
 		WarehouseInfo: inventoryWarehouses,
 	})
 

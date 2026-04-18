@@ -22,6 +22,10 @@ const (
 	InventoryService_CreateProductRecord_FullMethodName = "/inventory.v1.InventoryService/CreateProductRecord"
 	InventoryService_HasAnyWarehouse_FullMethodName     = "/inventory.v1.InventoryService/HasAnyWarehouse"
 	InventoryService_ListWarehouses_FullMethodName      = "/inventory.v1.InventoryService/ListWarehouses"
+	InventoryService_CreateWarehouse_FullMethodName     = "/inventory.v1.InventoryService/CreateWarehouse"
+	InventoryService_DeleteWarehouse_FullMethodName     = "/inventory.v1.InventoryService/DeleteWarehouse"
+	InventoryService_CreateStockMovement_FullMethodName = "/inventory.v1.InventoryService/CreateStockMovement"
+	InventoryService_ListStockMovements_FullMethodName  = "/inventory.v1.InventoryService/ListStockMovements"
 )
 
 // InventoryServiceClient is the client API for InventoryService service.
@@ -32,6 +36,10 @@ type InventoryServiceClient interface {
 	CreateProductRecord(ctx context.Context, in *AddProductRequest, opts ...grpc.CallOption) (*AddProductResponse, error)
 	HasAnyWarehouse(ctx context.Context, in *WarehouseExistReq, opts ...grpc.CallOption) (*WarehouseExistResp, error)
 	ListWarehouses(ctx context.Context, in *ListWarehousesReq, opts ...grpc.CallOption) (*ListWarehousesResp, error)
+	CreateWarehouse(ctx context.Context, in *CreateWarehouseReq, opts ...grpc.CallOption) (*CreateWarehouseResp, error)
+	DeleteWarehouse(ctx context.Context, in *DeleteWarehouseReq, opts ...grpc.CallOption) (*DeleteWarehouseResp, error)
+	CreateStockMovement(ctx context.Context, in *CreateStockMovementReq, opts ...grpc.CallOption) (*CreateStockMovementResp, error)
+	ListStockMovements(ctx context.Context, in *ListStockMovementsReq, opts ...grpc.CallOption) (*ListStockMovementsResp, error)
 }
 
 type inventoryServiceClient struct {
@@ -72,6 +80,46 @@ func (c *inventoryServiceClient) ListWarehouses(ctx context.Context, in *ListWar
 	return out, nil
 }
 
+func (c *inventoryServiceClient) CreateWarehouse(ctx context.Context, in *CreateWarehouseReq, opts ...grpc.CallOption) (*CreateWarehouseResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateWarehouseResp)
+	err := c.cc.Invoke(ctx, InventoryService_CreateWarehouse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryServiceClient) DeleteWarehouse(ctx context.Context, in *DeleteWarehouseReq, opts ...grpc.CallOption) (*DeleteWarehouseResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteWarehouseResp)
+	err := c.cc.Invoke(ctx, InventoryService_DeleteWarehouse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryServiceClient) CreateStockMovement(ctx context.Context, in *CreateStockMovementReq, opts ...grpc.CallOption) (*CreateStockMovementResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateStockMovementResp)
+	err := c.cc.Invoke(ctx, InventoryService_CreateStockMovement_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryServiceClient) ListStockMovements(ctx context.Context, in *ListStockMovementsReq, opts ...grpc.CallOption) (*ListStockMovementsResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListStockMovementsResp)
+	err := c.cc.Invoke(ctx, InventoryService_ListStockMovements_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InventoryServiceServer is the server API for InventoryService service.
 // All implementations must embed UnimplementedInventoryServiceServer
 // for forward compatibility.
@@ -80,6 +128,10 @@ type InventoryServiceServer interface {
 	CreateProductRecord(context.Context, *AddProductRequest) (*AddProductResponse, error)
 	HasAnyWarehouse(context.Context, *WarehouseExistReq) (*WarehouseExistResp, error)
 	ListWarehouses(context.Context, *ListWarehousesReq) (*ListWarehousesResp, error)
+	CreateWarehouse(context.Context, *CreateWarehouseReq) (*CreateWarehouseResp, error)
+	DeleteWarehouse(context.Context, *DeleteWarehouseReq) (*DeleteWarehouseResp, error)
+	CreateStockMovement(context.Context, *CreateStockMovementReq) (*CreateStockMovementResp, error)
+	ListStockMovements(context.Context, *ListStockMovementsReq) (*ListStockMovementsResp, error)
 	mustEmbedUnimplementedInventoryServiceServer()
 }
 
@@ -98,6 +150,18 @@ func (UnimplementedInventoryServiceServer) HasAnyWarehouse(context.Context, *War
 }
 func (UnimplementedInventoryServiceServer) ListWarehouses(context.Context, *ListWarehousesReq) (*ListWarehousesResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListWarehouses not implemented")
+}
+func (UnimplementedInventoryServiceServer) CreateWarehouse(context.Context, *CreateWarehouseReq) (*CreateWarehouseResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateWarehouse not implemented")
+}
+func (UnimplementedInventoryServiceServer) DeleteWarehouse(context.Context, *DeleteWarehouseReq) (*DeleteWarehouseResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteWarehouse not implemented")
+}
+func (UnimplementedInventoryServiceServer) CreateStockMovement(context.Context, *CreateStockMovementReq) (*CreateStockMovementResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateStockMovement not implemented")
+}
+func (UnimplementedInventoryServiceServer) ListStockMovements(context.Context, *ListStockMovementsReq) (*ListStockMovementsResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListStockMovements not implemented")
 }
 func (UnimplementedInventoryServiceServer) mustEmbedUnimplementedInventoryServiceServer() {}
 func (UnimplementedInventoryServiceServer) testEmbeddedByValue()                          {}
@@ -174,6 +238,78 @@ func _InventoryService_ListWarehouses_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InventoryService_CreateWarehouse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateWarehouseReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServiceServer).CreateWarehouse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryService_CreateWarehouse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServiceServer).CreateWarehouse(ctx, req.(*CreateWarehouseReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InventoryService_DeleteWarehouse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteWarehouseReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServiceServer).DeleteWarehouse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryService_DeleteWarehouse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServiceServer).DeleteWarehouse(ctx, req.(*DeleteWarehouseReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InventoryService_CreateStockMovement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateStockMovementReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServiceServer).CreateStockMovement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryService_CreateStockMovement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServiceServer).CreateStockMovement(ctx, req.(*CreateStockMovementReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InventoryService_ListStockMovements_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStockMovementsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServiceServer).ListStockMovements(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryService_ListStockMovements_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServiceServer).ListStockMovements(ctx, req.(*ListStockMovementsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InventoryService_ServiceDesc is the grpc.ServiceDesc for InventoryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -192,6 +328,22 @@ var InventoryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListWarehouses",
 			Handler:    _InventoryService_ListWarehouses_Handler,
+		},
+		{
+			MethodName: "CreateWarehouse",
+			Handler:    _InventoryService_CreateWarehouse_Handler,
+		},
+		{
+			MethodName: "DeleteWarehouse",
+			Handler:    _InventoryService_DeleteWarehouse_Handler,
+		},
+		{
+			MethodName: "CreateStockMovement",
+			Handler:    _InventoryService_CreateStockMovement_Handler,
+		},
+		{
+			MethodName: "ListStockMovements",
+			Handler:    _InventoryService_ListStockMovements_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

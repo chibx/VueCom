@@ -445,6 +445,578 @@ func (x *Warehouse) GetUpdatedAt() string {
 	return ""
 }
 
+type CreateWarehouseReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Address       string                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
+	City          string                 `protobuf:"bytes,4,opt,name=city,proto3" json:"city,omitempty"`
+	StateId       uint32                 `protobuf:"varint,5,opt,name=state_id,json=stateId,proto3" json:"state_id,omitempty"`
+	CountryId     uint32                 `protobuf:"varint,6,opt,name=country_id,json=countryId,proto3" json:"country_id,omitempty"`
+	IsActive      bool                   `protobuf:"varint,7,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateWarehouseReq) Reset() {
+	*x = CreateWarehouseReq{}
+	mi := &file_inventory_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateWarehouseReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateWarehouseReq) ProtoMessage() {}
+
+func (x *CreateWarehouseReq) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateWarehouseReq.ProtoReflect.Descriptor instead.
+func (*CreateWarehouseReq) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *CreateWarehouseReq) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *CreateWarehouseReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateWarehouseReq) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *CreateWarehouseReq) GetCity() string {
+	if x != nil {
+		return x.City
+	}
+	return ""
+}
+
+func (x *CreateWarehouseReq) GetStateId() uint32 {
+	if x != nil {
+		return x.StateId
+	}
+	return 0
+}
+
+func (x *CreateWarehouseReq) GetCountryId() uint32 {
+	if x != nil {
+		return x.CountryId
+	}
+	return 0
+}
+
+func (x *CreateWarehouseReq) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
+type CreateWarehouseResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateWarehouseResp) Reset() {
+	*x = CreateWarehouseResp{}
+	mi := &file_inventory_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateWarehouseResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateWarehouseResp) ProtoMessage() {}
+
+func (x *CreateWarehouseResp) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateWarehouseResp.ProtoReflect.Descriptor instead.
+func (*CreateWarehouseResp) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CreateWarehouseResp) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type DeleteWarehouseReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WarehouseIds  []uint32               `protobuf:"varint,1,rep,packed,name=warehouse_ids,json=warehouseIds,proto3" json:"warehouse_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteWarehouseReq) Reset() {
+	*x = DeleteWarehouseReq{}
+	mi := &file_inventory_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteWarehouseReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteWarehouseReq) ProtoMessage() {}
+
+func (x *DeleteWarehouseReq) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteWarehouseReq.ProtoReflect.Descriptor instead.
+func (*DeleteWarehouseReq) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *DeleteWarehouseReq) GetWarehouseIds() []uint32 {
+	if x != nil {
+		return x.WarehouseIds
+	}
+	return nil
+}
+
+type DeleteWarehouseResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteWarehouseResp) Reset() {
+	*x = DeleteWarehouseResp{}
+	mi := &file_inventory_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteWarehouseResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteWarehouseResp) ProtoMessage() {}
+
+func (x *DeleteWarehouseResp) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteWarehouseResp.ProtoReflect.Descriptor instead.
+func (*DeleteWarehouseResp) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{11}
+}
+
+type CreateStockMovementReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	InventoryId   uint32                 `protobuf:"varint,1,opt,name=inventory_id,json=inventoryId,proto3" json:"inventory_id,omitempty"`
+	Sku           string                 `protobuf:"bytes,2,opt,name=sku,proto3" json:"sku,omitempty"`
+	WarehouseId   uint32                 `protobuf:"varint,3,opt,name=warehouse_id,json=warehouseId,proto3" json:"warehouse_id,omitempty"`
+	MovementType  string                 `protobuf:"bytes,4,opt,name=movement_type,json=movementType,proto3" json:"movement_type,omitempty"`
+	Quantity      int32                  `protobuf:"varint,5,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Reference     string                 `protobuf:"bytes,6,opt,name=reference,proto3" json:"reference,omitempty"`
+	Notes         string                 `protobuf:"bytes,7,opt,name=notes,proto3" json:"notes,omitempty"`
+	CreatedBy     uint32                 `protobuf:"varint,8,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateStockMovementReq) Reset() {
+	*x = CreateStockMovementReq{}
+	mi := &file_inventory_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateStockMovementReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateStockMovementReq) ProtoMessage() {}
+
+func (x *CreateStockMovementReq) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateStockMovementReq.ProtoReflect.Descriptor instead.
+func (*CreateStockMovementReq) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *CreateStockMovementReq) GetInventoryId() uint32 {
+	if x != nil {
+		return x.InventoryId
+	}
+	return 0
+}
+
+func (x *CreateStockMovementReq) GetSku() string {
+	if x != nil {
+		return x.Sku
+	}
+	return ""
+}
+
+func (x *CreateStockMovementReq) GetWarehouseId() uint32 {
+	if x != nil {
+		return x.WarehouseId
+	}
+	return 0
+}
+
+func (x *CreateStockMovementReq) GetMovementType() string {
+	if x != nil {
+		return x.MovementType
+	}
+	return ""
+}
+
+func (x *CreateStockMovementReq) GetQuantity() int32 {
+	if x != nil {
+		return x.Quantity
+	}
+	return 0
+}
+
+func (x *CreateStockMovementReq) GetReference() string {
+	if x != nil {
+		return x.Reference
+	}
+	return ""
+}
+
+func (x *CreateStockMovementReq) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+func (x *CreateStockMovementReq) GetCreatedBy() uint32 {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return 0
+}
+
+type CreateStockMovementResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateStockMovementResp) Reset() {
+	*x = CreateStockMovementResp{}
+	mi := &file_inventory_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateStockMovementResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateStockMovementResp) ProtoMessage() {}
+
+func (x *CreateStockMovementResp) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateStockMovementResp.ProtoReflect.Descriptor instead.
+func (*CreateStockMovementResp) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *CreateStockMovementResp) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type ListStockMovementsReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WarehouseId   uint32                 `protobuf:"varint,1,opt,name=warehouse_id,json=warehouseId,proto3" json:"warehouse_id,omitempty"`
+	Sku           string                 `protobuf:"bytes,2,opt,name=sku,proto3" json:"sku,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListStockMovementsReq) Reset() {
+	*x = ListStockMovementsReq{}
+	mi := &file_inventory_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListStockMovementsReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListStockMovementsReq) ProtoMessage() {}
+
+func (x *ListStockMovementsReq) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListStockMovementsReq.ProtoReflect.Descriptor instead.
+func (*ListStockMovementsReq) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ListStockMovementsReq) GetWarehouseId() uint32 {
+	if x != nil {
+		return x.WarehouseId
+	}
+	return 0
+}
+
+func (x *ListStockMovementsReq) GetSku() string {
+	if x != nil {
+		return x.Sku
+	}
+	return ""
+}
+
+type ListStockMovementsResp struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	StockMovements []*StockMovement       `protobuf:"bytes,1,rep,name=stock_movements,json=stockMovements,proto3" json:"stock_movements,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *ListStockMovementsResp) Reset() {
+	*x = ListStockMovementsResp{}
+	mi := &file_inventory_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListStockMovementsResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListStockMovementsResp) ProtoMessage() {}
+
+func (x *ListStockMovementsResp) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListStockMovementsResp.ProtoReflect.Descriptor instead.
+func (*ListStockMovementsResp) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *ListStockMovementsResp) GetStockMovements() []*StockMovement {
+	if x != nil {
+		return x.StockMovements
+	}
+	return nil
+}
+
+type StockMovement struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	InventoryId   uint32                 `protobuf:"varint,2,opt,name=inventory_id,json=inventoryId,proto3" json:"inventory_id,omitempty"`
+	Sku           string                 `protobuf:"bytes,3,opt,name=sku,proto3" json:"sku,omitempty"`
+	WarehouseId   uint32                 `protobuf:"varint,4,opt,name=warehouse_id,json=warehouseId,proto3" json:"warehouse_id,omitempty"`
+	MovementType  string                 `protobuf:"bytes,5,opt,name=movement_type,json=movementType,proto3" json:"movement_type,omitempty"`
+	Quantity      int32                  `protobuf:"varint,6,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	Reference     string                 `protobuf:"bytes,7,opt,name=reference,proto3" json:"reference,omitempty"`
+	Notes         string                 `protobuf:"bytes,8,opt,name=notes,proto3" json:"notes,omitempty"`
+	CreatedBy     uint32                 `protobuf:"varint,9,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StockMovement) Reset() {
+	*x = StockMovement{}
+	mi := &file_inventory_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StockMovement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StockMovement) ProtoMessage() {}
+
+func (x *StockMovement) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StockMovement.ProtoReflect.Descriptor instead.
+func (*StockMovement) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *StockMovement) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *StockMovement) GetInventoryId() uint32 {
+	if x != nil {
+		return x.InventoryId
+	}
+	return 0
+}
+
+func (x *StockMovement) GetSku() string {
+	if x != nil {
+		return x.Sku
+	}
+	return ""
+}
+
+func (x *StockMovement) GetWarehouseId() uint32 {
+	if x != nil {
+		return x.WarehouseId
+	}
+	return 0
+}
+
+func (x *StockMovement) GetMovementType() string {
+	if x != nil {
+		return x.MovementType
+	}
+	return ""
+}
+
+func (x *StockMovement) GetQuantity() int32 {
+	if x != nil {
+		return x.Quantity
+	}
+	return 0
+}
+
+func (x *StockMovement) GetReference() string {
+	if x != nil {
+		return x.Reference
+	}
+	return ""
+}
+
+func (x *StockMovement) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+func (x *StockMovement) GetCreatedBy() uint32 {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return 0
+}
+
+func (x *StockMovement) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
 var File_inventory_proto protoreflect.FileDescriptor
 
 const file_inventory_proto_rawDesc = "" +
@@ -481,11 +1053,60 @@ const file_inventory_proto_rawDesc = "" +
 	"created_at\x18\t \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
 	"updated_at\x18\n" +
-	" \x01(\tR\tupdatedAt2\x97\x02\n" +
+	" \x01(\tR\tupdatedAt\"\xc1\x01\n" +
+	"\x12CreateWarehouseReq\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
+	"\aaddress\x18\x03 \x01(\tR\aaddress\x12\x12\n" +
+	"\x04city\x18\x04 \x01(\tR\x04city\x12\x19\n" +
+	"\bstate_id\x18\x05 \x01(\rR\astateId\x12\x1d\n" +
+	"\n" +
+	"country_id\x18\x06 \x01(\rR\tcountryId\x12\x1b\n" +
+	"\tis_active\x18\a \x01(\bR\bisActive\"%\n" +
+	"\x13CreateWarehouseResp\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"9\n" +
+	"\x12DeleteWarehouseReq\x12#\n" +
+	"\rwarehouse_ids\x18\x01 \x03(\rR\fwarehouseIds\"\x15\n" +
+	"\x13DeleteWarehouseResp\"\x84\x02\n" +
+	"\x16CreateStockMovementReq\x12!\n" +
+	"\finventory_id\x18\x01 \x01(\rR\vinventoryId\x12\x10\n" +
+	"\x03sku\x18\x02 \x01(\tR\x03sku\x12!\n" +
+	"\fwarehouse_id\x18\x03 \x01(\rR\vwarehouseId\x12#\n" +
+	"\rmovement_type\x18\x04 \x01(\tR\fmovementType\x12\x1a\n" +
+	"\bquantity\x18\x05 \x01(\x05R\bquantity\x12\x1c\n" +
+	"\treference\x18\x06 \x01(\tR\treference\x12\x14\n" +
+	"\x05notes\x18\a \x01(\tR\x05notes\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\b \x01(\rR\tcreatedBy\")\n" +
+	"\x17CreateStockMovementResp\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"L\n" +
+	"\x15ListStockMovementsReq\x12!\n" +
+	"\fwarehouse_id\x18\x01 \x01(\rR\vwarehouseId\x12\x10\n" +
+	"\x03sku\x18\x02 \x01(\tR\x03sku\"^\n" +
+	"\x16ListStockMovementsResp\x12D\n" +
+	"\x0fstock_movements\x18\x01 \x03(\v2\x1b.inventory.v1.StockMovementR\x0estockMovements\"\xaa\x02\n" +
+	"\rStockMovement\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\x12!\n" +
+	"\finventory_id\x18\x02 \x01(\rR\vinventoryId\x12\x10\n" +
+	"\x03sku\x18\x03 \x01(\tR\x03sku\x12!\n" +
+	"\fwarehouse_id\x18\x04 \x01(\rR\vwarehouseId\x12#\n" +
+	"\rmovement_type\x18\x05 \x01(\tR\fmovementType\x12\x1a\n" +
+	"\bquantity\x18\x06 \x01(\x05R\bquantity\x12\x1c\n" +
+	"\treference\x18\a \x01(\tR\treference\x12\x14\n" +
+	"\x05notes\x18\b \x01(\tR\x05notes\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\t \x01(\rR\tcreatedBy\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\n" +
+	" \x01(\tR\tcreatedAt2\x8c\x05\n" +
 	"\x10InventoryService\x12X\n" +
 	"\x13CreateProductRecord\x12\x1f.inventory.v1.AddProductRequest\x1a .inventory.v1.AddProductResponse\x12T\n" +
 	"\x0fHasAnyWarehouse\x12\x1f.inventory.v1.WarehouseExistReq\x1a .inventory.v1.WarehouseExistResp\x12S\n" +
-	"\x0eListWarehouses\x12\x1f.inventory.v1.ListWarehousesReq\x1a .inventory.v1.ListWarehousesRespB;Z9github.com/chibx/vuecom/backend/shared/proto/go/inventoryb\x06proto3"
+	"\x0eListWarehouses\x12\x1f.inventory.v1.ListWarehousesReq\x1a .inventory.v1.ListWarehousesResp\x12V\n" +
+	"\x0fCreateWarehouse\x12 .inventory.v1.CreateWarehouseReq\x1a!.inventory.v1.CreateWarehouseResp\x12V\n" +
+	"\x0fDeleteWarehouse\x12 .inventory.v1.DeleteWarehouseReq\x1a!.inventory.v1.DeleteWarehouseResp\x12b\n" +
+	"\x13CreateStockMovement\x12$.inventory.v1.CreateStockMovementReq\x1a%.inventory.v1.CreateStockMovementResp\x12_\n" +
+	"\x12ListStockMovements\x12#.inventory.v1.ListStockMovementsReq\x1a$.inventory.v1.ListStockMovementsRespB;Z9github.com/chibx/vuecom/backend/shared/proto/go/inventoryb\x06proto3"
 
 var (
 	file_inventory_proto_rawDescOnce sync.Once
@@ -499,31 +1120,49 @@ func file_inventory_proto_rawDescGZIP() []byte {
 	return file_inventory_proto_rawDescData
 }
 
-var file_inventory_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_inventory_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_inventory_proto_goTypes = []any{
-	(*WarehouseInfo)(nil),      // 0: inventory.v1.WarehouseInfo
-	(*AddProductRequest)(nil),  // 1: inventory.v1.AddProductRequest
-	(*AddProductResponse)(nil), // 2: inventory.v1.AddProductResponse
-	(*WarehouseExistReq)(nil),  // 3: inventory.v1.WarehouseExistReq
-	(*WarehouseExistResp)(nil), // 4: inventory.v1.WarehouseExistResp
-	(*ListWarehousesReq)(nil),  // 5: inventory.v1.ListWarehousesReq
-	(*ListWarehousesResp)(nil), // 6: inventory.v1.ListWarehousesResp
-	(*Warehouse)(nil),          // 7: inventory.v1.Warehouse
+	(*WarehouseInfo)(nil),           // 0: inventory.v1.WarehouseInfo
+	(*AddProductRequest)(nil),       // 1: inventory.v1.AddProductRequest
+	(*AddProductResponse)(nil),      // 2: inventory.v1.AddProductResponse
+	(*WarehouseExistReq)(nil),       // 3: inventory.v1.WarehouseExistReq
+	(*WarehouseExistResp)(nil),      // 4: inventory.v1.WarehouseExistResp
+	(*ListWarehousesReq)(nil),       // 5: inventory.v1.ListWarehousesReq
+	(*ListWarehousesResp)(nil),      // 6: inventory.v1.ListWarehousesResp
+	(*Warehouse)(nil),               // 7: inventory.v1.Warehouse
+	(*CreateWarehouseReq)(nil),      // 8: inventory.v1.CreateWarehouseReq
+	(*CreateWarehouseResp)(nil),     // 9: inventory.v1.CreateWarehouseResp
+	(*DeleteWarehouseReq)(nil),      // 10: inventory.v1.DeleteWarehouseReq
+	(*DeleteWarehouseResp)(nil),     // 11: inventory.v1.DeleteWarehouseResp
+	(*CreateStockMovementReq)(nil),  // 12: inventory.v1.CreateStockMovementReq
+	(*CreateStockMovementResp)(nil), // 13: inventory.v1.CreateStockMovementResp
+	(*ListStockMovementsReq)(nil),   // 14: inventory.v1.ListStockMovementsReq
+	(*ListStockMovementsResp)(nil),  // 15: inventory.v1.ListStockMovementsResp
+	(*StockMovement)(nil),           // 16: inventory.v1.StockMovement
 }
 var file_inventory_proto_depIdxs = []int32{
-	0, // 0: inventory.v1.AddProductRequest.warehouse_info:type_name -> inventory.v1.WarehouseInfo
-	7, // 1: inventory.v1.ListWarehousesResp.warehouses:type_name -> inventory.v1.Warehouse
-	1, // 2: inventory.v1.InventoryService.CreateProductRecord:input_type -> inventory.v1.AddProductRequest
-	3, // 3: inventory.v1.InventoryService.HasAnyWarehouse:input_type -> inventory.v1.WarehouseExistReq
-	5, // 4: inventory.v1.InventoryService.ListWarehouses:input_type -> inventory.v1.ListWarehousesReq
-	2, // 5: inventory.v1.InventoryService.CreateProductRecord:output_type -> inventory.v1.AddProductResponse
-	4, // 6: inventory.v1.InventoryService.HasAnyWarehouse:output_type -> inventory.v1.WarehouseExistResp
-	6, // 7: inventory.v1.InventoryService.ListWarehouses:output_type -> inventory.v1.ListWarehousesResp
-	5, // [5:8] is the sub-list for method output_type
-	2, // [2:5] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0,  // 0: inventory.v1.AddProductRequest.warehouse_info:type_name -> inventory.v1.WarehouseInfo
+	7,  // 1: inventory.v1.ListWarehousesResp.warehouses:type_name -> inventory.v1.Warehouse
+	16, // 2: inventory.v1.ListStockMovementsResp.stock_movements:type_name -> inventory.v1.StockMovement
+	1,  // 3: inventory.v1.InventoryService.CreateProductRecord:input_type -> inventory.v1.AddProductRequest
+	3,  // 4: inventory.v1.InventoryService.HasAnyWarehouse:input_type -> inventory.v1.WarehouseExistReq
+	5,  // 5: inventory.v1.InventoryService.ListWarehouses:input_type -> inventory.v1.ListWarehousesReq
+	8,  // 6: inventory.v1.InventoryService.CreateWarehouse:input_type -> inventory.v1.CreateWarehouseReq
+	10, // 7: inventory.v1.InventoryService.DeleteWarehouse:input_type -> inventory.v1.DeleteWarehouseReq
+	12, // 8: inventory.v1.InventoryService.CreateStockMovement:input_type -> inventory.v1.CreateStockMovementReq
+	14, // 9: inventory.v1.InventoryService.ListStockMovements:input_type -> inventory.v1.ListStockMovementsReq
+	2,  // 10: inventory.v1.InventoryService.CreateProductRecord:output_type -> inventory.v1.AddProductResponse
+	4,  // 11: inventory.v1.InventoryService.HasAnyWarehouse:output_type -> inventory.v1.WarehouseExistResp
+	6,  // 12: inventory.v1.InventoryService.ListWarehouses:output_type -> inventory.v1.ListWarehousesResp
+	9,  // 13: inventory.v1.InventoryService.CreateWarehouse:output_type -> inventory.v1.CreateWarehouseResp
+	11, // 14: inventory.v1.InventoryService.DeleteWarehouse:output_type -> inventory.v1.DeleteWarehouseResp
+	13, // 15: inventory.v1.InventoryService.CreateStockMovement:output_type -> inventory.v1.CreateStockMovementResp
+	15, // 16: inventory.v1.InventoryService.ListStockMovements:output_type -> inventory.v1.ListStockMovementsResp
+	10, // [10:17] is the sub-list for method output_type
+	3,  // [3:10] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_inventory_proto_init() }
@@ -537,7 +1176,7 @@ func file_inventory_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_inventory_proto_rawDesc), len(file_inventory_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

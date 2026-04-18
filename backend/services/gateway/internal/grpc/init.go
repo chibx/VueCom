@@ -7,13 +7,15 @@ import (
 	order_service "github.com/chibx/vuecom/backend/services/orders"
 	payment_service "github.com/chibx/vuecom/backend/services/payment"
 	"github.com/chibx/vuecom/backend/shared/proto/go/catalog"
+	"github.com/chibx/vuecom/backend/shared/proto/go/inventory"
 	"github.com/chibx/vuecom/backend/shared/proto/go/orders"
 	"go.uber.org/zap"
 )
 
 var (
-	OrderClient   orders.OrderServiceClient
-	CatalogClient catalog.CatalogServiceClient
+	OrderClient     orders.OrderServiceClient
+	CatalogClient   catalog.CatalogServiceClient
+	InventoryClient inventory.InventoryServiceClient
 )
 
 func InitClients() func() {
@@ -21,6 +23,7 @@ func InitClients() func() {
 	// Register ALL services on the single in-memory server
 	registerServices(
 		catalog_service.Register,
+		inventory_service.Register,
 		order_service.Register,
 		// payment.Register,
 		// notification.Register,
@@ -31,6 +34,7 @@ func InitClients() func() {
 
 	OrderClient = orders.NewOrderServiceClient(conn)
 	CatalogClient = catalog.NewCatalogServiceClient(conn)
+	InventoryClient = inventory.NewInventoryServiceClient(conn)
 
 	return func() {
 		catalog_service.Destroy()

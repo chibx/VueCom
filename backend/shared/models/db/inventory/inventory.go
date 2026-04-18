@@ -24,20 +24,20 @@ const (
  */
 
 type Inventory struct {
-	ID              uint      `gorm:"primarykey" redis:"id"`
-	UpdatedAt       time.Time `gorm:"" redis:"updated_at"`
-	CreatedAt       time.Time `gorm:"" redis:"created_at"`
-	SKU             string    `json:"sku" gorm:"not null;index" redis:"sku"`
-	ProductId       uint      `json:"product_id" gorm:"not null" redis:"product_id"`
-	WarehouseId     uint      `json:"warehouse_id" gorm:"not null" redis:"warehouse_id"`
-	AvailableQty    int       `json:"available_qty" gorm:"default:0" redis:"available_qty"`
-	ReservedQty     int       `json:"reserved_qty" gorm:"default:0" redis:"reserved_qty"`
-	OnHoldQty       int       `json:"on_hold_qty" gorm:"default:0" redis:"on_hold_qty"`
-	TotalQty        int       `json:"total_qty" gorm:"<-:false" redis:"total_qty"`
-	SafetyStock     int       `json:"safety_stock" gorm:"default:0" redis:"safety_stock"`
-	ReorderLevel    int       `json:"reorder_level" gorm:"default:0" redis:"reorder_level"`
-	LastRestockedAt time.Time `json:"last_restocked_at" gorm:"" redis:"last_restocked_at"`
-	LastSoldAt      time.Time `json:"last_sold_at" gorm:"" redis:"last_sold_at"`
+	ID              uint       `gorm:"primarykey" redis:"id"`
+	UpdatedAt       time.Time  `gorm:"" redis:"updated_at"`
+	CreatedAt       time.Time  `gorm:"" redis:"created_at"`
+	SKU             string     `json:"sku" gorm:"not null;index" redis:"sku"`
+	ProductId       uint       `json:"product_id" gorm:"not null" redis:"product_id"`
+	WarehouseId     uint       `json:"warehouse_id" gorm:"not null" redis:"warehouse_id"`
+	AvailableQty    int        `json:"available_qty" gorm:"default:0" redis:"available_qty"`
+	ReservedQty     int        `json:"reserved_qty" gorm:"default:0" redis:"reserved_qty"`
+	OnHoldQty       int        `json:"on_hold_qty" gorm:"default:0" redis:"on_hold_qty"`
+	TotalQty        int        `json:"total_qty" gorm:"<-:false" redis:"total_qty"`
+	SafetyStock     int        `json:"safety_stock" gorm:"default:0" redis:"safety_stock"`
+	ReorderLevel    int        `json:"reorder_level" gorm:"default:0" redis:"reorder_level"`
+	LastRestockedAt *time.Time `json:"last_restocked_at" gorm:"" redis:"last_restocked_at"`
+	LastSoldAt      *time.Time `json:"last_sold_at" gorm:"" redis:"last_sold_at"`
 }
 
 type Warehouse struct {

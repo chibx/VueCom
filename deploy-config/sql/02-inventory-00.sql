@@ -42,8 +42,8 @@ CREATE TABLE warehouses (
     name TEXT NOT NULL,
     address TEXT NOT NULL,
     city TEXT NOT NULL,
-    state_id INT,
-    country_id INT,
+    state_id INT NOT NULL,
+    country_id INT NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

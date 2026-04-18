@@ -100,7 +100,7 @@ type Product struct {
 	UpdatedAt        time.Time  `gorm:"" redis:"updated_at"`
 	CreatedAt        time.Time  `gorm:"" redis:"created_at"`
 	Name             string     `gorm:"not null;index;type:text" redis:"name"`
-	SKU              string     `gorm:"not null;index" redis:"sku"`
+	SKU              string     `gorm:"not null;index;<-:create" redis:"sku"`
 	BasePrice        float64    `redis:"base_price" gorm:"not null;type:numeric(15, 2)"`
 	SalePrice        float64    `redis:"sale_price" gorm:"not null;type:numeric(15, 2)"`
 	DiscountStart    *time.Time `redis:"discount_start"`

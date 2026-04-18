@@ -169,6 +169,86 @@ func (*AddProductResponse) Descriptor() ([]byte, []int) {
 	return file_inventory_proto_rawDescGZIP(), []int{2}
 }
 
+type WarehouseExistReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WarehouseExistReq) Reset() {
+	*x = WarehouseExistReq{}
+	mi := &file_inventory_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WarehouseExistReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WarehouseExistReq) ProtoMessage() {}
+
+func (x *WarehouseExistReq) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WarehouseExistReq.ProtoReflect.Descriptor instead.
+func (*WarehouseExistReq) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{3}
+}
+
+type WarehouseExistResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Exists        bool                   `protobuf:"varint,1,opt,name=exists,proto3" json:"exists,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WarehouseExistResp) Reset() {
+	*x = WarehouseExistResp{}
+	mi := &file_inventory_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WarehouseExistResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WarehouseExistResp) ProtoMessage() {}
+
+func (x *WarehouseExistResp) ProtoReflect() protoreflect.Message {
+	mi := &file_inventory_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WarehouseExistResp.ProtoReflect.Descriptor instead.
+func (*WarehouseExistResp) Descriptor() ([]byte, []int) {
+	return file_inventory_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *WarehouseExistResp) GetExists() bool {
+	if x != nil {
+		return x.Exists
+	}
+	return false
+}
+
 var File_inventory_proto protoreflect.FileDescriptor
 
 const file_inventory_proto_rawDesc = "" +
@@ -182,9 +262,13 @@ const file_inventory_proto_rawDesc = "" +
 	"product_id\x18\x01 \x01(\rR\tproductId\x12B\n" +
 	"\x0ewarehouse_info\x18\x02 \x03(\v2\x1b.inventory.v1.WarehouseInfoR\rwarehouseInfo\x12\x10\n" +
 	"\x03sku\x18\x03 \x01(\tR\x03sku\"\x14\n" +
-	"\x12AddProductResponse2l\n" +
+	"\x12AddProductResponse\"\x13\n" +
+	"\x11WarehouseExistReq\",\n" +
+	"\x12WarehouseExistResp\x12\x16\n" +
+	"\x06exists\x18\x01 \x01(\bR\x06exists2\xc2\x01\n" +
 	"\x10InventoryService\x12X\n" +
-	"\x13CreateProductRecord\x12\x1f.inventory.v1.AddProductRequest\x1a .inventory.v1.AddProductResponseB;Z9github.com/chibx/vuecom/backend/shared/proto/go/inventoryb\x06proto3"
+	"\x13CreateProductRecord\x12\x1f.inventory.v1.AddProductRequest\x1a .inventory.v1.AddProductResponse\x12T\n" +
+	"\x0fHasAnyWarehouse\x12\x1f.inventory.v1.WarehouseExistReq\x1a .inventory.v1.WarehouseExistRespB;Z9github.com/chibx/vuecom/backend/shared/proto/go/inventoryb\x06proto3"
 
 var (
 	file_inventory_proto_rawDescOnce sync.Once
@@ -198,18 +282,22 @@ func file_inventory_proto_rawDescGZIP() []byte {
 	return file_inventory_proto_rawDescData
 }
 
-var file_inventory_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_inventory_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_inventory_proto_goTypes = []any{
 	(*WarehouseInfo)(nil),      // 0: inventory.v1.WarehouseInfo
 	(*AddProductRequest)(nil),  // 1: inventory.v1.AddProductRequest
 	(*AddProductResponse)(nil), // 2: inventory.v1.AddProductResponse
+	(*WarehouseExistReq)(nil),  // 3: inventory.v1.WarehouseExistReq
+	(*WarehouseExistResp)(nil), // 4: inventory.v1.WarehouseExistResp
 }
 var file_inventory_proto_depIdxs = []int32{
 	0, // 0: inventory.v1.AddProductRequest.warehouse_info:type_name -> inventory.v1.WarehouseInfo
 	1, // 1: inventory.v1.InventoryService.CreateProductRecord:input_type -> inventory.v1.AddProductRequest
-	2, // 2: inventory.v1.InventoryService.CreateProductRecord:output_type -> inventory.v1.AddProductResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
+	3, // 2: inventory.v1.InventoryService.HasAnyWarehouse:input_type -> inventory.v1.WarehouseExistReq
+	2, // 3: inventory.v1.InventoryService.CreateProductRecord:output_type -> inventory.v1.AddProductResponse
+	4, // 4: inventory.v1.InventoryService.HasAnyWarehouse:output_type -> inventory.v1.WarehouseExistResp
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -226,7 +314,7 @@ func file_inventory_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_inventory_proto_rawDesc), len(file_inventory_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

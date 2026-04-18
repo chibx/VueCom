@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	InventoryService_CreateProductRecord_FullMethodName = "/inventory.v1.InventoryService/CreateProductRecord"
+	InventoryService_HasAnyWarehouse_FullMethodName     = "/inventory.v1.InventoryService/HasAnyWarehouse"
 )
 
 // InventoryServiceClient is the client API for InventoryService service.
@@ -28,6 +29,7 @@ const (
 type InventoryServiceClient interface {
 	// Add your service methods here
 	CreateProductRecord(ctx context.Context, in *AddProductRequest, opts ...grpc.CallOption) (*AddProductResponse, error)
+	HasAnyWarehouse(ctx context.Context, in *WarehouseExistReq, opts ...grpc.CallOption) (*WarehouseExistResp, error)
 }
 
 type inventoryServiceClient struct {
@@ -48,12 +50,23 @@ func (c *inventoryServiceClient) CreateProductRecord(ctx context.Context, in *Ad
 	return out, nil
 }
 
+func (c *inventoryServiceClient) HasAnyWarehouse(ctx context.Context, in *WarehouseExistReq, opts ...grpc.CallOption) (*WarehouseExistResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(WarehouseExistResp)
+	err := c.cc.Invoke(ctx, InventoryService_HasAnyWarehouse_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InventoryServiceServer is the server API for InventoryService service.
 // All implementations must embed UnimplementedInventoryServiceServer
 // for forward compatibility.
 type InventoryServiceServer interface {
 	// Add your service methods here
 	CreateProductRecord(context.Context, *AddProductRequest) (*AddProductResponse, error)
+	HasAnyWarehouse(context.Context, *WarehouseExistReq) (*WarehouseExistResp, error)
 	mustEmbedUnimplementedInventoryServiceServer()
 }
 
@@ -66,6 +79,9 @@ type UnimplementedInventoryServiceServer struct{}
 
 func (UnimplementedInventoryServiceServer) CreateProductRecord(context.Context, *AddProductRequest) (*AddProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProductRecord not implemented")
+}
+func (UnimplementedInventoryServiceServer) HasAnyWarehouse(context.Context, *WarehouseExistReq) (*WarehouseExistResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HasAnyWarehouse not implemented")
 }
 func (UnimplementedInventoryServiceServer) mustEmbedUnimplementedInventoryServiceServer() {}
 func (UnimplementedInventoryServiceServer) testEmbeddedByValue()                          {}
@@ -106,6 +122,24 @@ func _InventoryService_CreateProductRecord_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InventoryService_HasAnyWarehouse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WarehouseExistReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServiceServer).HasAnyWarehouse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InventoryService_HasAnyWarehouse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServiceServer).HasAnyWarehouse(ctx, req.(*WarehouseExistReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InventoryService_ServiceDesc is the grpc.ServiceDesc for InventoryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -116,6 +150,10 @@ var InventoryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateProductRecord",
 			Handler:    _InventoryService_CreateProductRecord_Handler,
+		},
+		{
+			MethodName: "HasAnyWarehouse",
+			Handler:    _InventoryService_HasAnyWarehouse_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

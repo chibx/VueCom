@@ -9,6 +9,7 @@ option go_package = "github.com/chibx/vuecom/backend/shared/proto/go/inventory";
 service InventoryService {
   // Add your service methods here
   rpc CreateProductRecord(AddProductRequest) returns (AddProductResponse);
+  rpc HasAnyWarehouse(WarehouseExistReq) returns (WarehouseExistResp);
 }
 
 message WarehouseInfo {
@@ -23,3 +24,9 @@ message AddProductRequest {
 }
 
 message AddProductResponse {}
+
+message WarehouseExistReq {}
+
+message WarehouseExistResp {
+  bool exists = 1;
+}

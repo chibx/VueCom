@@ -38,3 +38,28 @@ func (c *InventoryDB) ListWarehouses(ctx context.Context) ([]*inventoryModel.War
 	err := c.db.WithContext(ctx).Find(&warehouses).Error
 	return warehouses, err
 }
+
+func (c *InventoryDB) CreateWarehouse(ctx context.Context, warehouse *inventoryModel.Warehouse) error {
+	return c.db.WithContext(ctx).Create(warehouse).Error
+}
+
+func (c *InventoryDB) DeleteWarehouse(ctx context.Context, ids []uint32) error {
+	return c.db.WithContext(ctx).Delete(&inventoryModel.Warehouse{}, ids).Error
+}
+
+func (c *InventoryDB) CreateStockMovement(ctx context.Context, movement *inventoryModel.StockMovement) error {
+	return c.db.WithContext(ctx).Create(movement).Error
+}
+
+func (c *InventoryDB) ListStockMovements(ctx context.Context, warehouseId uint, sku string) ([]*inventoryModel.StockMovement, error) {
+	var movements []*inventoryModel.StockMovement
+	query := c.db.WithContext(ctx)
+	if warehouseId > 0 {
+		query = query.Where("warehouse_id = ?", warehouseId)
+	}
+	if sku != "" {
+		query = query.Where("sku = ?", sku)
+	}
+	err := query.Find(&movements).Error
+	return movements, err
+}

@@ -102,3 +102,80 @@ func (s *Service) ListWarehouses(ctx context.Context, req *inventoryPr.ListWareh
 
 	return resp, nil
 }
+
+func (s *Service) CreateWarehouse(ctx context.Context, req *inventoryPr.CreateWarehouseReq) (*inventoryPr.CreateWarehouseResp, error) {
+	warehouse := &inventory.Warehouse{
+		Code:      req.Code,
+		Name:      req.Name,
+		Address:   req.Address,
+		City:      req.City,
+		StateID:   uint(req.StateId),
+		CountryID: uint(req.CountryId),
+		IsActive:  req.IsActive,
+	}
+
+	err := global.Repo.CreateWarehouse(ctx, warehouse)
+	if err != nil {
+		global.Logger.Error("failed to create warehouse", zap.Error(err))
+		return nil, err
+	}
+
+	return &inventoryPr.CreateWarehouseResp{Id: uint32(warehouse.ID)}, nil
+}
+
+func (s *Service) DeleteWarehouse(ctx context.Context, req *inventoryPr.DeleteWarehouseReq) (*inventoryPr.DeleteWarehouseResp, error) {
+	err := global.Repo.DeleteWarehouse(ctx, req.WarehouseIds)
+	if err != nil {
+		global.Logger.Error("failed to delete warehouse(s)", zap.Error(err), zap.Uint32s("ids", req.WarehouseIds))
+		return nil, err
+	}
+
+	return &inventoryPr.DeleteWarehouseResp{}, nil
+}
+
+func (s *Service) CreateStockMovement(ctx context.Context, req *inventoryPr.CreateStockMovementReq) (*inventoryPr.CreateStockMovementResp, error) {
+	movement := &inventory.StockMovement{
+		InventoryId:  uint(req.InventoryId),
+		SKU:          req.Sku,
+		WarehouseId:  uint(req.WarehouseId),
+		MovementType: inventory.StockMovementType(req.MovementType),
+		Quantity:     int(req.Quantity),
+		Reference:    req.Reference,
+		Notes:        req.Notes,
+		CreatedBy:    uint(req.CreatedBy),
+	}
+
+	err := global.Repo.CreateStockMovement(ctx, movement)
+	if err != nil {
+		global.Logger.Error("failed to create stock movement", zap.Error(err))
+		return nil, err
+	}
+
+	return &inventoryPr.CreateStockMovementResp{Id: uint32(movement.ID)}, nil
+}
+
+func (s *Service) ListStockMovements(ctx context.Context, req *inventoryPr.ListStockMovementsReq) (*inventoryPr.ListStockMovementsResp, error) {
+	movements, err := global.Repo.ListStockMovements(ctx, uint(req.WarehouseId), req.Sku)
+	if err != nil {
+		global.Logger.Error("failed to list stock movements", zap.Error(err))
+		return nil, err
+	}
+
+	resp := &inventoryPr.ListStockMovementsResp{}
+	for _, m := range movements {
+		resp.StockMovements = append(resp.StockMovements, &inventoryPr.StockMovement{
+			Id:           uint32(m.ID),
+			InventoryId:  uint32(m.InventoryId),
+			Sku:          m.SKU,
+			WarehouseId:  uint32(m.WarehouseId),
+			MovementType: string(m.MovementType),
+			Quantity:     int32(m.Quantity),
+			Reference:    m.Reference,
+			Notes:        m.Notes,
+			CreatedBy:    uint32(m.CreatedBy),
+			CreatedAt:    m.CreatedAt.Format(time.RFC3339),
+		})
+	}
+
+	return resp, nil
+}

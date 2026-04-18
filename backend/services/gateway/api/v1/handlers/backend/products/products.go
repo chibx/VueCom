@@ -11,6 +11,7 @@ import (
 	igrpc "github.com/chibx/vuecom/backend/services/gateway/internal/grpc"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/types"
 	"github.com/chibx/vuecom/backend/services/gateway/internal/utils"
+	inventoryPr "github.com/chibx/vuecom/backend/shared/proto/go/inventory"
 	"go.uber.org/zap"
 
 	reqTypes "github.com/chibx/vuecom/backend/services/gateway/api/v1/request/catalog"
@@ -42,19 +43,31 @@ func CreateProduct(api *types.Api) fiber.Handler {
 			return response.WriteResponse(c, fiber.StatusBadRequest, "One or more fields are invalid", errorBag)
 		}
 
+		existsResp, err := igrpc.InventoryClient.HasAnyWarehouse(c.Context(), &inventoryPr.WarehouseExistReq{})
+		if err != nil {
+			logger.Error("inventory warehouse check failed", zap.Error(err))
+			return response.WriteResponse(c, fiber.StatusInternalServerError, "Error occurred while checking inventory warehouses")
+		}
+		if !existsResp.Exists {
+			return response.WriteResponse(c, fiber.StatusBadRequest, "Cannot create product until at least one warehouse exists")
+		}
+
 		normalizeProdReq(&reqBody)
 
 		prodRpc, err := utils.CreateProductToRpc(&reqBody)
 		if err != nil {
 			return response.FromFiberError(c, err500)
 		}
+
 		prodRpcResp, err := igrpc.CatalogClient.CreateProduct(c.Context(), prodRpc)
 		if err != nil {
 			return response.WriteResponse(c, fiber.StatusInternalServerError, "Error occurred creating product")
 		}
 
 		productId := prodRpcResp.Id
-		go cache.SetProduct(c.Context(), api, utils.CreateProdToGetResp(&reqBody, productId))
+		go func() {
+			_ = cache.SetProduct(c.Context(), api, utils.CreateProdToGetResp(&reqBody, productId))
+		}()
 
 		return response.WriteResponse(c, fiber.StatusCreated, "Product Created Succesfully")
 	}

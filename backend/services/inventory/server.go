@@ -75,3 +75,30 @@ func (s *Service) HasAnyWarehouse(ctx context.Context, req *inventoryPr.Warehous
 
 	return &inventoryPr.WarehouseExistResp{Exists: exists}, nil
 }
+
+func (s *Service) ListWarehouses(ctx context.Context, req *inventoryPr.ListWarehousesReq) (*inventoryPr.ListWarehousesResp, error) {
+	warehouses, err := global.Repo.ListWarehouses(ctx)
+	if err != nil {
+		global.Logger.Error("failed to list warehouses", zap.Error(err))
+		return nil, err
+	}
+
+	resp := &inventoryPr.ListWarehousesResp{}
+	for _, wh := range warehouses {
+
+		resp.Warehouses = append(resp.Warehouses, &inventoryPr.Warehouse{
+			Id:        uint32(wh.ID),
+			Code:      wh.Code,
+			Name:      wh.Name,
+			Address:   wh.Address,
+			City:      wh.City,
+			StateId:   uint32(wh.StateID),
+			CountryId: uint32(wh.CountryID),
+			IsActive:  wh.IsActive,
+			CreatedAt: wh.CreatedAt.Format(time.RFC3339),
+			UpdatedAt: wh.UpdatedAt.Format(time.RFC3339),
+		})
+	}
+
+	return resp, nil
+}

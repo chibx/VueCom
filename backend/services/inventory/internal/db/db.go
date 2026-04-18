@@ -32,3 +32,9 @@ func (c *InventoryDB) HasAnyWarehouse(ctx context.Context) (bool, error) {
 	}
 	return count > 0, nil
 }
+
+func (c *InventoryDB) ListWarehouses(ctx context.Context) ([]*inventoryModel.Warehouse, error) {
+	var warehouses []*inventoryModel.Warehouse
+	err := c.db.WithContext(ctx).Find(&warehouses).Error
+	return warehouses, err
+}

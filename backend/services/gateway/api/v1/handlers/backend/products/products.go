@@ -37,7 +37,7 @@ func CreateProduct(api *types.Api) fiber.Handler {
 		isFatal, errorBag := serverErrors.HandleValidationError(err)
 		if isFatal {
 			logger.Error("InvalidValidationError while creating a signup token", zap.Error(err))
-			return response.WriteResponse(c, fiber.ErrBadRequest.Code, err500.Message)
+			return response.WriteResponse(c, fiber.ErrInternalServerError.Code, err500.Message)
 		}
 		if len(errorBag) > 0 {
 			return response.WriteResponse(c, fiber.StatusBadRequest, "One or more fields are invalid", errorBag)

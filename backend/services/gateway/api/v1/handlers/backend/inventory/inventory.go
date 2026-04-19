@@ -70,7 +70,7 @@ func CreateWarehouse(api *types.Api) fiber.Handler {
 			return response.WriteResponse(c, fiber.StatusBadRequest, "Invalid request body")
 		}
 
-		err = utils.Validator().Struct(req)
+		err = utils.Validator().Struct(&req)
 		isFatal, errorBag := serverErrors.HandleValidationError(err)
 		if isFatal {
 			logger.Error("InvalidValidationError while creating warehouse", zap.Error(err))
@@ -136,7 +136,7 @@ func CreateStockMovement(api *types.Api) fiber.Handler {
 			return response.WriteResponse(c, fiber.StatusBadRequest, "Invalid request body")
 		}
 
-		err = utils.Validator().Struct(req)
+		err = utils.Validator().Struct(&req)
 		isFatal, errorBag := serverErrors.HandleValidationError(err)
 		if isFatal {
 			logger.Error("InvalidValidationError, applying stock movement", zap.Error(err))
@@ -177,7 +177,7 @@ func ListStockMovements(api *types.Api) fiber.Handler {
 			return response.WriteResponse(c, fiber.StatusBadRequest, "Invalid request body")
 		}
 
-		err = utils.Validator().Struct(req)
+		err = utils.Validator().Struct(&req)
 		isFatal, errorBag := serverErrors.HandleValidationError(err)
 		if isFatal {
 			logger.Error("InvalidValidationError, applying stock movement", zap.Error(err))

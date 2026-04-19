@@ -33,7 +33,7 @@ func CreateProduct(api *types.Api) fiber.Handler {
 			return response.WriteResponse(c, fiber.StatusBadRequest, "Validation error")
 		}
 
-		err = utils.Validator().Struct(reqBody)
+		err = utils.Validator().Struct(&reqBody)
 		isFatal, errorBag := serverErrors.HandleValidationError(err)
 		if isFatal {
 			logger.Error("InvalidValidationError while creating a signup token", zap.Error(err))

@@ -415,7 +415,7 @@ func CreateSignupToken(api *types.Api) fiber.Handler {
 		if err != nil {
 			return response.FromFiberError(ctx, err500)
 		}
-		err = utils.Validator().Struct(reqBody)
+		err = utils.Validator().Struct(&reqBody)
 		isFatal, errorBag := serverErrors.HandleValidationError(err)
 		if isFatal {
 			logger.Error("InvalidValidationError while creating a signup token", zap.Error(err))

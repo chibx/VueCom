@@ -43,6 +43,13 @@ func Register(api *types.Api) fiber.Handler {
 		var err error
 		// var errorBag = []serverErrors.ErrorDetail{}
 		var userForRegister = new(backendusers.CreateBackendUserRequest)
+
+		err = ctx.BodyParser(userForRegister)
+		if err != nil {
+			logger.Error("Error occured while parsing login values", zap.Error(err))
+			return response.FromFiberError(ctx, err500)
+		}
+
 		var regTokenJWT = ctx.Cookies("reg_token")
 		var now = time.Now()
 		if len(strings.TrimSpace(regTokenJWT)) == 0 {
@@ -61,12 +68,6 @@ func Register(api *types.Api) fiber.Handler {
 		if now.After(regToken.ExpiresAt.Time) {
 			logger.Warn("Reg Token: Used after jwt expiration")
 			return response.WriteResponse(ctx, fiber.StatusBadRequest, "Expired Registration Token!!")
-		}
-
-		err = ctx.BodyParser(userForRegister)
-		if err != nil {
-			logger.Error("Error occured while parsing login values", zap.Error(err))
-			return response.FromFiberError(ctx, err500)
 		}
 
 		err = utils.Validator().Struct(userForRegister)
